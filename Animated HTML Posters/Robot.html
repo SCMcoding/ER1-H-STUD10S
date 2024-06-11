@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Constellation with Robotic Face</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #000022;
+        }
+
+        .star {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 0.7;
+            }
+        }
+
+        .line {
+            position: absolute;
+            width: 2px;
+            background: white;
+            transform-origin: 0 0;
+            opacity: 0.8;
+        }
+
+        @keyframes move {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+
+        .robot-face {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 150px;
+            height: 200px;
+            margin: -100px 0 0 -75px;
+            background: #555;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-around;
+            transition: transform 0.3s;
+        }
+
+        .robot-face:hover {
+            transform: scale(1.1);
+        }
+
+        .eye {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            overflow: hidden;
+        }
+
+        .eye .pupil {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 15px;
+            height: 15px;
+            background: black;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s;
+        }
+
+        .mouth {
+            width: 100px;
+            height: 20px;
+            background: #222;
+            border-radius: 10px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s, background 0.3s;
+        }
+
+        .robot-face:hover .mouth {
+            transform: scale(1.5);
+            background: red;
+        }
+
+        .antenna {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            width: 10px;
+            height: 40px;
+            background: #555;
+            border-radius: 5px;
+            margin-left: -5px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .antenna-tip {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            width: 15px;
+            height: 15px;
+            background: red;
+            border-radius: 50%;
+            margin-left: -7.5px;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            animation: blink 1s infinite alternate;
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Define the stars of the constellation -->
+    <div class="star" style="top: 50%; left: 30%; animation-delay: 0s;"></div>
+    <div class="star" style="top: 40%; left: 40%; animation-delay: 0.2s;"></div>
+    <div class="star" style="top: 60%; left: 45%; animation-delay: 0.4s;"></div>
+    <div class="star" style="top: 30%; left: 60%; animation-delay: 0.6s;"></div>
+    <div class="star" style="top: 50%; left: 70%; animation-delay: 0.8s;"></div>
+    <div class="star" style="top: 55%; left: 35%; animation-delay: 1s;"></div>
+    <div class="star" style="top: 45%; left: 50%; animation-delay: 1.2s;"></div>
+    <div class="star" style="top: 35%; left: 80%; animation-delay: 1.4s;"></div>
+    <div class="star" style="top: 60%; left: 75%; animation-delay: 1.6s;"></div>
+    <div class="star" style="top: 65%; left: 55%; animation-delay: 1.8s;"></div>
+    <div class="star" style="top: 40%; left: 20%; animation-delay: 2s;"></div>
+    <div class="star" style="top: 70%; left: 30%; animation-delay: 2.2s;"></div>
+    <div class="star" style="top: 20%; left: 50%; animation-delay: 2.4s;"></div>
+    <div class="star" style="top: 80%; left: 40%; animation-delay: 2.6s;"></div>
+    <div class="star" style="top: 35%; left: 60%; animation-delay: 2.8s;"></div>
+    <div class="star" style="top: 55%; left: 80%; animation-delay: 3s;"></div>
+    <div class="star" style="top: 25%; left: 70%; animation-delay: 3.2s;"></div>
+    <div class="star" style="top: 65%; left: 90%; animation-delay: 3.4s;"></div>
+    <div class="star" style="top: 85%; left: 10%; animation-delay: 3.6s;"></div>
+    <div class="star" style="top: 15%; left: 30%; animation-delay: 3.8s;"></div>
+    <div class="star" style="top: 10%; left: 10%; animation-delay: 4s;"></div>
+    <div class="star" style="top: 25%; left: 90%; animation-delay: 4.2s;"></div>
+    <div class="star" style="top: 90%; left: 60%; animation-delay: 4.4s;"></div>
+    <div class="star" style="top: 50%; left: 90%; animation-delay: 4.6s;"></div>
+    <div class="star" style="top: 30%; left: 80%; animation-delay: 4.8s;"></div>
+    <div class="star" style="top: 70%; left: 10%; animation-delay: 5s;"></div>
+    <div class="star" style="top: 25%; left: 25%; animation-delay: 5.2s;"></div>
+    <div class="star" style="top: 15%; left: 75%; animation-delay: 5.4s;"></div>
+    <div class="star" style="top: 75%; left: 85%; animation-delay: 5.6s;"></div>
+    <div class="star" style="top: 65%; left: 15%; animation-delay: 5.8s;"></div>
+    <div class="star" style="top: 35%; left: 35%; animation-delay: 6s;"></div>
+
+    <!-- Define the lines connecting the stars -->
+    <div class="line" style="top: 52%; left: 32%; width: 120px; transform: rotate(-30deg);"></div>
+    <div class="line" style="top: 42%; left: 42%; width: 50px; transform: rotate(60deg);"></div>
+    <div class="line" style="top: 62%; left: 47%; width: 150px; transform: rotate(-45deg);"></div>
+    <div class="line" style="top: 32%; left: 62%; width: 120px; transform: rotate(45deg);"></div>
+    <div class="line" style="top: 57%; left: 37%; width: 110px; transform: rotate(-10deg);"></div>
+    <div class="line" style="top: 47%; left: 52%; width: 140px; transform: rotate(30deg);"></div>
+    <div class="line" style="top: 37%; left: 82%; width: 90px; transform: rotate(-50deg);"></div>
+    <div class="line" style="top: 62%; left: 77%; width: 110px; transform: rotate(-20deg);"></div>
+    <div class="line" style="top: 67%; left: 57%; width: 100px; transform: rotate(15deg);"></div>
+
+    <!-- Robot face -->
+    <div class="robot-face">
+        <div class="antenna">
+            <div class="antenna-tip"></div>
+        </div>
+        <div class="eye left">
+            <div class="pupil" id="pupil-left"></div>
+        </div>
+        <div class="eye right">
+            <div class="pupil" id="pupil-right"></div>
+        </div>
+        <div class="mouth"></div>
+    </div>
+
+    <script>
+        // Optional: Add some movement to the entire constellation
+        document.querySelectorAll('.star, .line').forEach(el => {
+            el.style.animation = 'move 5s infinite';
+        });
+
+        // Eye movement logic
+        document.addEventListener('mousemove', (event) => {
+            const robotFace = document.querySelector('.robot-face');
+            const pupils = document.querySelectorAll('.pupil');
+
+            const faceRect = robotFace.getBoundingClientRect();
+            const faceCenterX = faceRect.left + faceRect.width / 2;
+            const faceCenterY = faceRect.top + faceRect.height / 2;
+
+            const angle = Math.atan2(event.clientY - faceCenterY, event.clientX - faceCenterX);
+
+            pupils.forEach(pupil => {
+                pupil.style.transform = `translate(${10 * Math.cos(angle)}px, ${10 * Math.sin(angle)}px)`;
+            });
+        });
+    </script>
+</body>
+</html>
+
