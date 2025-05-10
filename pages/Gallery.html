@@ -1,53 +1,144 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-<title>
-Gallery Page
-</title>
-<link rel="stylesheet" type="text/css" href="..\css\mystyle.css">       
-<body class="gallery-color">    
-<head>
-    <center><img src="../Website Design/Banner/Banner.png" width="2000" height="350"></center>
-<ul><h2>
-    <li><a href="..\Home.html">Home</a></li> 
-    <li><a href="..\pages\Animation Projects.html">Animation Projects</a></li> 
-    <li><a href="..\pages\Project Archives.html">Project Archives</a></li> 
-    <li><a href="..\pages\Music.html">Music</a></li> 
-    <li><a href="..\pages\Social.html">Social</a></li>
-    </h2>
-</ul>
+    <!-- Meta tags for character encoding and responsiveness -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Page title -->
+    <title>Gallery Page</title>
+    
+    <!-- Linking external stylesheet -->
+    <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+    
+    <!-- Internal CSS for styling -->
+    <style>
+        /* Basic page styling */
+        body {
+            background-color: #000;
+            color: white;
+            font-family: 'Courier New', Geneva, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Banner image styling for responsiveness */
+        .banner {
+            width: 100%;
+            height: auto;
+            display: block;
+            margin: auto;
+        }
+
+        /* Navigation bar styling */
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            background-color: #333;
+        }
+
+        ul li {
+            margin: 0 15px;
+        }
+
+        ul li a {
+            text-decoration: none;
+            color: white;
+            padding: 10px 20px;
+            display: block;
+        }
+
+        ul li a:hover {
+            background-color: #555;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin: 20px 0;
+        }
+
+        /* Styling for the gallery container */
+        .gallery {
+            display: flex;
+            flex-wrap: wrap; /* Allows images to form rows */
+            justify-content: center;
+            gap: 20px; /* Space between images */
+            padding: 20px;
+        }
+
+        /* Slightly larger size for the top Cinema 4D posters */
+        .gallery .large-size {
+            width: 400px; /* Increased width */
+            height: 500px; /* Increased height */
+            object-fit: cover; /* Ensures images fit the frame without distortion */
+            margin: 10px;
+            border-radius: 5px;
+            display: block;
+        }
+
+        /* Original size for the Practice Posters */
+        .gallery .original-size {
+            max-width: 1000px; /* Maintain original size */
+            height: auto; /* Auto height to keep proportions */
+            margin: 10px;
+            border-radius: 5px;
+            display: block;
+        }
+
+        /* Mobile-friendly adjustments */
+        @media (max-width: 600px) {
+            ul {
+                flex-direction: column;
+            }
+
+            .gallery .large-size,
+            .gallery .original-size {
+                width: 90%; /* Adjust size for smaller screens */
+                height: auto;
+            }
+        }
+    </style>
 </head>
 
-<body>
+<body class="gallery-color">
 
-<center>    
+    <!-- Banner Image -->
+    <center>
+        <img src="../Website Design/Banner/Banner.png" class="banner" alt="Banner Image">
+    </center>
 
-<h1><p style="color: white;">Cinema 4D Posters:</p></h1>
-    
-<img src="../Poster Designs/Cubical Cosmos, UFO Charm.png">
+    <!-- Navigation Menu -->
+    <ul>
+        <li><a href="../Home.html">Home</a></li>
+        <li><a href="../pages/Animation Projects.html">Animation Projects</a></li>
+        <li><a href="../pages/Project Archives.html">Project Archives</a></li>
+        <li><a href="../pages/Music.html">Music</a></li>
+        <li><a href="../pages/Social.html">Social</a></li>
+    </ul>
 
-<img src="../Poster Designs/Noot Noot Penguin.png">
+    <!-- Cinema 4D Posters Section -->
+    <h1>Cinema 4D Posters:</h1>
+    <div class="gallery">
+        <!-- Larger-sized Cinema 4D Posters -->
+        <img src="../Poster Designs/Cubical Cosmos, UFO Charm.png" class="large-size" alt="Cubical Cosmos, UFO Charm Poster">
+        <img src="../Poster Designs/Noot Noot Penguin.png" class="large-size" alt="Noot Noot Penguin Poster">
+        <img src="../Poster Designs/Noot Wars.png" class="large-size" alt="Noot Wars Poster">
+        <img src="../Poster Designs/Seranade Of The Stars.png" class="large-size" alt="Serenade Of The Stars Poster">
+    </div>
 
-<img src="../Poster Designs/Noot Wars.png">
+    <!-- Practice Posters Section -->
+    <h1>Practice Posters:</h1>
+    <div class="gallery">
+        <!-- Practice Posters with original size -->
+        <img src="../Poster Designs/Space_Poster1.png" class="original-size" alt="Space Poster 1">
+        <img src="../Poster Designs/Space_Poster2.png" class="original-size" alt="Space Poster 2">
+        <img src="../Poster Designs/Space_Poster3.png" class="original-size" alt="Space Poster 3">
+    </div>
 
-<img src="../Poster Designs/Seranade Of The Stars.png">
-
-<br>
-
-<br>
-
-<h1><p style="color: white;">Practice Posters:</p></h1>
-
-<img src="../Poster Designs/Space_Poster1.png" width="1000">
-
-<img src="../Poster Designs/Space_Poster2.png" width="1000">
-
-<img src="../Poster Designs/Space_Poster3.png" width="1000">
-
-    
-
-    
-    
-</center>
 </body>
 </html>
-

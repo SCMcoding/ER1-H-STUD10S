@@ -1,57 +1,76 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<title>
-Video Projects
-</title>
-<link rel="stylesheet" type="text/css" href="..\css\mystyle.css">        
-<body class="interview-color"> 
-<head>
-
- <center><img src="../Website Design/Banner/Banner.png" width="2000" height="350"></center>
-    
-<ul>
-<li>
-  <h2>
-   <li><a href="..\pages\Animation Projects.html">Animated Projects</a></li> 
-   <li><a href="..\pages\Project Archives.html">Project Archives</a></li> 
-   <li><a href="..\pages\Gallery.html">Gallery </a></li> 
-   <li><a href="..\pages\Music.html">Music</a></li>   
-   <li><a href="..\pages\Social.html">Social</a></li> 
-   </h2>
-</ul>
-
-<style>
-    
-        iframe {
-            width:80%;
-            height: 80%;
-            border: 2px solid #ccc;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Projects</title>
+    <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
         }
-</style>    
-    
-    
-        
-    
-    
-    
+
+        .banner {
+            width: 100%;
+            height: auto;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            background-color: #333;
+        }
+
+        li {
+            margin: 0 15px;
+        }
+
+        li a {
+            text-decoration: none;
+            color: white;
+            padding: 10px 20px;
+            display: block;
+        }
+
+        li a:hover {
+            background-color: #555;
+        }
+
+        iframe {
+            width: 80%;
+            height: 80vh;
+            border: 2px solid #ccc;
+            margin: 20px auto;
+            display: block;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+    </style>
 </head>
-<body>
-    
-<br>
-<br>    
-    
+<body class="interview-color">
 
-    
+    <center>
+        <img src="../Website Design/Banner/Banner.png" class="banner" alt="Banner Image">
+    </center>
 
+    <ul>
+        <li><a href="../pages/Animation Projects.html">Animated Projects</a></li>
+        <li><a href="../pages/Project Archives.html">Project Archives</a></li>
+        <li><a href="../pages/Gallery.html">Gallery</a></li>
+        <li><a href="../pages/Music.html">Music</a></li>
+        <li><a href="../pages/Social.html">Social</a></li>
+    </ul>
 
-    
-<center><iframe src="../Archive Pages/S_M_L.html" title="Embedded HTML Page"></iframe></center>
-    
-
-
-
-
-
+    <center>
+        <iframe src="../Archive Pages/S_M_L.html" title="Embedded HTML Page"></iframe>
+    </center>
 
 </body>
 </html>

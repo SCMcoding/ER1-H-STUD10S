@@ -1,42 +1,143 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-<title>
+    <!-- Meta tags for encoding and responsiveness -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Robot Display</title>
+    <link rel="stylesheet" type="text/css" href="css/mystyle.css">
 
-</title>  
-
-<link rel="stylesheet" type="text/css" href="css\mystyle.css">    
-
-<!--Robot Display-->
-   <style>
-    
-        iframe {
-            width:100%;
-            height: 95%;
-            border: 2px solid #ccc;
+    <!-- Inline CSS for layout and styling -->
+    <style>
+        /* Basic page styling */
+        body {
+            background-color: #000;
+            color: white;
+            font-family: 'Courier New', Geneva, sans-serif;
+            margin: 0;
+            padding: 0;
         }
-    </style>    
-    
-</head>  
-    
-    
-//Banner and Page Color
-    <center><img src="../ER1-H-STUD10S/Website Design/Banner/Banner.png" width="1900" height="350"></center>
+
+        /* Banner image styling */
+        .banner {
+            width: 100%;
+            height: auto;
+            display: block;
+            margin: auto;
+        }
+
+        /* Navigation bar styling */
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            background-color: #333;
+        }
+
+        ul li {
+            margin: 0 15px;
+        }
+
+        ul li a {
+            text-decoration: none;
+            color: white;
+            padding: 10px 20px;
+            display: block;
+        }
+
+        ul li a:hover {
+            background-color: #555;
+        }
+
+        /* Layout for the robot and embedded page */
+        .container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px;
+            padding: 20px;
+        }
+
+        /* Left side for embedded content */
+        .left-frame {
+            flex: 1;
+            height: 70vh; /* Responsive height */
+            border: 2px solid #ccc;
+            border-radius: 5px;
+        }
+
+        /* Right side for the robot display */
+        .robot-frame {
+            flex: 1;
+            height: 70vh; /* Responsive height */
+            border: 2px solid #ccc;
+            border-radius: 5px;
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 800px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .left-frame, .robot-frame {
+                width: 90%;
+                height: 50vh; /* Adjusted for mobile */
+            }
+
+            ul {
+                flex-direction: column;
+            }
+
+            ul li {
+                margin: 5px 0;
+            }
+        }
+
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+            color: white;
+        }
+    </style>
+</head>
+
 <body class="home-color">
 
-//Navigation bar    
-<ul>
-<h2> 
-    <li><a href="pages\Animation Projects.html">Animated Projects</a></li> 
-    <li><a href="pages\Project Archives.html">Project Archives</a></li> 
-    <li><a href="pages\Gallery.html">Gallery </a></li> 
-    <li><a href="pages\Music.html">Music</a></li>   
-    <li><a href="pages\Social.html">Contacts</a></li> 
-</h2>
-</ul>
+    <!-- Banner Image -->
+    <center>
+        <img src="../ER1-H-STUD10S/Website Design/Banner/Banner.png" class="banner" alt="Banner Image">
+    </center>
 
-//Animated Robot     
-<iframe src="../ER1-H-STUD10S/Animated HTML Posters/Robot.html" title="Embedded HTML Page"></iframe>
+    <!-- Navigation Menu -->
+    <ul>
+        <li><a href="pages/Animation Projects.html">Animated Projects</a></li>
+        <li><a href="pages/Project Archives.html">Project Archives</a></li>
+        <li><a href="pages/Gallery.html">Gallery</a></li>
+        <li><a href="pages/Music.html">Music</a></li>
+        <li><a href="pages/Social.html">Contacts</a></li>
+    </ul>
 
+    <!-- Interactive Display Container -->
+    <div class="container">
+        <!-- Left iframe for displaying an external or local page -->
+        <iframe class="left-frame" 
+            src="Information Pages/AboutMe.html" 
+            title="Embedded External Page">
+            Your browser does not support iframes or the page cannot be displayed.
+        </iframe>
+
+        <!-- Right iframe for the animated robot display -->
+        <iframe class="robot-frame" 
+            src="../ER1-H-STUD10S/Animated HTML Posters/Robot.html" 
+            title="Interactive Robot Display">
+            Your browser does not support iframes or the page cannot be displayed.
+        </iframe>
+    </div>
 
 </body>
 </html>

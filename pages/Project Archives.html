@@ -1,76 +1,110 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<title>
-Video Projects
-</title>
-<link rel="stylesheet" type="text/css" href="..\css\mystyle.css">        
-<body class="interview-color"> 
-<head>
-
- <center><img src="../Website Design/Banner/Banner.png" width="2000" height="350"></center>
-    
-<ul>
-<li>
-  <h2> 
-  <li><a href="..\Home.html">Home</a></li> 
-  <li><a href="..\pages\Animation Projects.html">Animation Projects</a></li> 
-  <li><a href="..\pages\Gallery.html">Gallery </a></li> 
-  <li><a href="..\pages\Music.html">Music</a></li> 
-  <li><a href="..\pages\Social.html">Social</a></li>  
-  </h2>
-</ul>
-
-<style>
-    
-
-    
-       iframe {
-            display: block;
-            width: 50%;
-            height: 1000px;
-            border: none; /* Removes the default iframe border */
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Projects</title>
+    <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+    <style>
+        body {
+            background-color: #000;
+            color: white;
+            font-family: 'Courier New', Geneva, sans-serif;
+            margin: 0;
+            padding: 0;
         }
-</style>    
-    
-    
-        
-    
-    
-    
+
+        .banner {
+            width: 100%;
+            height: auto;
+            display: block;
+            margin: auto;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            background-color: #333;
+        }
+
+        ul li {
+            margin: 0 15px;
+        }
+
+        ul li a {
+            text-decoration: none;
+            color: white;
+            padding: 10px 20px;
+            display: block;
+        }
+
+        ul li a:hover {
+            background-color: #555;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: white;
+        }
+
+        .separator {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        iframe {
+            display: block;
+            width: 80%;
+            height: 80vh;
+            border: none;
+            margin: 20px auto;
+        }
+
+        .content-title {
+            color: white;
+            font-family: 'Courier New', Geneva, sans-serif;
+            text-decoration: underline;
+        }
+    </style>
 </head>
-<body>
-    
-<br>
-<br>    
-    
-<center><h1><p style="color: white; font-family: 'Courier New', Geneva, sans-serif;">
-    <u>KAMEN RIDER GEATS:/"Desire Driver" AD Campaign:</u></h1></center>    
-    
-    
-<center><iframe src="../Archive Pages/Geats.html" title="Embedded HTML Page"></iframe></center>
-    
-    
-<center><h1><p style="color: white;">____________________________________________________________________________________________________________________________________</p></h1></center>
+<body class="interview-color">
 
-    
-<center><h1><p style="color: white; font-family: 'Courier New', Geneva, sans-serif;">
-    <u>WAYANG 2024: Animated Backgrounds Case Study:</u></h1></center>    
-<center><iframe src="../Archive Pages/Wayang 2024.html" title="Embedded HTML Page"></iframe></center>
-    
-    
+    <!-- Banner Image -->
+    <center>
+        <img src="../Website Design/Banner/Banner.png" class="banner" alt="Banner">
+    </center>
 
+    <!-- Navigation Menu -->
+    <ul>
+        <li><a href="../Home.html">Home</a></li>
+        <li><a href="../pages/Animation Projects.html">Animation Projects</a></li>
+        <li><a href="../pages/Gallery.html">Gallery</a></li>
+        <li><a href="../pages/Music.html">Music</a></li>
+        <li><a href="../pages/Social.html">Social</a></li>
+    </ul>
 
-<center><h1><p style="color: white;">____________________________________________________________________________________________________________________________________</p></h1></center>
+    <!-- Content Sections -->
+    <div class="separator">
+        <h1 class="content-title">KAMEN RIDER GEATS: "Desire Driver" AD Campaign</h1>
+        <iframe src="../Archive Pages/Geats.html" title="Embedded HTML Page - Geats"></iframe>
+    </div>
 
-<center><h1><p style="color: white; font-family: 'Courier New', Geneva, sans-serif;">
-    <u>Artificial Intellegence Web Case Study:</u></h1></center>    
-    
-<center><iframe src="../Archive Pages/Evol.html" title="Embedded HTML Page"></iframe></center>
-    
-    
-<center><h1><p style="color: white;">____________________________________________________________________________________________________________________________________</p></h1></center>
+    <div class="separator">
+        <h1 class="content-title">WAYANG 2024: Animated Backgrounds Case Study</h1>
+        <iframe src="../Archive Pages/Wayang 2024.html" title="Embedded HTML Page - Wayang"></iframe>
+    </div>
 
-<center><iframe src="../Archive Pages/Stairs.html" title="Embedded HTML Page"></iframe></center>
+    <div class="separator">
+        <h1 class="content-title">Artificial Intelligence Web Case Study</h1>
+        <iframe src="../Archive Pages/Evol.html" title="Embedded HTML Page - AI Case Study"></iframe>
+    </div>
+
+    <div class="separator">
+        <iframe src="../Archive Pages/Stairs.html" title="Embedded HTML Page - Stairs"></iframe>
+    </div>
 
 </body>
 </html>

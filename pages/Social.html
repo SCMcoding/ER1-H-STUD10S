@@ -1,35 +1,108 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-<title>Social</title>
-<link rel="stylesheet" type="text/css" href="..\css\mystyle.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social</title>
+    <!-- Linking external stylesheets -->
+    <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- Inline CSS for layout and styling -->
+    <style>
+        /* Basic page styling */
+        body {
+            background-color: #333;
+            color: white;
+            font-family: 'Courier New', Geneva, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        /* Banner styling */
+        .banner {
+            width: 100%;
+            height: auto;
+            display: block;
+            margin: auto;
+        }
+
+        /* Navigation menu styling */
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            background-color: #444;
+        }
+
+        ul li {
+            margin: 0 15px;
+        }
+
+        ul li a {
+            text-decoration: none;
+            color: white;
+            padding: 10px 20px;
+            display: block;
+        }
+
+        ul li a:hover {
+            background-color: #555;
+        }
+
+        /* Social media icon styling */
+        .socialmediaicons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .socialmediaicons a {
+            text-decoration: none;
+            color: white;
+            font-size: 40px;
+            padding: 10px;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        .socialmediaicons a:hover {
+            background-color: # #555;
+        }
+    </style>
 </head>
 
 <body class="contacts-color">
-<center><img src="../Website Design/Banner/Banner.png" width="2000" height="350"></center>
-<ul>
-  <h2>
-    <li><a href="..\Home.html">Home</a></li> 
-    <li><a href="..\pages\Animation Projects.html">Animated Projects</a></li> 
-    <li><a href="..\pages\Project Archives.html">Project Archives</a></li> 
-    <li><a href="..\pages\Gallery.html">Gallery </a></li> 
-    <li><a href="..\pages\Music.html">Music</a></li>  
-    </h2>
 
+    <!-- Banner Image -->
+    <center>
+        <img src="../Website Design/Banner/Banner.png" class="banner" alt="Banner Image">
+    </center>
+
+    <!-- Navigation Menu -->
+    <ul>
+        <li><a href="../Home.html">Home</a></li>
+        <li><a href="../pages/Animation Projects.html">Animated Projects</a></li>
+        <li><a href="../pages/Project Archives.html">Project Archives</a></li>
+        <li><a href="../pages/Gallery.html">Gallery</a></li>
+        <li><a href="../pages/Music.html">Music</a></li>
+    </ul>
     
 
-<br>
-<br>
-<br>
-<br>
-<!--
-<div class="Content">
- <ul class="socialmediaicons">
- <li><a href="" target="_blank"><i class="fa fa-facebook"></i></a></li>
- <li><a href=""_blank"><i class="fa fa-twitter"></i></a></li>
--->
-</ul>
-</div>
+    <!-- Social Media Links -->
+    <div class="socialmediaicons">
+        <a href="https://www.facebook.com" target="_blank" class="fa fa-facebook"></a>
+        <a href="https://www.twitter.com" target="_blank" class="fa fa-twitter"></a>
+        <a href="https://www.instagram.com" target="_blank" class="fa fa-instagram"></a>
+        <a href="https://www.linkedin.com" target="_blank" class="fa fa-linkedin"></a>
+        <a href="https://www.youtube.com" target="_blank" class="fa fa-youtube"></a>
+    </div>
+
 </body>
+
 </html>
