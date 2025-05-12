@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Meta tags for character encoding and responsiveness -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Page title -->
+  <title>Gallery Page</title>
+  
+  <!-- Linking external stylesheet -->
+  <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+  
+  <!-- Internal CSS for styling -->
+  <style>
+    /* Basic page styling */
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: 'Courier New', Geneva, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Centered banner */
+    .banner {
+      width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto 20px;
+    }
+
+    /* Navigation bar styling */
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      background-color: #333;
+    }
+    ul li { margin: 0 15px; }
+    ul li a {
+      text-decoration: none;
+      color: #fff;
+      padding: 10px 20px;
+      display: block;
+    }
+    ul li a:hover { background-color: #555; }
+
+    /* Section heading */
+    h1 {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    /* Gallery container */
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
+    }
+
+    /* Clickable image wrapper */
+    .gallery-btn {
+      display: inline-block;
+      padding: 0;
+      margin: 0;
+      border: none;
+      background: none;
+      cursor: pointer;
+    }
+
+    /* Unified image sizing */
+    .gallery-btn img {
+      width: 250px;      /* fixed width for all images */
+      height: auto;      /* maintain aspect ratio */
+      object-fit: cover;
+      border-radius: 5px;
+      display: block;
+    }
+
+    /* Mobile-friendly adjustments */
+    @media (max-width: 600px) {
+      .gallery-btn img {
+        width: 90%;      /* fluid on small screens */
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Banner Image -->
+  <img src="../Website%20Design/Banner/Banner.png" class="banner" alt="Banner">
+
+  <!-- Navigation Menu -->
+  <ul>
+    <li><a href="../Home.html">Home</a></li>
+<!--
+    <li><a href="../pages/Animation%20Projects.html">Animation Projects</a></li>
+    <li><a href="../pages/Project%20Archives.html">Project Archives</a></li>
+-->
+<!--    <li><a href="../pages/Music.html">Music</a></li>-->
+    <li><a href="../pages/Social.html">Social</a></li>
+  </ul>
+
+  <!-- Clickable Gallery -->
+  <div class="gallery">
+    <a href="../pages/GalleryChiWayang.html" class="gallery-btn">
+      <img src="../Gallery/GalleryButtons/CHIBUTTON_1.png" alt="Template Puppets">
+    </a>
+    <a href="../pages/GalleryPosters.html" class="gallery-btn">
+      <img src="../Gallery/GalleryButtons/CIN4DBUTTON.png" alt="Karna Puppet">
+    </a>
+    <a href="../pages/Animation Projects.html" class="gallery-btn">
+      <img src="../Gallery/GalleryButtons/ANIBUTTON.png" alt="Kunti Puppet">
+    </a>
+      
+<!--
+    <a href="princess.html" class="gallery-btn">
+      <img src="../Gallery/2024SpringPuppet_ThePrincess.png" alt="Princess Puppet">
+    </a>
+    <a href="archer.html" class="gallery-btn">
+      <img src="../Gallery/2024SpringPuppet_GreatArcher.png" alt="Great Archer Puppet">
+    </a>
+-->
+  </div>
+
+</body>
+</html>
+

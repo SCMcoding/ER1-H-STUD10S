@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ISS‑Style Station • Slow Float + Blinking & Twinkling Stars</title>
+<style>
+/* —— RESET —— */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#000;font-family:system-ui;overflow:hidden}
+
+/* —— EARTH —— */
+.earth{
+  position:fixed;left:-60vw;bottom:-35vh;width:220vw;height:130vh;
+  background:radial-gradient(ellipse at center,
+      #3b6ff3 0%,#2559d4 40%,#122d69 55%,transparent 70%);
+  animation: earthShift 160s linear infinite;
+}
+.earth::before{
+  content:"";position:absolute;inset:-2%;
+  background:radial-gradient(ellipse at center,
+      rgba(80,144,255,.35) 45%,transparent 55%);
+  filter:blur(4px);
+}
+@keyframes earthShift{to{transform:translateX(-12vw)}}
+
+/* —— STARFIELD (gentle twinkle layers) —— */
+.star{position:fixed;inset:0;pointer-events:none}
+.star.l1{opacity:.95;animation:tw1 7s linear infinite}
+.star.l2{opacity:.6; animation:tw2 10s linear infinite}
+.star.l3{opacity:.4; animation:tw3 14s linear infinite}
+@keyframes tw1{50%{opacity:.25;transform:translateY(2px)}}
+@keyframes tw2{50%{opacity:.15;transform:translateY(3px)}}
+@keyframes tw3{50%{opacity:.08; transform:translateY(4px)}}
+
+/* —— NEW: blinking star layer —— */
+@keyframes blinkStar{
+  0%,100%{opacity:0}
+  50%    {opacity:1}
+}
+.blink{
+  position:fixed;inset:0;pointer-events:none;
+  box-shadow:
+    10vw 20vh 2px #fff,30vw 10vh 2px #fff,50vw 80vh 2px #fff,
+    70vw 35vh 2px #fff,85vw 60vh 2px #fff,
+    /* duplicate above a screen for seamless scroll */
+    10vw calc(20vh-100vh) 2px #fff,30vw calc(10vh-100vh) 2px #fff,
+    50vw calc(80vh-100vh) 2px #fff,70vw calc(35vh-100vh) 2px #fff,
+    85vw calc(60vh-100vh) 2px #fff;
+  animation:blinkStar 1.6s linear infinite;
+}
+
+/* stagger three identical blink layers so flashes aren’t in sync */
+.blink.d2{animation-delay:.4s}
+.blink.d3{animation-delay:.8s}
+
+/* —— dot lists for twinkle layers (unchanged) —— */
+.star.l1{box-shadow:
+  4vw 10vh 1px #fff,12vw 83vh 2px #dfe9ff,19vw 41vh 1px #fff,
+  26vw 73vh 2px #cad7ff,33vw 17vh 1px #fff,40vw 58vh 1px #fff,
+  47vw 92vh 2px #e8f1ff,54vw 27vh 1px #fff,61vw 69vh 2px #cad7ff,
+  68vw 9vh 1px #fff,75vw 52vh 1px #fff,82vw 80vh 2px #e8f1ff,
+  89vw 32vh 1px #fff,96vw 62vh 1px #fff,
+  4vw calc(10vh-100vh) 1px #fff,12vw calc(83vh-100vh) 2px #dfe9ff,
+  19vw calc(41vh-100vh) 1px #fff,26vw calc(73vh-100vh) 2px #cad7ff,
+  33vw calc(17vh-100vh) 1px #fff,40vw calc(58vh-100vh) 1px #fff,
+  47vw calc(92vh-100vh) 2px #e8f1ff,54vw calc(27vh-100vh) 1px #fff,
+  61vw calc(69vh-100vh) 2px #cad7ff,68vw calc(9vh-100vh) 1px #fff,
+  75vw calc(52vh-100vh) 1px #fff,82vw calc(80vh-100vh) 2px #e8f1ff,
+  89vw calc(32vh-100vh) 1px #fff,96vw calc(62vh-100vh) 1px #fff;}
+.star.l2{box-shadow:
+  8vw 23vh 1px #fff,30vw 92vh 1px #c8d6ff,52vw 25vh 1px #fff,
+  74vw 66vh 1px #cfd9ff,90vw 41vh 1px #fff,
+  8vw calc(23vh-100vh) 1px #fff,30vw calc(92vh-100vh) 1px #c8d6ff,
+  52vw calc(25vh-100vh) 1px #fff,74vw calc(66vh-100vh) 1px #cfd9ff,
+  90vw calc(41vh-100vh) 1px #fff;}
+.star.l3{box-shadow:
+  15vw 5vh 1px #fff,45vw 15vh 1px #e6eeff,65vw 85vh 1px #fff,
+  85vw 55vh 1px #d4e0ff,15vw calc(5vh-100vh) 1px #fff,
+  45vw calc(15vh-100vh) 1px #e6eeff,65vw calc(85vh-100vh) 1px #fff,
+  85vw calc(55vh-100vh) 1px #d4e0ff;}
+
+/* —— STATION —— */
+.station{
+  position:absolute;top:50%;left:50%;width:580px;height:310px;
+  transform-origin:center;
+  animation:spin 200s linear infinite,bob 14s ease-in-out infinite;
+}
+@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+@keyframes bob{50%{transform:translate(-50%,-51%) rotate(180deg)}}
+
+/* —— SVG palette —— */
+.module{fill:#5d6391;stroke:#d1d6ff;stroke-width:2}
+.truss {fill:#38416b;stroke:#98a6ff;stroke-width:3}
+.array {fill:url(#stripe);stroke:#5f70ff;stroke-width:1.4}
+.radiator{fill:#48507e;stroke:#aabcff;stroke-width:1.4}
+.arm   {stroke:#d1d6ff;stroke-width:2;stroke-linecap:round}
+.cupola{fill:#272f5d;stroke:#b9c3ff;stroke-width:2}
+.nav   {fill:#ff3b3b;animation:blinkNav 1.4s linear infinite}
+@keyframes blinkNav{50%{opacity:.2}}
+.shadow{fill:rgba(0,0,0,.14)}
+</style>
+</head>
+<body>
+
+<div class="earth"></div>
+
+<!-- Three twinkle sheets -->
+<div class="star l1"></div><div class="star l2"></div><div class="star l3"></div>
+
+<!-- Three staggered blink layers -->
+<div class="blink"></div><div class="blink d2"></div><div class="blink d3"></div>
+
+<!-- Station SVG (unchanged from previous answer) -->
+<div class="station">
+<svg viewBox="0 0 580 310">
+  <defs>
+    <pattern id="stripe" width="6" height="6" patternUnits="userSpaceOnUse">
+      <rect width="6" height="6" fill="#1c203f"/>
+      <rect width="3" height="6" fill="#29386a"/>
+    </pattern>
+  </defs>
+
+  <ellipse cx="290" cy="250" rx="260" ry="18" class="shadow"/>
+
+  <rect x="90" y="145" width="400" height="24" class="truss"/>
+
+  <rect x="220" y="65"  width="14" height="65" class="radiator"/>
+  <rect x="346" y="65"  width="14" height="65" class="radiator"/>
+  <rect x="220" y="180" width="14" height="65" class="radiator"/>
+  <rect x="346" y="180" width="14" height="65" class="radiator"/>
+
+  <circle cx="290" cy="157" r="26" class="module"/>
+  <circle cx="238" cy="157" r="21" class="module"/>
+  <circle cx="342" cy="157" r="21" class="module"/>
+  <circle cx="186" cy="157" r="17" class="module"/>
+  <circle cx="394" cy="157" r="17" class="module"/>
+
+  <polygon points="290,185 300,197 290,209 280,197" class="cupola"/>
+
+  <rect x="278" y="110" width="24" height="13" class="module"/>
+  <line x1="290" y1="110" x2="290" y2="78" class="arm"/>
+  <circle cx="290" cy="70" r="9" class="module"/>
+
+  <polyline points="342,157 372,124 414,105" class="arm"/>
+  <circle cx="414" cy="105" r="4" class="module"/>
+
+  <rect x="124" y="95" width="6" height="120" class="truss"/>
+  <rect x="174" y="95" width="6" height="120" class="truss"/>
+  <rect x="402" y="95" width="6" height="120" class="truss"/>
+  <rect x="452" y="95" width="6" height="120" class="truss"/>
+
+  <rect x="0"   y="42"  width="120" height="38" class="array"/>
+  <rect x="0"   y="230" width="120" height="38" class="array"/>
+  <rect x="60"  y="42"  width="120" height="38" class="array"/>
+  <rect x="60"  y="230" width="120" height="38" class="array"/>
+  <rect x="400" y="42"  width="120" height="38" class="array"/>
+  <rect x="400" y="230" width="120" height="38" class="array"/>
+  <rect x="460" y="42"  width="120" height="38" class="array"/>
+  <rect x="460" y="230" width="120" height="38" class="array"/>
+
+  <circle cx="186" cy="140" r="3" class="nav"/>
+  <circle cx="394" cy="174" r="3" class="nav"/>
+</svg>
+</div>
+
+</body>
+</html>
+

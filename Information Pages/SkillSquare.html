@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Meta tags for encoding and responsiveness -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interactive Robot Display</title>
+  <link rel="stylesheet" type="text/css" href="css/mystyle.css" />
+
+  <!-- Inline CSS for layout and styling -->
+  <style>
+    /* Basic page styling */
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: 'Courier New', Geneva, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Banner image styling */
+    .banner {
+      width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+
+    /* Navigation bar styling */
+    ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      background-color: #333;
+    }
+
+    ul li {
+      margin: 0 15px;
+    }
+
+    ul li a {
+      text-decoration: none;
+      color: #fff;
+      padding: 10px 20px;
+      display: block;
+    }
+
+    ul li a:hover {
+      background-color: #555;
+    }
+
+    /* Layout for the two panels */
+    .container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 20px;
+      padding: 20px;
+    }
+
+    /* Left side for Skill Square (scrollable) */
+    .left-frame {
+      flex: 1;
+      height: 70vh;            /* viewport-relative height */
+      border: 2px solid #ccc;
+      border-radius: 5px;
+    }
+
+    /* Right side for the robot display */
+    .robot-frame {
+      flex: 1;
+      height: 70vh;
+      border: 2px solid #ccc;
+      border-radius: 5px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 800px) {
+      .container {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .left-frame,
+      .robot-frame {
+        width: 90%;
+        height: 50vh;
+      }
+
+      ul {
+        flex-direction: column;
+      }
+
+      ul li {
+        margin: 5px 0;
+      }
+    }
+
+    h1 {
+      text-align: center;
+      margin: 20px 0;
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Banner Image -->
+  <center>
+    <img src="../ER1-H-STUD10S/Website Design/Banner/Banner.png" class="banner" alt="Banner Image" />
+  </center>
+
+  <!-- Navigation Menu -->
+  <ul>
+    <li><a href="SkillSquare.html">Skill Square</a></li>
+    <li><a href="pages/ProjectGallery.html">Projects</a></li>
+    <li><a href="pages/Social.html">Social</a></li>
+  </ul>
+
+  <!-- Interactive Display Container -->
+  <div class="container">
+    <!-- Left iframe for Skill Square -->
+    <iframe
+      class="left-frame"
+      src="Information Pages/SkillSquare V.1.html"
+      title="Skill Square"
+      scrolling="yes"
+    >
+      Your browser does not support iframes or the page cannot be displayed.
+    </iframe>
+
+    <!-- Right iframe for the animated robot/space station -->
+    <iframe
+      class="robot-frame"
+      src="../ER1-H-STUD10S/Animated HTML Posters/SpaceStation.html"
+      title="Interactive Robot Display"
+    >
+      Your browser does not support iframes or the page cannot be displayed.
+    </iframe>
+  </div>
+</body>
+
+</html>

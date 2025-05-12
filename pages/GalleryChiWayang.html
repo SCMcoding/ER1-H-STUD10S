@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gallery Page</title>
+  <link rel="stylesheet" href="../css/mystyle.css">
+  <style>
+    /* ---------- Base styles ---------- */
+    body {
+      background: #000;
+      color: #fff;
+      font-family: 'Courier New', Courier, monospace;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Banner */
+    .banner {
+      width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto 20px;
+    }
+
+    /* Navigation bar */
+    ul {
+      list-style: none;
+      display: flex;
+      justify-content: center;
+      background: #333;
+      margin: 0;
+      padding: 0;
+    }
+
+    ul li {
+      margin: 0 15px;
+    }
+
+    ul li a {
+      display: block;
+      padding: 10px 20px;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    ul li a:hover {
+      background: #555;
+    }
+
+    /* Section headings */
+    h1 {
+      text-align: center;
+      margin: 40px 0 20px;
+      font-size: 1.5rem;
+    }
+
+    /* ---------- Gallery grid (centered + bigger) ---------- */
+    .gallery {
+      display: grid;
+      justify-content: center;
+      /* — IMAGE SIZE HERE — 
+         Adjust the first value in minmax(350px, 1fr) to change the minimum width of each image. */
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 20px;
+      padding: 0 20px 40px;
+    }
+
+    .gallery img {
+      width: 100%;    /* each image fills its grid cell */
+      height: auto;
+      object-fit: cover;
+      display: block;
+      border-radius: 5px;
+    }
+
+    /* Responsive tweak for very small screens */
+    @media (max-width: 400px) {
+      .gallery {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Banner Image -->
+  <img src="../Website%20Design/Banner/Banner.png" class="banner" alt="Banner">
+
+  <!-- Navigation Menu -->
+  <ul>
+    <li><a href="../Home.html">Home</a></li>
+<!--
+    <li><a href="../pages/Animation%20Projects.html">Animation Projects</a></li>
+    <li><a href="../pages/Project%20Archives.html">Project Archives</a></li>
+-->
+    <li><a href="../pages/ProjectGallery.html">Projects</a></li>
+    <li><a href="../pages/Social.html">Social</a></li>
+  </ul>
+
+  <!-- Gallery: Virtual Puppet Concepts -->
+  <h1>Blended Shadow Puppet Project | Virtual Puppet Concepts (Spring 2025) / AI Collaboration: </h1>
+  <div class="gallery">
+    <img src="../Gallery/Tiger.png" alt="Tiger Poster">
+    <img src="../Gallery/Karna%202.0.png" alt="Karna Poster">
+    <img src="../Gallery/Kunti%202.0.png" alt="Kunti Poster">
+    <img src="../Gallery/NagiKara%20(Dragon%20Form).png" alt="Dragon Form">
+  </div>
+    
+  <!-- Gallery: Virtual Puppet Fabrication -->
+  <h1>Blended Shadow Puppet Project | Virtual Puppet Fabrication (Spring 2025): </h1>
+  <div class="gallery">
+    <img src="../Gallery/3_Puppets.jpg" alt="Three Puppets">
+    <img src="../Gallery/KarnaPuppet.jpg" alt="Karna Puppet">
+    <img src="../Gallery/KuntiPuppet.jpg" alt="Kunti Puppet">
+    <img src="../Gallery/ProtoTiger.jpg" alt="Proto Tiger">
+    <img src="../Gallery/Dragon%20Puppet%20_%20Heads%20Attached.jpg" alt="Dragon Puppet Heads Attached">
+  </div>    
+
+
+    <h1>Blended Shadow Puppet Project (Spring 2024) | Original Puppet Concepts:</h1>
+  <div class="gallery">
+    <img src="../Gallery/2024SpringPuppet.png" alt="Template Puppets">
+    <img src="../Gallery/2024SpringPuppet_Karna.png" alt="Template Puppets">
+    <img src="../Gallery/2024SpringPuppet_Kunti.png" alt="Template Puppets">
+    <img src="../Gallery/2024SpringPuppet_ThePrincess.png" alt="Template Puppets">    
+     <img src="../Gallery/2024SpringPuppet_GreatArcher.png" alt="Template Puppets">    
+    
+  </div>
+    
+
+
+
+</body>
+</html>

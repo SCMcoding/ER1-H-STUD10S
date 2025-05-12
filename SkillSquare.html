@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Interactive Robot Display</title>
+  <link rel="stylesheet" href="css/mystyle.css"/>
+
+  <style>
+    /* Box-sizing reset */
+    * { box-sizing: border-box; }
+
+    /* Base styles */
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      color: #fff;
+      font-family: 'Courier New', Geneva, sans-serif;
+    }
+
+    /* Banner */
+    .banner-container {
+      text-align: center;
+      padding: 20px 0;
+    }
+    .banner {
+      max-width: 100%;
+      height: auto;
+      display: inline-block;
+    }
+
+    /* Navigation */
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      background: #333;
+    }
+    nav li {
+      margin: 0 15px;
+    }
+    nav a {
+      display: block;
+      padding: 10px 20px;
+      color: #fff;
+      text-decoration: none;
+    }
+    nav a:hover {
+      background: #555;
+    }
+
+    /* Side-by-side container */
+    .container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
+    }
+    .container iframe {
+      flex: 0 0 45%;
+      height: 70vh;
+      border: 2px solid #555;
+      border-radius: 5px;
+    }
+    /* Only the left (Skill Square) pane scrolls */
+    .left-frame {
+      overflow-y: auto;
+    }
+
+    /* Responsive stack */
+    @media (max-width: 800px) {
+      .container {
+        flex-direction: column;
+        align-items: center;
+      }
+      .container iframe {
+        flex: 0 0 90%;
+        height: 50vh;
+      }
+      nav ul {
+        flex-direction: column;
+      }
+      nav li {
+        margin: 5px 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="banner-container">
+      <img
+        src="../ER1-H-STUD10S/Website Design/Banner/Banner.png"
+        alt="Banner Image"
+        class="banner"
+      />
+    </div>
+    <nav>
+      <ul>
+          
+           <li><a href="home.html">Home</a></li>
+          
+<!--        
+
+<       li><a href="pages/Animation Projects.html">Animated Projects</a></li>-->
+<!--
+        <li><a href="pages/Project Archives.html">Project Archives</a></li>
+        <li><a href="pages/Gallery.html">Gallery</a></li>
+-->
+        <li><a href="pages/ProjectGallery.html">Projects</a></li>
+        <li><a href="pages/Social.html">Contacts</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <!-- Skill Square (scrollable) -->
+      <iframe
+        class="left-frame"
+        src="Information Pages/SkillSquare V.1.html"
+        title="Skill Square"
+        scrolling="yes"
+      >
+        Your browser doesn’t support iframes.
+      </iframe>
+
+      <!-- Space Station (no scrolling) -->
+      <iframe
+        class="robot-frame"
+        src="../ER1-H-STUD10S/Animated HTML Posters/SpaceStation.html"
+        title="Space Station"
+      >
+        Your browser doesn’t support iframes.
+      </iframe>
+    </div>
+  </main>
+</body>
+</html>
