@@ -1,51 +1,54 @@
-
 /*tool bar ui settings*/
 ul {
-        list-style-type: none;
-        font-family: "Courier New", Geneva, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color:mediumpurple;
-        overflow: hidden;
-        font-size: 24
+    list-style-type: none;
+    font-family: "Courier New", Geneva, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: mediumpurple;
+    overflow: hidden;
+    font-size: 24;
+}
 
-    }
-    li{
-        float: left;
-    }
-    li a{
-        display: block;
-        color: #000;
-        text-align: center;
-        padding: 40px 63px;
-        text-decoration: none;
-    }
-    /*Active = visited page*/
-    /*color palette: #54494B, #9DA39A, #B98389, #5D5987, #DB2955*/
-    li a.active{
-        background-color: #555;
-        color: white;
-    }
-    li a:hover:not(.active){
-        background-color: #314;
-        color:#ded;
-    }
+li {
+    float: left;
+}
+
+li a {
+    display: block;
+    color: #000;
+    text-align: center;
+    padding: 40px 63px;
+    text-decoration: none;
+}
+
+/*Active = visited page*/
+/*color palette: #54494B, #9DA39A, #B98389, #5D5987, #DB2955*/
+li a.active {
+    background-color: #555;
+    color: white;
+}
+
+li a:hover:not(.active) {
+    background-color: #314;
+    color: #ded;
+}
 
 color: blue;
 
-#JE{text-align: center; color:silver;}
+#JE {
+    text-align: center;
+    color: silver;
+}
 
+body.home-color  { background-color: black; }
+body.bio-color   { background-color: black; }
+body.concert-color { background-color: black; }
+body.contacts-color { background-color: black; }
+body.gallery-color { background-color: black; }
+body.interview-color { background-color: black; }
+body.music-color { background-color: black; }
 
-body.home-color{background-color:black;}
-body.bio-color{background-color:black;}
-body.concert-color{background-color:black;}
-body.contacts-color{background-color:black;}
-body.gallery-color{background-color:black;}
-body.interview-color{background-color:black;}
-body.music-color{background-color:black;}
-
-
- .fa {
+.fa {
     padding: 20px;
     font-size: 30px;
     width: 30px;
@@ -53,35 +56,35 @@ body.music-color{background-color:black;}
     text-decoration: none;
     margin: 5px 2px;
     border-radius: 50%;
-  }
+}
 
-  .fa:hover {
-      opacity: 0.7;
-  }
+.fa:hover {
+    opacity: 0.7;
+}
 
-  .fa-facebook {
+.fa-facebook {
     background: #3B5998;
     color: white;
-  }
+}
 
-  .fa-twitter {
+.fa-twitter {
     background: #55ACEE;
     color: white;
-  }
-  .socialmediaicons {
-    text-align: center;
-    background-color:pink;
-  }
+}
 
-  .socialmediaicons li {
+.socialmediaicons {
+    text-align: center;
+    background-color: black;  /* was pink */
+}
+
+.socialmediaicons li {
     list-style: none;
-    display: inline-block
-  }
+    display: inline-block;
+}
 
 .Content {
-  position: fixed;
-    /* or absolute */
-  top: 90%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+    position: fixed; /* or absolute */
+    top: 90%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
