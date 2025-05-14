@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Projects</title>
+  <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+  <style>
+    body {
+      background-color: #000;
+      color: white;
+      font-family: 'Courier New', Geneva, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .banner-container {
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    .banner {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      background-color: #333;
+    }
+    ul li {
+      margin: 0 15px;
+    }
+    ul li a {
+      text-decoration: none;
+      color: white;
+      padding: 10px 20px;
+      display: block;
+    }
+    ul li a:hover {
+      background-color: #555;
+    }
+    /* Scale down only the content wrapper below nav */
+    .content-wrapper {
+      transform: scale(0.85);
+      transform-origin: top center;
+    }
+    iframe {
+      display: block;
+      width: 80%;
+      height: 80vh;
+      margin: 20px auto;
+      border: 4px solid grey;
+      border-radius: 8px;
+    }
+    .game-description {
+      width: 80%;
+      margin: 30px auto;
+      background-color: #222;
+      border: 2px solid grey;
+      border-radius: 8px;
+      padding: 20px;
+      line-height: 1.5;
+      font-size: 0.9rem;
+    }
+    .game-description h2 {
+      text-align: center;
+      margin: 20px 0 10px;
+      font-size: 1.3rem;
+    }
+    .game-description ul {
+      list-style: disc;
+      margin-left: 20px;
+    }
+    .section-image {
+      display: block;
+      max-width: 40%;
+      margin: 20px auto;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Banner Image (unchanged) -->
+  <div class="banner-container">
+    <img src="../Website Design/Banner/Banner.png" class="banner" alt="Banner">
+  </div>
+
+  <!-- Navigation Menu (unchanged) -->
+   <nav>
+      <ul>
+        <li><a href="../Home.html">Home</a></li>
+        <li><a href="../pages/ProjectGallery.html">Projects</a></li>
+        <li><a href="../pages/Social.html">Social</a></li>
+      </ul>
+    </nav>
+
+
+  <!-- Wrapped content below nav -->
+  <div class="content-wrapper">
+    <!-- Welcome Section -->
+    <div class="game-description">
+      <img src="../Gallery/Kathanra/Game Images/K2.png" alt="Kathantra Intro" class="section-image">
+      <h2>Welcome to Kathantra</h2>
+      <p>An immersive text-based adventure where every decision you make weaves the fabric of your fate. Your journey begins when you encounter a mysterious, silver-haired girl who transports you to an unfamiliar land—a parallel universe full of secrets and danger. You awaken to find yourself inhabiting the body of a legendary character, trapped in a world on the brink of collapse. An unstable timeline has been fractured by the dark archer, a vengeful figure determined to erase history and reshape reality. Will you have the courage and wit to mend the timeline, or will you succumb to the perils that lurk within this shattered world? The future rests in your hands.</p>
+    </div>
+
+    <!-- Twine Story Embed with grey border -->
+    <iframe
+      src="../Gallery/Kathanra/World Of Kathanra Demo_v8.html"
+      sandbox="allow-scripts allow-same-origin"
+      loading="lazy"
+      title="Twine Story">
+    </iframe>
+
+    <!-- Features Section -->
+    <div class="game-description">
+      <img src="../Gallery/Kathanra/Game Images/K1.png" alt="Gameplay Features" class="section-image">
+      <h2>Gameplay / Key Features</h2>
+      <ul>
+        <li><strong>Impactful Choices:</strong> Every decision counts. With branching narratives that unfold based on your actions, Kathantra leaves no room for second chances. Once you choose, there’sno turning back.</li>
+        <li><strong>Permanent Consequences:</strong> Your choices are final, shaping a world that reacts and evolves in response. Each playthrough offers a unique experience based on your path.</li>
+        <li><strong>Beta Testing Mode:</strong> Please note: Kathantra is currently in beta, which means there may be bugs and unfinished features. We are committed to improving the game and have exciting updates on the horizon, including:</li>
+        <ul>
+          <li><strong>Experience System:</strong> Earn experience points as you progress, boosting your chances of survival. But beware: losing all your experience points will trigger an instant game over, resetting your progress entirely.</li>
+          <li><strong>Anti-AFK Mechanism:</strong> To keep the pace thrilling, players will have limited time to make crucial decisions. Hesitate too long, and the game will choose for you, potentially leading to disastrous outcomes and the loss of valuable experience points.</li>
+        </ul>
+        <li>Are you ready to shape the destiny of Kathantra and confront the darkness threatening to rewrite reality? The adventure awaits, and every second counts!</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
