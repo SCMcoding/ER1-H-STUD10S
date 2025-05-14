@@ -2,85 +2,99 @@
 <html lang="en">
 
 <head>
-    <!-- Meta tags for encoding and responsiveness -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Me</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About Me</title>
 
-    <!-- Inline CSS for styling -->
-    <style>
-        /* Basic page styling */
-        body {
-            background-color: #f4f4f4;
-            color: #333;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 40px;
-            line-height: 1.6;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
+  <!-- Google Fonts for a more elegant look -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Montserrat:wght@400;600&display=swap"
+    rel="stylesheet"
+  />
 
-        /* Container for the text content */
-        .content {
-            max-width: 800px;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            text-align: justify;
-        }
+  <style>
+    body {
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      font-family: 'Montserrat', sans-serif;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
 
-        h1 {
-            text-align: center;
-            color: #444;
-        }
+    .content {
+      background-color: #fff;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      max-width: 700px;
+      text-align: center;
+    }
 
-        p {
-            margin: 15px 0;
-            font-size: 18px;
-        }
-    </style>
+    .content h1 {
+      font-family: 'Lora', serif;
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+
+    .content img {
+      width: 50%;
+      max-width: 300px;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin: 20px 0;
+    }
+
+    .content p {
+      font-size: 1.125rem;
+      line-height: 1.6;
+      margin: 16px 0;
+      text-align: left;
+    }
+
+    /* Make the first introduction line stand out */
+    .content p:first-of-type {
+      font-size: 1.25rem;
+      font-weight: 600;
+      text-align: center;
+    }
+  </style>
 </head>
 
 <body>
-    <div class="content">
-        <h1>Bonjour!!!</h1>
-        
-        <p>Hello my name is Samuel Cheung.</p>
-        
-        <p>I'm a graduate student from CUNY New York City College of Technology, where I earned my Bachelor of Technology in Emerging Media Technology. My academic journey is driven by a passion for research and innovation, particularly in the intersection of technology, storytelling, and interactive media.</p>
+  <div class="content">
+    <h1>Bonjour!!!</h1>
+    <img src="../Gallery/Portfolio Image/Port1.jpg" alt="Audience" />
 
-        <p>My work focuses on exploring how emerging technologies can enhance creative expression and narrative experiences. I’ve developed interactive web projects, crafted immersive game environments, and used AI-driven techniques to create dynamic storytelling elements. Through my research, I aim to bridge the gap between traditional media and modern digital tools.</p>
+    <p>My name is <strong>Samuel Cheung</strong>.</p>
 
-        <p>I’m passionate about combining technical expertise with creative problem-solving to push the boundaries of how stories are told in digital spaces. Welcome to my site – I invite you to explore my projects and see how I bring research-driven ideas to life.</p>
-    
-    
-<style>
-  .container {
-    /* make container span the full viewport width (or use px) */
-    width: 100vw;
-    height: 90vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .left-frame {
-    /* adjust to taste—here it’s 90% of container */
-    width: 90%;
-    height: 100%;
-    border: none;
-  }
-</style>
+    <p>
+      I'm a graduate of CUNY New York City College of Technology, where I earned my
+      Bachelor of Technology in Emerging Media Technology. My academic journey is
+      driven by a passion for research and innovation at the intersection of
+      technology, storytelling, and interactive media.
+    </p>
 
+    <p>
+      My work explores how emerging technologies can enhance creative expression
+      and narrative experiences. I’ve developed interactive web projects,
+      crafted immersive game environments, and used AI-driven techniques to
+      create dynamic storytelling elements. Through research, I aim to bridge
+      the gap between traditional media and modern digital tools.
+    </p>
 
-</div>
-    
-    
-
-    
+    <p>
+      I’m passionate about combining technical expertise with creative
+      problem-solving to push the boundaries of digital storytelling. Welcome to
+      my site—feel free to explore my projects and see how I bring research-driven
+      ideas to life.
+    </p>
+  </div>
 </body>
 
 </html>

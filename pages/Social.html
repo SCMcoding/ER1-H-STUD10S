@@ -1,110 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Social</title>
-    <!-- Linking external stylesheets -->
-    <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- Meta tags for character encoding and responsiveness -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Page title -->
+  <title>Social</title>
+  
+  <!-- Linking external stylesheet -->
+  <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  
+  <!-- Internal CSS for styling -->
+  <style>
+    /* Basic page styling */
+    body {
+      background-color: #000;
+      color: #f0f0f0;
+      font-family: 'Courier New', Geneva, sans-serif;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
 
-    <!-- Inline CSS for layout and styling -->
-    <style>
-        /* Basic page styling */
-        body {
-            background-color: #333;
-            color: white;
-            font-family: 'Courier New', Geneva, sans-serif;
-            margin: 0;
-            padding: 0;
-            text-align: center;
-        }
+    /* Centered banner */
+    .banner {
+      width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
 
-        /* Banner styling */
-        .banner {
-            width: 100%;
-            height: auto;
-            display: block;
-            margin: auto;
-        }
+    /* Navigation bar styling */
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      background-color: #3a3a3a;
+      font-size: 24px;
+    }
+    ul li { margin: 0 15px; }
+    ul li a {
+      text-decoration: none;
+      color: #f0f0f0;
+      padding: 10px 20px;
+      display: block;
+      border-radius: 4px;
+      transition: background 0.3s;
+    }
+    ul li a:hover { background-color: #555; }
+    ul li a.active { background-color: #DB2955; color: #fff; }
 
-        /* Navigation menu styling */
-        ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            background-color: #444;
-        }
+    /* Section heading */
+    h1 {
+      text-align: center;
+      margin: 20px 0;
+      color: #ddd;
+      position: relative;
+    }
+    h1::after {
+      content: '';
+      display: block;
+      width: 80px;
+      height: 3px;
+      background-color: #888;
+      margin: 8px auto;
+      border-radius: 2px;
+    }
 
-        ul li {
-            margin: 0 15px;
-        }
+    /* Social media icon styling */
+    .socialmediaicons {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      padding: 20px 0;
+    }
+    .socialmediaicons a {
+      text-decoration: none;
+      color: #f0f0f0;
+      font-size: 40px;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #666;
+      border-radius: 50%;
+      transition: background 0.3s, transform 0.3s;
+    }
+    .socialmediaicons a:hover {
+      background-color: #666;
+      transform: scale(1.1);
+    }
 
-        ul li a {
-            text-decoration: none;
-            color: white;
-            padding: 10px 20px;
-            display: block;
-        }
-
-        ul li a:hover {
-            background-color: #555;
-        }
-
-        /* Social media icon styling */
-        .socialmediaicons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            padding: 20px;
-        }
-
-        .socialmediaicons a {
-            text-decoration: none;
-            color: white;
-            font-size: 40px;
-            padding: 10px;
-            border-radius: 50%;
-            transition: 0.3s;
-        }
-
-        .socialmediaicons a:hover {
-            background-color: # #555;
-        }
-    </style>
+    /* Footer styling */
+    footer {
+      background-color: #333;
+      color: #aaa;
+      text-align: center;
+      padding: 12px 0;
+      font-size: 0.875rem;
+    }
+  </style>
 </head>
 
-<body class="contacts-color">
+<body>
 
-    <!-- Banner Image -->
-    <center>
-        <img src="../Website Design/Banner/Banner.png" class="banner" alt="Banner Image">
-    </center>
+  <!-- Banner Image -->
+  <img src="../Website Design/Banner/Banner.png" class="banner" alt="Banner">
 
-    <!-- Navigation Menu -->
-    <ul>
-        <li><a href="../Home.html">Home</a></li>
-<!--
-        <li><a href="../pages/Animation Projects.html">Animated Projects</a></li>
-        <li><a href="../pages/Project Archives.html">Project Archives</a></li>
--->
-        <li><a href="../pages/ProjectGallery.html">Projects</a></li>
-<!--        <li><a href="../pages/Music.html">Music</a></li>-->
-    </ul>
-    
+  <!-- Navigation Menu -->
+  <ul>
+    <li><a href="../Home.html">Home</a></li>
+    <li><a href="../pages/ProjectGallery.html">Projects</a></li>
+  </ul>
 
-    <!-- Social Media Links -->
-    <div class="socialmediaicons">
-        <a href="https://www.facebook.com" target="_blank" class="fa fa-facebook"></a>
-        <a href="https://www.twitter.com" target="_blank" class="fa fa-twitter"></a>
-        <a href="https://www.instagram.com" target="_blank" class="fa fa-instagram"></a>
-        <a href="https://www.linkedin.com" target="_blank" class="fa fa-linkedin"></a>
-        <a href="https://www.youtube.com" target="_blank" class="fa fa-youtube"></a>
-    </div>
+  <!-- Section heading -->
+  <h1>Connect With Me</h1>
+
+  <!-- Social Media Links -->
+  <div class="socialmediaicons">
+    <a href="https://www.facebook.com"       target="_blank" class="fa fa-facebook"></a>
+    <a href="https://github.com/SCMcoding" target="_blank" class="fa fa-github"></a>
+    <a href="https://www.instagram.com"      target="_blank" class="fa fa-instagram"></a>
+    <a href="https://www.linkedin.com/in/samuel-cheung-95a975278/" target="_blank" class="fa fa-linkedin"></a>
+    <a href="https://www.youtube.com/@samuelsmusicallibrary8725"      target="_blank" class="fa fa-youtube"></a>
+  </div>
+
+  <!-- Footer -->
+  <footer>&copy; 2025 Samuel Cheung &bull; All rights reserved</footer>
 
 </body>
-
 </html>

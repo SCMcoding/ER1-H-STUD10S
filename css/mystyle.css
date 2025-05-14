@@ -23,7 +23,7 @@ ul {
     /*Active = visited page*/
     /*color palette: #54494B, #9DA39A, #B98389, #5D5987, #DB2955*/
     li a.active{
-        background-color: #DB2955;
+        background-color: #555;
         color: white;
     }
     li a:hover:not(.active){

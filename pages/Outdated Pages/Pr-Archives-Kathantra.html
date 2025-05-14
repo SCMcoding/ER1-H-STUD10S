@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Projects</title>
+    <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+    <style>
+        body {
+            background-color: #000;
+            color: white;
+            font-family: 'Courier New', Geneva, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .banner-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .banner {
+            max-width: 100%;
+            height: auto;
+            display: inline-block;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            background-color: #333;
+        }
+
+        ul li {
+            margin: 0 15px;
+        }
+
+        ul li a {
+            text-decoration: none;
+            color: white;
+            padding: 10px 20px;
+            display: block;
+        }
+
+        ul li a:hover {
+            background-color: #555;
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        .content-title {
+            text-decoration: underline;
+        }
+
+        .url-input {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .url-input input[type="url"] {
+            width: 60%;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #666;
+            font-size: 1rem;
+        }
+
+        .url-input button {
+            padding: 8px 16px;
+            margin-left: 8px;
+            border: none;
+            border-radius: 4px;
+            background-color: #444;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .url-input button:hover {
+            background-color: #666;
+        }
+
+        .error-message {
+            color: #f66;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        iframe {
+            display: block;
+            width: 80%;
+            height: 80vh;
+            border: none;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Banner Image -->
+    <div class="banner-container">
+        <img src="../Website Design/Banner/Banner.png" class="banner" alt="Banner">
+    </div>
+
+    <!-- Navigation Menu -->
+    <ul>
+        <li><a href="../Home.html">Home</a></li>
+        <li><a href="../pages/Animation Projects.html">Animation Projects</a></li>
+        <li><a href="../pages/Gallery.html">Gallery</a></li>
+        <li><a href="../pages/Music.html">Music</a></li>
+        <li><a href="../pages/Social.html">Social</a></li>
+    </ul>
+
+    <!-- URL Input Section -->
+    <div class="url-input">
+        <input id="urlInput" type="url" placeholder="Enter website URL (e.g., https://example.com)" />
+        <button id="loadBtn">Load Site</button>
+        <div id="error" class="error-message"></div>
+    </div>
+
+    <!-- Embedded Content -->
+    <h1 class="content-title">Embedded Site</h1>
+    <iframe id="siteFrame" src="https://eriol-earthart.itch.io/world-of-kathanra" title="Embedded Site"></iframe>
+
+    <script>
+        const loadBtn = document.getElementById('loadBtn');
+        const urlInput = document.getElementById('urlInput');
+        const siteFrame = document.getElementById('siteFrame');
+        const errorDiv = document.getElementById('error');
+
+        loadBtn.addEventListener('click', () => {
+            let url = urlInput.value.trim();
+            errorDiv.textContent = '';
+
+            if (!url) {
+                errorDiv.textContent = 'Please enter a URL.';
+                return;
+            }
+
+            // Prepend protocol if missing
+            if (!/^https?:\/\//i.test(url)) {
+                url = 'https://' + url;
+            }
+
+            try {
+                new URL(url); // Validate URL format
+                siteFrame.src = url;
+            } catch (e) {
+                errorDiv.textContent = 'Invalid URL format. Please check and try again.';
+            }
+        });
+    </script>
+
+</body>
+</html>
