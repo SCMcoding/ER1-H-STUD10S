@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gallery Page</title>
+
+  <style>
+    :root {
+      --bg-dark: #000;
+      --bg-nav: #222;
+      --bg-hover: #555;
+      --text-light: #fff;
+      --container-max: 1200px;
+      --gap: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg-dark);
+      color: var(--text-light);
+      font-family: 'Courier New', monospace;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: var(--container-max);
+      margin: 0 auto;
+      padding: var(--gap);
+    }
+
+    header {
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    header img.banner {
+      width: 100%;
+      max-height: 200px; /* limit height */
+      height: auto;
+      display: block;
+    }
+
+    nav {
+      background: var(--bg-nav);
+      margin: 0;
+    }
+
+    nav ul {
+      display: flex;
+      justify-content: center;
+      list-style: none;
+    }
+
+    nav li + li {
+      margin-left: var(--gap);
+    }
+
+    nav a {
+      display: block;
+      padding: 10px 20px; /* reduced padding */
+      color: var(--text-light);
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    nav a:hover {
+      background: var(--bg-hover);
+    }
+
+    section {
+      margin-bottom: calc(var(--gap) * 3);
+    }
+
+    section h2 {
+      font-size: 1.75rem;
+      text-align: center;
+      margin-bottom: var(--gap);
+    }
+
+    .iframe-container {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%; /* 16:9 Aspect Ratio */
+      overflow: hidden;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    .iframe-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--gap);
+    }
+
+    .gallery img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
+    }
+
+    @media (max-width: 600px) {
+      nav ul {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      nav li + li {
+        margin-left: 0;
+        margin-top: var(--gap);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <header>
+      <img src="../Website%20Design/Banner/Banner.png" alt="Banner" class="banner">
+    </header>
+
+    <nav>
+      <ul>
+        <li><a href="../Home.html">Home</a></li>
+        <li><a href="../pages/ProjectGallery.html">Projects</a></li>
+        <li><a href="../pages/Social.html">Social</a></li>
+      </ul>
+    </nav>
+
+
+
+    <section>
+      <h2>The Cryptic Stronghold</h2>
+      <div class="gallery">
+        <img src="../Gallery/Roblox/Hazelstrum Fortress/H1.png" alt="Cryptic Stronghold">
+        <img src="../Gallery/Roblox/Hazelstrum Fortress/H2.png" alt="Cryptic Stronghold">
+        <img src="../Gallery/Roblox/Hazelstrum Fortress/H3.png" alt="Cryptic Stronghold">
+        <img src="../Gallery/Roblox/Hazelstrum Fortress/H4.png" alt="Cryptic Stronghold">
+        <img src="../Gallery/Roblox/Hazelstrum Fortress/H5.png" alt="Cryptic Stronghold">
+        <img src="../Gallery/Roblox/Hazelstrum Fortress/H6.png" alt="Cryptic Stronghold">
+        <img src="../Gallery/Roblox/Hazelstrum Fortress/H7.png" alt="Cryptic Stronghold">
+        <img src="../Gallery/Roblox/Hazelstrum Fortress/H8.png" alt="Cryptic Stronghold">
+        <img src="../Gallery/Roblox/Hazelstrum Fortress/H9.png" alt="Cryptic Stronghold">
+        <img src="../Gallery/Roblox/Hazelstrum Fortress/H10.png" alt="Cryptic Stronghold">
+        <img src="../Gallery/Roblox/Hazelstrum Fortress/H11.png" alt="Cryptic Stronghold"> 
+        <img src="../Gallery/Roblox/Hazelstrum Fortress/H12.png" alt="Cryptic Stronghold">
+        <img src="../Gallery/Roblox/Hazelstrum Fortress/H13.png" alt="Cryptic Stronghold">
+
+       
+      </div>
+    </section>
+     
+    
+                <section>
+      <h2>Sorlato's Cafe</h2>
+      <div class="gallery">
+        <img src="../Gallery/Roblox/Sorlato's Cafe/S1.png" alt="Sorlato">
+        <img src="../Gallery/Roblox/Sorlato's Cafe/S2.png" alt="Sorlato">
+        <img src="../Gallery/Roblox/Sorlato's Cafe/S3.png" alt="Sorlato">
+        <img src="../Gallery/Roblox/Sorlato's Cafe/S4.png" alt="Sorlato">
+        <img src="../Gallery/Roblox/Sorlato's Cafe/S5.png" alt="Sorlato">
+        <img src="../Gallery/Roblox/Sorlato's Cafe/S7.png" alt="Sorlato">
+        <img src="../Gallery/Roblox/Sorlato's Cafe/S8.png" alt="Sorlato">
+        <img src="../Gallery/Roblox/Sorlato's Cafe/S9.png" alt="Sorlato">
+        <img src="../Gallery/Roblox/Sorlato's Cafe/S10.png" alt="Sorlato">
+        <img src="../Gallery/Roblox/Sorlato's Cafe/S11.png" alt="Sorlato">
+       
+      </div>
+    </section>
+      
+      
+      
+          <section>
+      <h2>The Oracle's Heart</h2>
+      <div class="gallery">
+        <img src="../Gallery/Roblox/The Oracles Heart/O1.png" alt="Oracle">
+        <img src="../Gallery/Roblox/The Oracles Heart/O2.png" alt="Oracle">
+        <img src="../Gallery/Roblox/The Oracles Heart/O3.png" alt="Oracle"> 
+        <img src="../Gallery/Roblox/The Oracles Heart/O5.png" alt="Oracle">
+        <img src="../Gallery/Roblox/The Oracles Heart/O6.png" alt="Oracle">
+        <img src="../Gallery/Roblox/The Oracles Heart/O7.png" alt="Oracle">
+        <img src="../Gallery/Roblox/The Oracles Heart/O8.png" alt="Oracle">
+        <img src="../Gallery/Roblox/The Oracles Heart/O9.png" alt="Oracle">  
+
+      
+
+       
+      </div>
+    </section>
+      
+    
+      
+      
+    <section>
+      <h2>The Hindu Temple</h2>
+      <div class="gallery">
+        <img src="../Gallery/Roblox/Hindu Temple/HT-1.png" alt="Cryptic Stronghold">
+        <img src="../Gallery/Roblox/Hindu Temple/HT-2.png" alt="Cryptic Stronghold">
+        <img src="../Gallery/Roblox/Hindu Temple/HT-3.png" alt="Cryptic Stronghold">
+        <img src="../Gallery/Roblox/Hindu Temple/HT-4.png" alt="Cryptic Stronghold">
+        <img src="../Gallery/Roblox/Hindu Temple/HT-5.png" alt="Cryptic Stronghold">
+        <img src="../Gallery/Roblox/Hindu Temple/HT-6.png" alt="Cryptic Stronghold">
+        <img src="../Gallery/Roblox/Hindu Temple/HT-7.png" alt="Cryptic Stronghold">  
+      
+
+       
+      </div>
+    </section>
+      
+      
+      
+
+    
+        <img src
