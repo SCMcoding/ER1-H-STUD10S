@@ -10,7 +10,7 @@
   
   <!-- Linking external stylesheet -->
   <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   
   <!-- Internal CSS for styling -->
   <style>
@@ -34,7 +34,7 @@
 
     /* Portfolio image sizing */
     .portfolio-img {
-      max-width: 500px;  /* increased for a bigger display */
+      max-width: 500px;
       width: 100%;
       height: auto;
       display: block;
@@ -51,7 +51,11 @@
       background-color: #3a3a3a;
       font-size: 24px;
     }
-    ul li { margin: 0 15px; }
+
+    ul li {
+      margin: 0 15px;
+    }
+
     ul li a {
       text-decoration: none;
       color: #f0f0f0;
@@ -60,8 +64,15 @@
       border-radius: 4px;
       transition: background 0.3s;
     }
-    ul li a:hover { background-color: #555; }
-    ul li a.active { background-color: #000; color: #fff; }
+
+    ul li a:hover {
+      background-color: #555;
+    }
+
+    ul li a.active {
+      background-color: #000;
+      color: #fff;
+    }
 
     /* Section heading */
     h1 {
@@ -70,6 +81,7 @@
       color: #ddd;
       position: relative;
     }
+
     h1::after {
       content: '';
       display: block;
@@ -86,7 +98,9 @@
       justify-content: center;
       gap: 30px;
       padding: 20px 0;
+      flex-wrap: wrap;
     }
+
     .socialmediaicons a {
       text-decoration: none;
       color: #f0f0f0;
@@ -100,6 +114,7 @@
       border-radius: 50%;
       transition: background 0.3s, transform 0.3s;
     }
+
     .socialmediaicons a:hover {
       background-color: #666;
       transform: scale(1.1);
@@ -127,22 +142,20 @@
     <li><a href="../pages/ProjectGallery.html">Projects</a></li>
   </ul>
     
-      <h1>Connect With Me</h1>
+  <h1>Connect With Me</h1>
 
-    
-  <!-- Portfolio Image (now up to 500px wide) -->
+  <!-- Portfolio Image -->
   <img src="../Gallery/Portfolio Image/Port1.jpg" alt="Audience" class="portfolio-img" />
-
-  <!-- Section heading -->
 
   <!-- Social Media Links -->
   <div class="socialmediaicons">
-    <a href="https://www.facebook.com"       target="_blank" class="fa fa-facebook"></a>
-    <a href="https://github.com/SCMcoding"    target="_blank" class="fa fa-github"></a>
-    <a href="https://www.instagram.com"      target="_blank" class="fa fa-instagram"></a>
-    <a href="https://www.linkedin.com/in/samuel-cheung-95a975278/" target="_blank" class="fa fa-linkedin"></a>
-    <a href="https://citytech.joinhandshake.com/profiles/r3r4bj" target="_blank" class="fa fa-Handshake"></a>
-    <a href="https://www.youtube.com/@samuelsmusicallibrary8725"      target="_blank" class="fa fa-youtube"></a>
+    <a href="https://www.facebook.com" target="_blank" class="fab fa-facebook" title="Facebook"></a>
+    <a href="https://github.com/SCMcoding" target="_blank" class="fab fa-github" title="GitHub"></a>
+    <a href="https://www.instagram.com" target="_blank" class="fab fa-instagram" title="Instagram"></a>
+    <a href="https://www.linkedin.com/in/samuel-cheung-95a975278/" target="_blank" class="fab fa-linkedin" title="LinkedIn"></a>
+    <a href="https://citytech.joinhandshake.com/profiles/r3r4bj" target="_blank" class="fas fa-handshake" title="Handshake"></a>
+    <a href="https://profile.indeed.com/?hl=en_US&co=US" target="_blank" class="fas fa-briefcase" title="Indeed"></a>
+    <a href="https://www.youtube.com/@samuelsmusicallibrary8725" target="_blank" class="fab fa-youtube" title="YouTube"></a>
   </div>
 
   <!-- Footer -->
