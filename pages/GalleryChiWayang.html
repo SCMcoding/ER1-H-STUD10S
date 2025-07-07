@@ -2,10 +2,9 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Gallery Page</title>
-
   <style>
     :root {
       --bg-dark: #000;
@@ -29,34 +28,33 @@
       line-height: 1.6;
     }
 
-    .container {
-      max-width: var(--container-max);
-      margin: 0 auto;
-      padding: var(--gap);
+    .top-section {
+      width: 100%;
     }
 
     header {
-      text-align: center;
-      margin: 0;
-      padding: 0;
+      width: 100%;
     }
 
     header img.banner {
       width: 100%;
-      max-height: 200px; /* limit height */
       height: auto;
+      max-height: 300px;
+      object-fit: cover;
       display: block;
     }
 
     nav {
       background: var(--bg-nav);
-      margin: 0;
+      width: 100%;
     }
 
     nav ul {
       display: flex;
       justify-content: center;
       list-style: none;
+      padding: 0;
+      margin: 0;
     }
 
     nav li + li {
@@ -65,7 +63,7 @@
 
     nav a {
       display: block;
-      padding: 10px 20px; /* reduced padding */
+      padding: 15px 20px;
       color: var(--text-light);
       text-decoration: none;
       transition: background 0.3s;
@@ -73,6 +71,12 @@
 
     nav a:hover {
       background: var(--bg-hover);
+    }
+
+    .container {
+      max-width: var(--container-max);
+      margin: 0 auto;
+      padding: var(--gap);
     }
 
     section {
@@ -88,7 +92,7 @@
     .iframe-container {
       position: relative;
       width: 100%;
-      padding-top: 56.25%; /* 16:9 Aspect Ratio */
+      padding-top: 56.25%;
       overflow: hidden;
       border-radius: 8px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
@@ -131,12 +135,11 @@
 </head>
 
 <body>
-  <div class="container">
 
+  <div class="top-section">
     <header>
-      <img src="../Website%20Design/Banner/Banner.png" alt="Banner" class="banner">
+      <img src="../Website%20Design/Banner/Banner.png" alt="Banner" class="banner" />
     </header>
-
     <nav>
       <ul>
         <li><a href="../Home.html">Home</a></li>
@@ -144,7 +147,9 @@
         <li><a href="../pages/Social.html">Social</a></li>
       </ul>
     </nav>
+  </div>
 
+  <div class="container">
 
     <section>
       <h2>Our Mission and Research:</h2>
@@ -152,7 +157,7 @@
         <iframe src="../Information Pages/ABOUTCHI.html" title="Embedded HTML Page - AI Case Study"></iframe>
       </div>
     </section>  
-      
+
     <section>
       <h2>Virtual Puppet Concepts (Spring 2025)</h2>
       <div class="gallery">
@@ -173,87 +178,84 @@
         <img src="../Gallery/CHIWAYANG/Fabrication/Dragon%20Puppet%20_%20Heads%20Attached.jpg" alt="Dragon Puppet Heads Attached">
       </div>
     </section>
-  
+
     <section>
-      <h2>The Archer's Journey/ New York City Tech Fair / Friday Performance (Spring 2025) | Photo Credit's: <a href="https://www.citytech.cuny.edu/faculty/MMcaUliffe" target="_blank">Professor Michael McAuliffe</a></h2>
+      <h2>The Archer's Journey/ New York City Tech Fair / Friday Performance (Spring 2025) | Photo Credit: 
+        <a href="https://www.citytech.cuny.edu/faculty/MMcaUliffe" target="_blank">Professor Michael McAuliffe</a>
+      </h2>
       <div class="gallery">
-        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Audiance1.jpg" alt="Audiance">
-        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Audiance2.jpg" alt="Audiance">
-        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Audiance3.jpg" alt="Audiance">
-        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Audiance4.jpg" alt="Audiance">
-        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Audiance5.jpg" alt="Audiance">
-        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Audiance6.jpg" alt="Audiance">
-        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Audiance7.jpg" alt="Audiance">
-        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Audiance8.jpg" alt="Audiance">
-        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Audiance9.jpg" alt="Audiance">
-        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Audiance10.jpg" alt="Audiance">
-    
-            
-          
-        </div>
+        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Audiance1.jpg" alt="Audience">
+        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Audiance2.jpg" alt="Audience">
+        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Audiance3.jpg" alt="Audience">
+        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Audiance4.jpg" alt="Audience">
+        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Audiance5.jpg" alt="Audience">
+        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Audiance6.jpg" alt="Audience">
+        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Audiance7.jpg" alt="Audience">
+        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Audiance8.jpg" alt="Audience">
+        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Audiance9.jpg" alt="Audience">
+        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Audiance10.jpg" alt="Audience">
+      </div>
     </section>  
-      
-      
-          <section>
-      <h2>The Archer's Journey/ New York City Tech Fair / Friday Performance (Spring 2025) | Photo Credit's: <a href="https://www.citytech.cuny.edu/faculty/MMcaUliffe" target="_blank">Professor Michael McAuliffe</a></h2>
+
+    <section>
+      <h2>Stage Screenshots | Photo Credit: 
+        <a href="https://www.citytech.cuny.edu/faculty/MMcaUliffe" target="_blank">Professor Michael McAuliffe</a>
+      </h2>
       <div class="gallery">
-        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Screen 1.jpg" alt="Audiance">
-        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Screen 2.jpg" alt="Audiance">
-        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Screen 3.jpg" alt="Audiance">
-        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Screen 4.jpg" alt="Audiance">
-        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Screen 5.jpg" alt="Audiance">
-        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Screen 6.jpg" alt="Audiance">  
-        
-        </div>
+        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Screen 1.jpg" alt="Screen 1">
+        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Screen 2.jpg" alt="Screen 2">
+        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Screen 3.jpg" alt="Screen 3">
+        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Screen 4.jpg" alt="Screen 4">
+        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Screen 5.jpg" alt="Screen 5">
+        <img src="../Gallery/CHIWAYANG/Live_Performance Tech Fair/Screen 6.jpg" alt="Screen 6">  
+      </div>
     </section>
-      
-          
+
     <section>
       <h2>CHI WAYANG Spring 2025: Animated Backgrounds Case Study</h2>
       <div class="iframe-container">
-      <iframe src="../Information%20Pages/ABOUTCHIBACKGROUNDS.html" title="Embedded HTML Page - AI Case Study"></iframe>
+        <iframe src="../Information%20Pages/ABOUTCHIBACKGROUNDS.html" title="Embedded HTML Page - AI Case Study"></iframe>
       </div>
     </section>  
-              
-      
-      
+
     <section>
-    <h2>CHI WAYANG Spring 2024: Open Lab Archive: Animated Backgrounds Case Study</h2>    
+      <h2>CHI WAYANG Spring 2024: Open Lab Archive: Animated Backgrounds</h2>    
       <div class="iframe-container">
         <iframe src="../Archive Pages/Wayang 2024.html" title="Embedded HTML Page - AI Case Study"></iframe>
       </div>
     </section>  
-        
-              <section>
-      <h2>Spring 2024 Project Development | BTS | Photo Credit's: <a href="https://scmcoding.github.io/ER1-H-STUD10S/Home.html" target="_blank">Samuel Cheung</a></h2>
-      <div class="gallery">
-          
-        <img src="../Gallery/CHIWAYANG/Spring-2024-Archives/Spring 2024-1.jpg" alt="Audiance">
-        <img src="../Gallery/CHIWAYANG/Spring-2024-Archives/Spring 2024-2.jpg" alt="Audiance">  
-        <img src="../Gallery/CHIWAYANG/Spring-2024-Archives/Spring 2024-3.jpg" alt="Audiance">
-        <img src="../Gallery/CHIWAYANG/Spring-2024-Archives/Spring 2024-4.jpg" alt="Audiance">
-        <img src="../Gallery/CHIWAYANG/Spring-2024-Archives/Spring 2024-5.jpg" alt="Audiance">
-        <img src="../Gallery/CHIWAYANG/Spring-2024-Archives/Spring 2024-6.jpg" alt="Audiance">
-        <img src="../Gallery/CHIWAYANG/Spring-2024-Archives/Spring 2024-7.jpg" alt="Audiance">
-        <img src="../Gallery/CHIWAYANG/Spring-2024-Archives/Spring 2024-8.jpg" alt="Audiance">
-        <img src="../Gallery/CHIWAYANG/Spring-2024-Archives/Spring 2024-9.jpg" alt="Audiance">
-        <img src="../Gallery/CHIWAYANG/Spring-2024-Archives/Spring 2024-10.jpg" alt="Audiance">
-       
-        </div>
-    </section>  
-        
-      
-      
+
     <section>
-      <h2>The Archer's Journey/ Puppet Conncepts (Spring 2024)
+      <h2>Spring 2024 Project Development | BTS | Photo Credit: 
+        <a href="https://scmcoding.github.io/ER1-H-STUD10S/Home.html" target="_blank">Samuel Cheung</a>
+      </h2>
       <div class="gallery">
-        <img src="../Gallery/CHIWAYANG/Concepts Spring 2024/2024SpringPuppet.png" alt="2024">
-        <img src="../Gallery/CHIWAYANG/Concepts Spring 2024/2024SpringPuppet_Karna.png" alt="2024">
-        <img src="../Gallery/CHIWAYANG/Concepts Spring 2024/2024SpringPuppet_Kunti.png" alt="2024"> 
-        <img src="../Gallery/CHIWAYANG/Concepts Spring 2024/2024SpringPuppet_ThePrincess.png" alt="2024">
-        <img src="../Gallery/CHIWAYANG/Concepts Spring 2024/2024SpringPuppet_GreatArcher.png" alt="2024">   
-      
-    </div>
-    </section>      
-      
-      
+        <img src="../Gallery/CHIWAYANG/Spring-2024-Archives/Spring 2024-1.jpg" alt="BTS">
+        <img src="../Gallery/CHIWAYANG/Spring-2024-Archives/Spring 2024-2.jpg" alt="BTS">  
+        <img src="../Gallery/CHIWAYANG/Spring-2024-Archives/Spring 2024-3.jpg" alt="BTS">
+        <img src="../Gallery/CHIWAYANG/Spring-2024-Archives/Spring 2024-4.jpg" alt="BTS">
+        <img src="../Gallery/CHIWAYANG/Spring-2024-Archives/Spring 2024-5.jpg" alt="BTS">
+        <img src="../Gallery/CHIWAYANG/Spring-2024-Archives/Spring 2024-6.jpg" alt="BTS">
+        <img src="../Gallery/CHIWAYANG/Spring-2024-Archives/Spring 2024-7.jpg" alt="BTS">
+        <img src="../Gallery/CHIWAYANG/Spring-2024-Archives/Spring 2024-8.jpg" alt="BTS">
+        <img src="../Gallery/CHIWAYANG/Spring-2024-Archives/Spring 2024-9.jpg" alt="BTS">
+        <img src="../Gallery/CHIWAYANG/Spring-2024-Archives/Spring 2024-10.jpg" alt="BTS">
+      </div>
+    </section>  
+
+    <section>
+      <h2>The Archer's Journey: Puppet Concepts (Spring 2024)</h2>
+      <div class="gallery">
+        <img src="../Gallery/CHIWAYANG/Concepts Spring 2024/2024SpringPuppet.png" alt="Concept">
+        <img src="../Gallery/CHIWAYANG/Concepts Spring 2024/2024SpringPuppet_Karna.png" alt="Concept">
+        <img src="../Gallery/CHIWAYANG/Concepts Spring 2024/2024SpringPuppet_Kunti.png" alt="Concept"> 
+        <img src="../Gallery/CHIWAYANG/Concepts Spring 2024/2024SpringPuppet_ThePrincess.png" alt="Concept">
+        <img src="../Gallery/CHIWAYANG/Concepts Spring 2024/2024SpringPuppet_GreatArcher.png" alt="Concept">   
+      </div>
+    </section>
+
+  </div>
+
+</body>
+</html>
+
