@@ -1,135 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Interactive Robot Display</title>
-  <link rel="stylesheet" href="css/mystyle.css"/>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Projects</title>
+  <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
   <style>
-    /* Box-sizing reset */
-    * { box-sizing: border-box; }
-
-    /* Base styles */
     body {
+      background-color: #000;
+      color: white;
+      font-family: 'Courier New', Geneva, sans-serif;
       margin: 0;
       padding: 0;
-      background: #000;
-      color: #fff;
-      font-family: 'Courier New', Geneva, sans-serif;
     }
-
-    /* Banner */
     .banner-container {
       text-align: center;
-      padding: 20px 0;
-    }
-    .banner {
-      max-width: 100%;
-      height: auto;
-      display: inline-block;
-    }
-
-    /* Navigation */
-    nav ul {
-      list-style: none;
       margin: 0;
       padding: 0;
+    }
+    .banner {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
       display: flex;
       justify-content: center;
-      background: #333;
+      background-color: #333;
     }
-    nav li {
+    ul li {
       margin: 0 15px;
     }
-    nav a {
-      display: block;
-      padding: 10px 20px;
-      color: #fff;
+    ul li a {
       text-decoration: none;
+      color: white;
+      padding: 10px 20px;
+      display: block;
     }
-    nav a:hover {
-      background: #555;
+    ul li a:hover {
+      background-color: #555;
     }
-
-    /* Side-by-side container */
-    .container {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
+    /* Scale down only the content wrapper below nav */
+    .content-wrapper {
+      transform: scale(0.85);
+      transform-origin: top center;
+    }
+    iframe {
+      display: block;
+      width: 80%;
+      height: 80vh;
+      margin: 20px auto;
+      border: 4px solid grey;
+      border-radius: 8px;
+    }
+    .game-description {
+      width: 80%;
+      margin: 30px auto;
+      background-color: #222;
+      border: 2px solid grey;
+      border-radius: 8px;
       padding: 20px;
+      line-height: 1.5;
+      font-size: 0.9rem;
     }
-    .container iframe {
-      flex: 0 0 45%;
-      height: 70vh;
-      border: 2px solid #555;
-      border-radius: 5px;
+    .game-description h2 {
+      text-align: center;
+      margin: 20px 0 10px;
+      font-size: 1.3rem;
     }
-    /* Only the left (Skill Square) pane scrolls */
-    .left-frame {
-      overflow-y: auto;
+    .game-description ul {
+      list-style: disc;
+      margin-left: 20px;
     }
-
-    /* Responsive stack */
-    @media (max-width: 800px) {
-      .container {
-        flex-direction: column;
-        align-items: center;
-      }
-      .container iframe {
-        flex: 0 0 90%;
-        height: 50vh;
-      }
-      nav ul {
-        flex-direction: column;
-      }
-      nav li {
-        margin: 5px 0;
-      }
+    .section-image {
+      display: block;
+      max-width: 40%;
+      margin: 20px auto;
+      border-radius: 4px;
     }
   </style>
 </head>
-
 <body>
-  <header>
-    <div class="banner-container">
-      <img
-        src="../ER1-H-STUD10S/Website Design/Banner/Banner.png"
-        alt="Banner Image"
-        class="banner"
-      />
-    </div>
-    <nav>
-      <ul>
-          
-        <li><a href="../ER1-H-STUD10S/Home.html">Home</a></li>
+  <!-- Banner Image (unchanged) -->
+  <div class="banner-container">
+  <img src="../ER1-H-STUD10S/Website Design/Banner/Banner.png" class="banner" alt="Banner Image">
+  </div>
+
+  <!-- Navigation Menu (unchanged) -->
+       <ul> 
+        <li><a href="Home.html">Home</a></li>
         <li><a href="pages/ProjectGallery.html">Projects</a></li>
+       </ul>
+
+
+      <section>
+      <div class="iframe-container">
+        <iframe src="Information Pages/SkillSquare V.1.html" title="Embedded HTML Page - AI Case Study"></iframe>
+      </div>
+    </section>  
       
-        </ul>
-    </nav>
-  </header>
-
-  <main>
-    <div class="container">
-      <!-- Skill Square (scrollable) -->
-      <iframe
-        class="left-frame"
-        src="Information Pages/SkillSquare V.1.html"
-        title="Skill Square"
-        scrolling="yes"
-      >
-        Your browser doesn’t support iframes.
-      </iframe>
-
-      <!-- Space Station (no scrolling) -->
-      <iframe
-        class="robot-frame"
-        src="../ER1-H-STUD10S/Animated HTML Posters/SpaceStation.html"
-        title="Space Station"
-      >
-        Your browser doesn’t support iframes.
-      </iframe>
-    </div>
-  </main>
+    
+    
 </body>
 </html>
