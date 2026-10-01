@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Meta tags for character encoding and responsiveness -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Page title -->
+  <title>Home</title>
+  
+  <!-- Linking external stylesheet -->
+  <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <!-- Internal CSS for styling -->
+  <style>
+    /* Basic page styling */
+    body {
+      background-color: #000;
+      color: #f0f0f0;
+      font-family: 'Courier New', Geneva, sans-serif;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    /* Centered banner */
+    .banner {
+      width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+
+    /* Portfolio image sizing */
+    .portfolio-img {
+      max-width: 500px;
+      width: 100%;
+      height: auto;
+      display: block;
+      margin: 20px auto;
+    }
+
+    /* Navigation bar styling */
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      background-color: #3a3a3a;
+      font-size: 24px;
+    }
+
+    ul li {
+      margin: 0 15px;
+    }
+
+    ul li a {
+      text-decoration: none;
+      color: #f0f0f0;
+      padding: 10px 20px;
+      display: block;
+      border-radius: 4px;
+      transition: background 0.3s;
+    }
+
+    ul li a:hover {
+      background-color: #555;
+    }
+
+    ul li a.active {
+      background-color: #000;
+      color: #fff;
+    }
+
+    /* Section heading */
+    h1 {
+      text-align: center;
+      margin: 20px 0;
+      color: #ddd;
+      position: relative;
+    }
+
+    h1::after {
+      content: '';
+      display: block;
+      width: 80px;
+      height: 3px;
+      background-color: #888;
+      margin: 8px auto;
+      border-radius: 2px;
+    }
+
+    /* Social media icon styling */
+    .socialmediaicons {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      padding: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .socialmediaicons a {
+      text-decoration: none;
+      color: #f0f0f0;
+      font-size: 40px;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #666;
+      border-radius: 50%;
+      transition: background 0.3s, transform 0.3s;
+    }
+
+    .socialmediaicons a:hover {
+      background-color: #666;
+      transform: scale(1.1);
+    }
+
+    /* About Me Section */
+    .about-me {
+      border: 2px solid grey;
+      padding: 20px;
+      margin: 40px auto;
+      max-width: 800px;
+      text-align: left;
+      background-color: #111;
+      color: #f0f0f0;
+      border-radius: 8px;
+    }
+
+    .about-me h2 {
+      color: #ccc;
+      margin-bottom: 10px;
+    }
+
+    .about-me p {
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    /* Footer styling */
+    footer {
+      background-color: #333;
+      color: #aaa;
+      text-align: center;
+      padding: 12px 0;
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Banner Image -->
+  <img src="../ER1-H-STUD10S/Website Design/Banner/Banner.png" class="banner" alt="Banner Image">
+
+  <!-- Navigation Menu -->
+    <ul> 
+        <li><a href="SkillSquare.html">Skill Square</a></li>
+        <li><a href="pages/ProjectGallery.html">Projects</a></li>
+
+    </ul>
+    
+  <h1>Welcome To My Website</h1>
+
+  <!-- Portfolio Image -->
+  <img src="../ER1-H-STUD10S/Gallery/Portfolio Image/Port1.jpg" alt="Audience" class="portfolio-img" />
+
+  <!-- Social Media Links -->
+  <div class="socialmediaicons">
+<!--    <a href="https://www.facebook.com" target="_blank" class="fab fa-facebook" title="Facebook"></a>-->
+    <a href="https://github.com/SCMcoding" target="_blank" class="fab fa-github" title="GitHub"></a>
+<!--    <a href="https://www.instagram.com" target="_blank" class="fab fa-instagram" title="Instagram"></a>-->
+    <a href="https://www.linkedin.com/in/samuel-cheung-95a975278/" target="_blank" class="fab fa-linkedin" title="LinkedIn"></a>
+    <a href="https://citytech.joinhandshake.com/profiles/r3r4bj" target="_blank" class="fas fa-handshake" title="Handshake"></a>
+    <a href="https://profile.indeed.com/?hl=en_US&co=US" target="_blank" class="fas fa-briefcase" title="Indeed"></a>
+    <a href="https://www.youtube.com/@samuelsmusicallibrary8725" target="_blank" class="fab fa-youtube" title="YouTube"></a>
+  </div>
+
+  <!-- About Me Section -->
+  <div class="about-me">
+    <h2>About Me</h2>
+    <p>
+        
+      I'm a graduate of CUNY New York City College of Technology, where I earned my Bachelors in Emerging Media Technology. My academic journey is driven by a passion for research and innovation at the intersection of technology, storytelling, and interactive media.
+        
+    </p>    
+
+    <p>  
+        My work explores how emerging technologies can enhance creative expression and narrative experiences. I’ve developed interactive web projects, crafted immersive game environments, and used AI-driven techniques to create dynamic storytelling elements. Through research, I aim to bridge the gap between traditional media and modern digital tools.
+    </p>
+
+    <p>  
+        
+      I’m passionate about combining technical expertise with creative problem-solving to push the boundaries of digital storytelling. Welcome to my site—feel free to explore my projects and see how I bring research-driven ideas to life.
+    
+    </p>
+      
+  </div>
+
+  <!-- Footer -->
+  <footer>&copy; 2025 Samuel Cheung &bull; All rights reserved</footer>
+
+</body>
+</html>
