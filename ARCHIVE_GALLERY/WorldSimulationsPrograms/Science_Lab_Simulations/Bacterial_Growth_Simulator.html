@@ -1,0 +1,4331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bacteria Culture Simulator</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+:root{
+    --bg:#081216;
+    --panel:#101d22;
+    --border:#2e464f;
+    --text:#edf5f6;
+    --muted:#8fa5ab;
+}
+
+body{
+    margin:0;
+    min-height:100vh;
+    color:var(--text);
+    font-family:Arial,Helvetica,sans-serif;
+    background:
+        radial-gradient(circle at 20% 0%,#193038 0%,transparent 35%),
+        linear-gradient(135deg,#071014,#102127 65%,#081116);
+}
+
+header{
+    background:#071014ee;
+    border-bottom:1px solid var(--border);
+    padding:17px 22px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+h1{
+    margin:0;
+    font-size:23px;
+}
+
+.subtitle{
+    color:var(--muted);
+    margin-top:4px;
+    font-size:12px;
+}
+
+.status{
+    border:1px solid #49616a;
+    background:#102229;
+    border-radius:999px;
+    padding:8px 13px;
+    font-size:12px;
+    transition:.4s ease;
+}
+
+.app{
+    max-width:1500px;
+    margin:auto;
+    padding:18px;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 370px;
+    gap:18px;
+}
+
+.panel{
+    background:#0c181ddf;
+    border:1px solid var(--border);
+    border-radius:15px;
+}
+
+.sim-panel{
+    padding:18px;
+}
+
+.controls{
+    padding:17px;
+}
+
+.section-title{
+    margin:0 0 12px;
+    text-transform:uppercase;
+    font-size:12px;
+    letter-spacing:1px;
+    color:#b6c8cd;
+}
+
+.main-grid{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 340px;
+    gap:15px;
+}
+
+.dish-area{
+    min-height:600px;
+    border:1px solid #263e47;
+    border-radius:13px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+    overflow:hidden;
+    background:
+        linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px),
+        #091519;
+    background-size:27px 27px;
+}
+
+.environment-background{
+    position:absolute;
+    inset:0;
+    opacity:.55;
+    pointer-events:none;
+}
+
+.environment-layer{
+    position:absolute;
+    inset:0;
+    opacity:0;
+    transition:opacity .9s ease;
+}
+
+.environment-layer.visible{
+    opacity:1;
+}
+
+#dish{
+    width:min(550px,82vw);
+    aspect-ratio:1/1;
+    position:relative;
+    border-radius:50%;
+    border:13px solid rgba(220,240,240,.32);
+
+    background:
+        radial-gradient(
+            circle at 38% 32%,
+            rgba(255,255,220,.42),
+            rgba(203,191,111,.35) 45%,
+            rgba(120,110,62,.24) 80%
+        );
+
+    box-shadow:
+        inset 0 0 55px rgba(255,255,210,.15),
+        0 24px 65px rgba(0,0,0,.72);
+
+    overflow:hidden;
+    z-index:2;
+}
+
+canvas{
+    width:100%;
+    height:100%;
+    display:block;
+}
+
+.dish-label{
+    position:absolute;
+    left:50%;
+    bottom:17px;
+    transform:translateX(-50%);
+    background:#071014c9;
+    border:1px solid #3a525b;
+    border-radius:7px;
+    padding:7px 12px;
+    font-size:11px;
+    white-space:nowrap;
+    z-index:4;
+    transition:
+        opacity .3s ease,
+        transform .3s ease;
+}
+
+.dish-label.fade{
+    opacity:.15;
+    transform:translateX(-50%) translateY(5px);
+}
+
+/* pause icon */
+
+.pause-overlay{
+    position:absolute;
+    inset:0;
+    z-index:6;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    pointer-events:none;
+    opacity:1;
+    transform:scale(1);
+    transition:
+        opacity .55s cubic-bezier(.2,.8,.2,1),
+        transform .55s cubic-bezier(.2,.8,.2,1);
+}
+
+.pause-overlay.hidden{
+    opacity:0;
+    transform:scale(1.08);
+}
+
+.pause-icon{
+    width:62px;
+    height:62px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    border-radius:50%;
+    background:rgba(7,16,20,.58);
+    border:1px solid rgba(255,255,255,.18);
+    backdrop-filter:blur(5px);
+    box-shadow:0 6px 18px rgba(0,0,0,.45);
+}
+
+.pause-bar{
+    width:8px;
+    height:31px;
+    border-radius:5px;
+    background:rgba(255,255,255,.95);
+}
+
+.sample-transition{
+    position:absolute;
+    inset:0;
+    border-radius:50%;
+    z-index:5;
+    opacity:0;
+    pointer-events:none;
+    background:
+        radial-gradient(
+            circle,
+            rgba(255,255,255,.14),
+            rgba(255,255,255,0) 65%
+        );
+    transition:opacity .45s ease;
+}
+
+.sample-transition.active{
+    opacity:1;
+}
+
+/* stats */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:9px;
+    margin-top:12px;
+}
+
+.stat{
+    background:#0f1e23;
+    border:1px solid #2b4149;
+    border-radius:9px;
+    padding:10px;
+}
+
+.stat-label{
+    text-transform:uppercase;
+    color:var(--muted);
+    font-size:9px;
+}
+
+.stat-value{
+    font-weight:bold;
+    font-size:18px;
+    margin-top:4px;
+}
+
+/* browser */
+
+.browser{
+    border-left:1px solid #29434b;
+    padding-left:14px;
+}
+
+.browser input{
+    width:100%;
+    background:#091419;
+    color:white;
+    border:1px solid #3a535b;
+    border-radius:8px;
+    padding:10px;
+    margin-bottom:9px;
+}
+
+.category-tabs{
+    display:flex;
+    flex-wrap:wrap;
+    gap:5px;
+    margin-bottom:9px;
+}
+
+.category-tabs button{
+    padding:5px 7px;
+    min-height:auto;
+    font-size:10px;
+}
+
+.category-tabs button.active{
+    background:#2b5a40;
+    border-color:#60896d;
+}
+
+.bacteria-list{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+    max-height:300px;
+    overflow:auto;
+    padding-right:4px;
+}
+
+.bacteria-card{
+    display:grid;
+    grid-template-columns:50px minmax(0,1fr);
+    gap:9px;
+    padding:7px;
+    align-items:center;
+    background:#102027;
+    border:1px solid #2e454d;
+    border-radius:9px;
+    cursor:pointer;
+    transition:
+        background .3s ease,
+        border-color .3s ease,
+        transform .3s ease;
+}
+
+.bacteria-card:hover{
+    background:#172c33;
+    transform:translateY(-1px);
+}
+
+.bacteria-card.selected{
+    outline:2px solid #77bb8b;
+    background:#173128;
+}
+
+.bacteria-image{
+    width:50px;
+    height:50px;
+    border-radius:7px;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#091519;
+}
+
+.bacteria-name{
+    font-size:11px;
+    font-style:italic;
+    font-weight:bold;
+}
+
+.bacteria-info{
+    color:#8ea4aa;
+    font-size:9px;
+    line-height:1.35;
+    margin-top:3px;
+}
+
+/* sample information */
+
+.sample-info-panel{
+    margin-top:12px;
+    background:#0d1a1f;
+    border:1px solid #29444d;
+    border-radius:12px;
+    overflow:hidden;
+    opacity:1;
+    transform:translateY(0);
+    transition:
+        opacity .35s ease,
+        transform .35s ease;
+}
+
+.sample-info-panel.changing{
+    opacity:.2;
+    transform:translateY(5px);
+}
+
+.sample-info-top{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    padding:12px;
+    border-bottom:1px solid #243b43;
+}
+
+.sample-info-icon{
+    width:60px;
+    height:60px;
+    flex-shrink:0;
+    border-radius:10px;
+    background:#081317;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+}
+
+.sample-info-name{
+    font-size:14px;
+    font-weight:bold;
+    font-style:italic;
+}
+
+.sample-info-subtitle{
+    margin-top:4px;
+    color:#90a7ad;
+    font-size:10px;
+}
+
+.sample-info-body{
+    padding:12px;
+    display:grid;
+    gap:9px;
+}
+
+.info-row{
+    display:grid;
+    grid-template-columns:88px minmax(0,1fr);
+    gap:8px;
+    font-size:10px;
+    line-height:1.45;
+}
+
+.info-row strong{
+    color:#94abb1;
+    font-size:9px;
+    text-transform:uppercase;
+    letter-spacing:.4px;
+}
+
+.info-row span{
+    color:#d0dcdf;
+}
+
+.health-box{
+    margin-top:3px;
+    padding:10px;
+    border-radius:8px;
+    background:#18181a;
+    border:1px solid #4e4647;
+}
+
+.health-title{
+    text-transform:uppercase;
+    color:#d5ae8b;
+    font-size:9px;
+    font-weight:bold;
+    letter-spacing:.6px;
+    margin-bottom:5px;
+}
+
+.health-text{
+    color:#d9ceca;
+    font-size:10px;
+    line-height:1.55;
+}
+
+.info-description{
+    padding:10px;
+    background:#091519;
+    border-radius:8px;
+    font-size:10px;
+    line-height:1.55;
+    color:#b8c8cc;
+}
+
+/* controls */
+
+.control{
+    margin-bottom:14px;
+}
+
+.control-row{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    font-size:12px;
+    margin-bottom:5px;
+}
+
+input[type="range"]{
+    width:100%;
+    accent-color:#79c18c;
+}
+
+select{
+    width:100%;
+    background:#091419;
+    color:white;
+    border:1px solid #3b545d;
+    padding:10px;
+    border-radius:8px;
+}
+
+button{
+    border:1px solid #405a63;
+    background:#19323a;
+    color:white;
+    border-radius:8px;
+    padding:10px;
+    min-height:41px;
+    cursor:pointer;
+    font-weight:bold;
+    transition:
+        background .25s ease,
+        transform .25s ease;
+}
+
+button:hover{
+    background:#274750;
+    transform:translateY(-1px);
+}
+
+button:active{
+    transform:scale(.98);
+}
+
+button.primary{
+    background:#315e45;
+    border-color:#58886b;
+}
+
+button.danger{
+    background:#583438;
+    border-color:#805157;
+}
+
+.actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin:15px 0;
+}
+
+.observation{
+    background:#0a161a;
+    border-left:4px solid #6eaf7d;
+    padding:11px;
+    border-radius:6px;
+    font-size:11px;
+    color:#b4c6ca;
+    line-height:1.5;
+}
+
+.note{
+    color:#798f95;
+    font-size:9px;
+    line-height:1.4;
+    margin-top:10px;
+}
+
+.legend{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:10px;
+    color:#8da2a8;
+    font-size:10px;
+}
+
+.dot{
+    display:inline-block;
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    margin-right:4px;
+}
+
+@media(max-width:1100px){
+
+    .app{
+        grid-template-columns:1fr;
+    }
+
+    .main-grid{
+        grid-template-columns:1fr;
+    }
+
+    .browser{
+        border-left:0;
+        border-top:1px solid #29434b;
+        padding-left:0;
+        padding-top:15px;
+    }
+}
+
+@media(max-width:650px){
+
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .dish-area{
+        min-height:400px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div>
+<h1>Bacterial Culture Simulator</h1>
+<div class="subtitle">
+Explore bacterial samples, environments, growth, and health information
+</div>
+</div>
+
+<div class="status" id="status">
+Paused
+</div>
+
+</header>
+
+
+<div class="app">
+
+<section class="panel sim-panel">
+
+<div class="main-grid">
+
+<div>
+
+<div class="dish-area">
+
+<div class="environment-background">
+
+<div
+class="environment-layer visible"
+id="environmentLayerA">
+</div>
+
+<div
+class="environment-layer"
+id="environmentLayerB">
+</div>
+
+</div>
+
+
+<div id="dish">
+
+<canvas id="canvas"></canvas>
+
+<div
+class="sample-transition"
+id="sampleTransition">
+</div>
+
+<div
+class="dish-label"
+id="dishLabel">
+Micrococcus luteus • Laboratory Petri Dish
+</div>
+
+</div>
+
+
+<div
+class="pause-overlay"
+id="pauseOverlay">
+
+<div class="pause-icon">
+
+<div class="pause-bar"></div>
+<div class="pause-bar"></div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="legend">
+
+<span>
+<i class="dot" style="background:#74c58b"></i>
+Active cells
+</span>
+
+<span>
+<i class="dot" style="background:#d7c469"></i>
+Growing colonies
+</span>
+
+<span>
+<i class="dot" style="background:#755a54"></i>
+Stressed cells
+</span>
+
+</div>
+
+
+<div class="stats">
+
+<div class="stat">
+<div class="stat-label">Population Index</div>
+<div class="stat-value" id="population">100</div>
+</div>
+
+<div class="stat">
+<div class="stat-label">Colonies</div>
+<div class="stat-value" id="colonies">5</div>
+</div>
+
+<div class="stat">
+<div class="stat-label">Time</div>
+<div class="stat-value" id="time">0.0h</div>
+</div>
+
+<div class="stat">
+<div class="stat-label">Growth</div>
+<div class="stat-value" id="growth">Paused</div>
+</div>
+
+<div class="stat">
+<div class="stat-label">Viability</div>
+<div class="stat-value" id="viability">100%</div>
+</div>
+
+</div>
+
+</div>
+
+
+<div class="browser">
+
+<h3 class="section-title">
+Bacteria Samples
+</h3>
+
+
+<input
+id="search"
+type="text"
+placeholder="Search bacteria..."
+>
+
+
+<div
+class="category-tabs"
+id="categoryTabs">
+</div>
+
+
+<div
+class="bacteria-list"
+id="bacteriaList">
+</div>
+
+
+<div
+class="sample-info-panel"
+id="sampleInfoPanel">
+
+
+<div class="sample-info-top">
+
+<div
+class="sample-info-icon"
+id="sampleInfoIcon">
+</div>
+
+
+<div>
+
+<div
+class="sample-info-name"
+id="sampleInfoName">
+</div>
+
+<div
+class="sample-info-subtitle"
+id="sampleInfoSubtitle">
+</div>
+
+</div>
+
+</div>
+
+
+<div class="sample-info-body">
+
+<div class="info-row">
+<strong>Shape</strong>
+<span id="sampleInfoShape"></span>
+</div>
+
+<div class="info-row">
+<strong>Color</strong>
+<span id="sampleInfoColor"></span>
+</div>
+
+<div class="info-row">
+<strong>Habitat</strong>
+<span id="sampleInfoHabitat"></span>
+</div>
+
+<div class="info-row">
+<strong>Oxygen</strong>
+<span id="sampleInfoOxygen"></span>
+</div>
+
+<div class="info-row">
+<strong>Notes</strong>
+<span id="sampleInfoNotes"></span>
+</div>
+
+
+<div class="health-box">
+
+<div class="health-title">
+Human Health / Possible Symptoms
+</div>
+
+<div
+class="health-text"
+id="sampleInfoSymptoms">
+</div>
+
+</div>
+
+
+<div
+class="info-description"
+id="sampleInfoDescription">
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<aside class="panel controls">
+
+<h3 class="section-title">
+Environment
+</h3>
+
+
+<select id="environment">
+
+<option value="petri">
+Laboratory Petri Dish
+</option>
+
+<option value="soil">
+Forest Soil
+</option>
+
+<option value="pond">
+Freshwater Pond
+</option>
+
+<option value="ocean">
+Marine Water
+</option>
+
+<option value="skin">
+Human Skin
+</option>
+
+<option value="oral">
+Oral Environment
+</option>
+
+<option value="intestinal">
+Low-Oxygen Intestinal Environment
+</option>
+
+<option value="hotspring">
+Hot Spring
+</option>
+
+<option value="acidic">
+Acidic Environment
+</option>
+
+<option value="saltlake">
+Hypersaline Lake
+</option>
+
+<option value="dry">
+Dry Surface
+</option>
+
+<option value="wastewater">
+Wastewater
+</option>
+
+</select>
+
+
+<br><br>
+
+
+<h3 class="section-title">
+Environmental Variables
+</h3>
+
+
+<div class="control">
+<div class="control-row">
+<span>Temperature Compatibility</span>
+<b id="temperatureValue">82%</b>
+</div>
+<input id="temperature" type="range" min="0" max="100" value="82">
+</div>
+
+
+<div class="control">
+<div class="control-row">
+<span>pH Compatibility</span>
+<b id="phValue">82%</b>
+</div>
+<input id="ph" type="range" min="0" max="100" value="82">
+</div>
+
+
+<div class="control">
+<div class="control-row">
+<span>Nutrients</span>
+<b id="nutrientsValue">80%</b>
+</div>
+<input id="nutrients" type="range" min="0" max="100" value="80">
+</div>
+
+
+<div class="control">
+<div class="control-row">
+<span>Moisture</span>
+<b id="moistureValue">90%</b>
+</div>
+<input id="moisture" type="range" min="0" max="100" value="90">
+</div>
+
+
+<div class="control">
+<div class="control-row">
+<span>Oxygen Compatibility</span>
+<b id="oxygenValue">72%</b>
+</div>
+<input id="oxygen" type="range" min="0" max="100" value="72">
+</div>
+
+
+<div class="control">
+<div class="control-row">
+<span>Salinity Compatibility</span>
+<b id="salinityValue">80%</b>
+</div>
+<input id="salinity" type="range" min="0" max="100" value="80">
+</div>
+
+
+<div class="control">
+<div class="control-row">
+<span>UV Exposure</span>
+<b id="uvValue">0%</b>
+</div>
+<input id="uv" type="range" min="0" max="100" value="0">
+</div>
+
+
+<div class="control">
+<div class="control-row">
+<span>Antimicrobial Pressure</span>
+<b id="antibioticValue">0%</b>
+</div>
+<input id="antibiotic" type="range" min="0" max="100" value="0">
+</div>
+
+
+<div class="control">
+<div class="control-row">
+<span>Immune Pressure</span>
+<b id="immuneValue">0%</b>
+</div>
+<input id="immune" type="range" min="0" max="100" value="0">
+</div>
+
+
+<div class="control">
+<div class="control-row">
+<span>Microbial Competition</span>
+<b id="competitionValue">5%</b>
+</div>
+<input id="competition" type="range" min="0" max="100" value="5">
+</div>
+
+
+<div class="control">
+<div class="control-row">
+<span>Simulation Speed</span>
+</div>
+
+<select id="speed">
+
+<option value="0.5">0.5×</option>
+<option value="1" selected>1×</option>
+<option value="2">2×</option>
+<option value="4">4×</option>
+
+</select>
+
+</div>
+
+
+<div class="actions">
+
+<button
+class="primary"
+id="playButton">
+▶ Play
+</button>
+
+<button id="pauseButton">
+❚❚ Pause
+</button>
+
+<button id="sampleButton">
++ Add Sample
+</button>
+
+<button
+class="danger"
+id="resetButton">
+Reset
+</button>
+
+</div>
+
+
+<div
+class="observation"
+id="observation">
+
+<b>Observation:</b><br>
+The simulation is paused.
+
+</div>
+
+
+<div class="note">
+Educational visual simulation only. The health information summarizes possible associations with human disease and does not mean that exposure to a listed bacterium will cause illness. Many strains are harmless, and symptoms depend on strain, site of infection, dose, and individual health. This simulator is not a diagnostic tool or laboratory culturing guide.
+</div>
+
+</aside>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   BACTERIA DATA
+===================================================== */
+
+const bacteriaSamples = [
+
+{
+name:"Micrococcus luteus",
+category:"Cocci",
+phylum:"Actinomycetota",
+color:"#e4d344",
+secondary:"#fff18a",
+shape:"coccus",
+shapeLabel:"Spherical cocci",
+colorLabel:"Yellow pigmentation",
+habitat:"Soil, dust, water, air, and human skin.",
+oxygen:"Generally aerobic.",
+notes:"Its carotenoid pigments often produce a yellow colony appearance.",
+symptoms:"Usually harmless in healthy people and normally causes no symptoms. Rare opportunistic infections have been reported, particularly in people with weakened immunity or medical devices; symptoms depend on the infected site and can include fever or signs of local infection.",
+description:"Micrococcus luteus is a Gram-positive environmental coccus and a common member of the normal skin microbiota."
+},
+
+{
+name:"Staphylococcus aureus",
+category:"Cocci",
+phylum:"Bacillota",
+color:"#d9a936",
+secondary:"#ffe082",
+shape:"cluster",
+shapeLabel:"Cocci in grape-like clusters",
+colorLabel:"Golden-yellow pigmentation",
+habitat:"Human skin and nasal passages.",
+oxygen:"Facultative anaerobe.",
+notes:"Some strains produce golden carotenoid pigmentation.",
+symptoms:"Can cause painful red or swollen skin lesions, abscesses, pus, and fever. More serious infections can involve the bloodstream, lungs, bones, heart, or other organs and may cause high fever, chills, breathing difficulty, low blood pressure, or severe illness.",
+description:"Staphylococcus aureus commonly colonizes humans without causing disease, but some strains can cause skin infections and serious invasive infections."
+},
+
+{
+name:"Staphylococcus epidermidis",
+category:"Cocci",
+phylum:"Bacillota",
+color:"#ece9d5",
+secondary:"#ffffff",
+shape:"cluster",
+shapeLabel:"Cocci in clusters",
+colorLabel:"White to cream appearance",
+habitat:"Normal human skin microbiota.",
+oxygen:"Facultative anaerobe.",
+notes:"Can form biofilms on artificial surfaces.",
+symptoms:"Usually causes no symptoms because it is a normal skin organism. Opportunistic infections involving catheters, prosthetic joints, or other implanted devices may cause fever, pain, redness, swelling, or device-related infection.",
+description:"Staphylococcus epidermidis is a common skin bacterium that is usually harmless but can occasionally cause device-associated infections."
+},
+
+{
+name:"Streptococcus salivarius",
+category:"Cocci",
+phylum:"Bacillota",
+color:"#deddd3",
+secondary:"#ffffff",
+shape:"chain",
+shapeLabel:"Cocci in chains",
+colorLabel:"Pale or cream appearance",
+habitat:"Mouth, tongue, and upper respiratory tract.",
+oxygen:"Facultative anaerobe.",
+notes:"A common early colonizer of the human oral cavity.",
+symptoms:"Normally part of the healthy oral microbiome and generally causes no symptoms. Rare opportunistic infections can cause fever or other symptoms depending on the infected body site.",
+description:"Streptococcus salivarius is usually a harmless member of the normal oral microbiome."
+},
+
+{
+name:"Serratia marcescens",
+category:"Pigmented",
+phylum:"Pseudomonadota",
+color:"#c9434e",
+secondary:"#ff7475",
+shape:"rod",
+shapeLabel:"Rod-shaped",
+colorLabel:"Red or pink pigmentation in some strains",
+habitat:"Water, soil, plants, and damp environments.",
+oxygen:"Facultative anaerobe.",
+notes:"Some strains produce the red pigment prodigiosin.",
+symptoms:"Opportunistic infections can involve the urinary tract, respiratory tract, bloodstream, wounds, or eyes. Symptoms may include fever, painful or frequent urination, cough, breathing difficulty, wound redness, or eye pain and discharge depending on the infection.",
+description:"Serratia marcescens is an environmental Gram-negative rod that can occasionally cause healthcare-associated infections."
+},
+
+{
+name:"Chromobacterium violaceum",
+category:"Pigmented",
+phylum:"Pseudomonadota",
+color:"#623c9d",
+secondary:"#9e73d7",
+shape:"rod",
+shapeLabel:"Rod-shaped",
+colorLabel:"Violet pigmentation",
+habitat:"Soil and freshwater, particularly in tropical regions.",
+oxygen:"Facultative anaerobe.",
+notes:"Known for the purple pigment violacein.",
+symptoms:"Human infection is rare but can be serious. Possible symptoms include skin or wound infection, fever, abdominal discomfort, abscesses, or bloodstream infection after environmental exposure.",
+description:"Chromobacterium violaceum is a violet-pigmented environmental bacterium. Human infections are uncommon."
+},
+
+{
+name:"Janthinobacterium lividum",
+category:"Pigmented",
+phylum:"Pseudomonadota",
+color:"#644da3",
+secondary:"#9583d6",
+shape:"rod",
+shapeLabel:"Rod-shaped",
+colorLabel:"Violet pigmentation",
+habitat:"Soil, water, and cool moist environments.",
+oxygen:"Generally aerobic.",
+notes:"Can produce violet pigmentation.",
+symptoms:"Generally considered an environmental organism and does not normally cause symptoms in healthy people. Human infections are exceptionally rare.",
+description:"Janthinobacterium lividum is an environmental violet-pigmented bacterium."
+},
+
+{
+name:"Pseudomonas aeruginosa",
+category:"Pigmented",
+phylum:"Pseudomonadota",
+color:"#32a9a0",
+secondary:"#76d9ad",
+shape:"rod",
+shapeLabel:"Rod-shaped",
+colorLabel:"Blue-green pigmentation may occur",
+habitat:"Soil, water, drains, and other moist environments.",
+oxygen:"Primarily aerobic but metabolically versatile.",
+notes:"May produce pigments including pyocyanin and pyoverdine.",
+symptoms:"Can cause wound, ear, urinary, respiratory, bloodstream, or other infections, especially in hospitalized or immunocompromised people. Symptoms vary and can include fever, redness, pain, discharge, cough, breathing difficulty, or painful urination.",
+description:"Pseudomonas aeruginosa is a versatile environmental bacterium and an important opportunistic pathogen."
+},
+
+{
+name:"Deinococcus radiodurans",
+category:"Pigmented",
+phylum:"Deinococcota",
+color:"#d45b70",
+secondary:"#ff91a2",
+shape:"cluster",
+shapeLabel:"Coccoid cells in pairs or groups",
+colorLabel:"Pink to red pigmentation",
+habitat:"Soil, dust, food, and harsh environments.",
+oxygen:"Aerobic.",
+notes:"Remarkably resistant to radiation and DNA damage.",
+symptoms:"Not generally regarded as a human pathogen and is not normally associated with disease symptoms.",
+description:"Deinococcus radiodurans is famous for surviving extreme radiation and other forms of cellular damage."
+},
+
+{
+name:"Rhodobacter sphaeroides",
+category:"Pigmented",
+phylum:"Pseudomonadota",
+color:"#a55068",
+secondary:"#da8191",
+shape:"oval",
+shapeLabel:"Oval to rod-shaped",
+colorLabel:"Reddish-purple pigmentation",
+habitat:"Freshwater and aquatic environments.",
+oxygen:"Metabolically flexible.",
+notes:"A photosynthetic purple non-sulfur bacterium.",
+symptoms:"Not generally considered a human pathogen and does not normally cause symptoms.",
+description:"Rhodobacter sphaeroides is widely studied for bacterial photosynthesis and metabolism."
+},
+
+{
+name:"Myxococcus xanthus",
+category:"Pigmented",
+phylum:"Myxococcota",
+color:"#cf9536",
+secondary:"#efc26a",
+shape:"rod",
+shapeLabel:"Rod-shaped",
+colorLabel:"Yellow-orange appearance",
+habitat:"Primarily soil.",
+oxygen:"Aerobic.",
+notes:"Known for coordinated social movement and fruiting-body formation.",
+symptoms:"Not normally considered a human pathogen and is not usually associated with disease symptoms.",
+description:"Myxococcus xanthus is a social predatory soil bacterium with unusually complex behavior."
+},
+
+{
+name:"Bacillus subtilis",
+category:"Rods",
+phylum:"Bacillota",
+color:"#ddd7be",
+secondary:"#fff8dd",
+shape:"rod",
+shapeLabel:"Rod-shaped",
+colorLabel:"Cream or off-white appearance",
+habitat:"Soil, plants, dust, and many natural environments.",
+oxygen:"Aerobic or facultatively anaerobic.",
+notes:"Forms resistant endospores.",
+symptoms:"Usually harmless and commonly encountered in the environment. Rare opportunistic infections can cause symptoms such as fever or local inflammation depending on the affected site.",
+description:"Bacillus subtilis is a common Gram-positive soil bacterium and a major model organism."
+},
+
+{
+name:"Bacillus megaterium",
+category:"Rods",
+phylum:"Bacillota",
+color:"#e4dfcb",
+secondary:"#fffdf0",
+shape:"largeRod",
+shapeLabel:"Large rod-shaped cells",
+colorLabel:"Pale cream appearance",
+habitat:"Soil and diverse environmental habitats.",
+oxygen:"Primarily aerobic.",
+notes:"Historically useful for microscopy because of its large cell size.",
+symptoms:"Generally considered nonpathogenic and does not normally cause symptoms. Rare opportunistic infections have been reported.",
+description:"Bacillus megaterium is a large spore-forming Gram-positive bacterium."
+},
+
+{
+name:"Escherichia coli",
+category:"Rods",
+phylum:"Pseudomonadota",
+color:"#d6d0bc",
+secondary:"#f8f2df",
+shape:"rod",
+shapeLabel:"Short rods",
+colorLabel:"Pale appearance",
+habitat:"Intestinal tract of humans and other warm-blooded animals.",
+oxygen:"Facultative anaerobe.",
+notes:"Most strains are harmless members of the normal intestinal microbiome.",
+symptoms:"Most strains cause no illness. Disease-causing strains can cause diarrhea, abdominal cramps, nausea, vomiting, and sometimes fever. Certain toxin-producing strains can cause bloody diarrhea and, rarely, serious kidney complications. Other strains can cause urinary tract infections with burning urination, urgency, and lower abdominal discomfort.",
+description:"Escherichia coli is one of the most studied bacterial species. Its effects range from harmless gut colonization to disease, depending on the strain."
+},
+
+{
+name:"Lactobacillus acidophilus",
+category:"Rods",
+phylum:"Bacillota",
+color:"#eeeadd",
+secondary:"#ffffff",
+shape:"longRod",
+shapeLabel:"Long rod-shaped cells",
+colorLabel:"White to cream appearance",
+habitat:"Human gastrointestinal and urogenital microbiota and fermented foods.",
+oxygen:"Aerotolerant anaerobe.",
+notes:"Produces lactic acid during carbohydrate fermentation.",
+symptoms:"Normally beneficial or harmless and generally causes no symptoms. Very rare opportunistic bloodstream or deep-tissue infections may occur in severely ill or immunocompromised individuals.",
+description:"Lactobacillus acidophilus is a lactic-acid bacterium associated with the normal microbiome and fermented foods."
+},
+
+{
+name:"Pseudomonas putida",
+category:"Rods",
+phylum:"Pseudomonadota",
+color:"#cfd9cf",
+secondary:"#eef7ed",
+shape:"rod",
+shapeLabel:"Rod-shaped",
+colorLabel:"Pale appearance",
+habitat:"Soil, water, and plant-associated environments.",
+oxygen:"Aerobic.",
+notes:"Known for broad metabolic abilities.",
+symptoms:"Usually an environmental organism and does not cause symptoms in healthy people. Rare opportunistic infections can produce fever or symptoms related to the infected site.",
+description:"Pseudomonas putida is widely studied for metabolism, biodegradation, and biotechnology."
+},
+
+{
+name:"Azotobacter vinelandii",
+category:"Rods",
+phylum:"Pseudomonadota",
+color:"#d8d8bd",
+secondary:"#f8f8dc",
+shape:"oval",
+shapeLabel:"Large oval to rod-shaped cells",
+colorLabel:"Cream to pale appearance",
+habitat:"Soil.",
+oxygen:"Aerobic.",
+notes:"Capable of fixing atmospheric nitrogen.",
+symptoms:"Not normally considered a human pathogen and is not associated with typical disease symptoms.",
+description:"Azotobacter vinelandii is a free-living nitrogen-fixing soil bacterium."
+},
+
+{
+name:"Vibrio natriegens",
+category:"Curved",
+phylum:"Pseudomonadota",
+color:"#e2e1cf",
+secondary:"#ffffff",
+shape:"curved",
+shapeLabel:"Curved rods",
+colorLabel:"Pale appearance",
+habitat:"Marine and coastal environments.",
+oxygen:"Facultative anaerobe.",
+notes:"Known for unusually rapid cell division.",
+symptoms:"Not generally considered an important human pathogen and is not normally associated with disease symptoms.",
+description:"Vibrio natriegens is a rapidly growing marine bacterium increasingly used as an experimental model."
+},
+
+{
+name:"Vibrio fischeri",
+category:"Curved",
+phylum:"Pseudomonadota",
+color:"#bddece",
+secondary:"#e4fff2",
+shape:"curved",
+shapeLabel:"Curved rods",
+colorLabel:"Pale cells; bioluminescent",
+habitat:"Marine environments and marine-animal symbioses.",
+oxygen:"Facultative anaerobe.",
+notes:"Best known for its light-producing symbiosis with certain squid.",
+symptoms:"Not normally considered a human pathogen and does not usually cause disease symptoms.",
+description:"Vibrio fischeri is a bioluminescent marine bacterium widely studied in bacterial communication and symbiosis."
+},
+
+{
+name:"Campylobacter jejuni",
+category:"Curved",
+phylum:"Campylobacterota",
+color:"#d5d3c8",
+secondary:"#f2efe6",
+shape:"curved",
+shapeLabel:"Curved or S-shaped rods",
+colorLabel:"Pale appearance",
+habitat:"Intestinal tracts of birds and mammals.",
+oxygen:"Microaerophilic.",
+notes:"A major bacterial cause of foodborne gastroenteritis.",
+symptoms:"Common symptoms include diarrhea, which may be bloody, abdominal cramps, fever, nausea, and sometimes vomiting. Rare complications can include reactive arthritis or neurologic complications such as Guillain-Barré syndrome.",
+description:"Campylobacter jejuni is an important foodborne bacterial pathogen."
+},
+
+{
+name:"Spirillum volutans",
+category:"Spiral",
+phylum:"Pseudomonadota",
+color:"#bccad1",
+secondary:"#e9f3f6",
+shape:"spiral",
+shapeLabel:"Large spiral cells",
+colorLabel:"Pale appearance",
+habitat:"Freshwater.",
+oxygen:"Microaerophilic.",
+notes:"A classic example of spiral bacterial morphology.",
+symptoms:"Not normally considered a human pathogen and is not typically associated with symptoms.",
+description:"Spirillum volutans is a large spiral-shaped aquatic bacterium."
+},
+
+{
+name:"Treponema denticola",
+category:"Spiral",
+phylum:"Spirochaetota",
+color:"#cbd2d8",
+secondary:"#edf3f7",
+shape:"spiral",
+shapeLabel:"Thin flexible spirochete",
+colorLabel:"Pale appearance",
+habitat:"Human oral cavity.",
+oxygen:"Anaerobic.",
+notes:"Associated with microbial communities involved in periodontal disease.",
+symptoms:"Associated with gum disease rather than a single isolated infection. Possible symptoms include swollen or bleeding gums, gum recession, bad breath, tooth sensitivity, pain while chewing, and loosening teeth in advanced periodontal disease.",
+description:"Treponema denticola is an oral spirochete associated with periodontal microbial communities."
+},
+
+{
+name:"Streptomyces coelicolor",
+category:"Filamentous",
+phylum:"Actinomycetota",
+color:"#7690a7",
+secondary:"#aebcca",
+shape:"filament",
+shapeLabel:"Branching filamentous cells",
+colorLabel:"Blue-gray pigmentation",
+habitat:"Primarily soil.",
+oxygen:"Aerobic.",
+notes:"Produces many secondary metabolites.",
+symptoms:"Not normally considered a human pathogen and usually causes no symptoms.",
+description:"Streptomyces coelicolor is an important model for studying filamentous bacteria and natural-product biosynthesis."
+},
+
+{
+name:"Streptomyces griseus",
+category:"Filamentous",
+phylum:"Actinomycetota",
+color:"#c6bbb0",
+secondary:"#e8ddd2",
+shape:"filament",
+shapeLabel:"Branching filamentous cells",
+colorLabel:"Gray or pale colonies",
+habitat:"Soil.",
+oxygen:"Aerobic.",
+notes:"Historically notable as the source of streptomycin.",
+symptoms:"Generally an environmental organism and not normally associated with human disease symptoms.",
+description:"Streptomyces griseus belongs to a genus famous for producing antibiotics and other natural products."
+},
+
+{
+name:"Caulobacter crescentus",
+category:"Other",
+phylum:"Pseudomonadota",
+color:"#d1d4c2",
+secondary:"#f0f2dd",
+shape:"stalk",
+shapeLabel:"Stalked rod-shaped cells",
+colorLabel:"Pale appearance",
+habitat:"Freshwater and nutrient-poor aquatic environments.",
+oxygen:"Aerobic.",
+notes:"Has distinct swarmer and stalked stages.",
+symptoms:"Not normally considered a human pathogen and does not usually cause symptoms.",
+description:"Caulobacter crescentus is widely used to study bacterial cell differentiation and asymmetric cell division."
+},
+
+{
+name:"Arthrobacter globiformis",
+category:"Other",
+phylum:"Actinomycetota",
+color:"#decfaf",
+secondary:"#f4e7c9",
+shape:"mixed",
+shapeLabel:"Rod-to-coccus changing morphology",
+colorLabel:"Cream to pale appearance",
+habitat:"Soil.",
+oxygen:"Aerobic.",
+notes:"Can change shape during different stages of growth.",
+symptoms:"Usually an environmental organism and normally causes no symptoms. Very rare opportunistic infections have been reported.",
+description:"Arthrobacter globiformis is notable for changing between rod-like and spherical cell forms."
+},
+
+{
+name:"Rhodococcus erythropolis",
+category:"Pigmented",
+phylum:"Actinomycetota",
+color:"#d78964",
+secondary:"#efae89",
+shape:"coccus",
+shapeLabel:"Coccoid to short rod forms",
+colorLabel:"Orange to reddish pigmentation",
+habitat:"Soil and water.",
+oxygen:"Aerobic.",
+notes:"Known for broad biodegradation capabilities.",
+symptoms:"Usually environmental and not a common human pathogen. Rare opportunistic infections may cause fever or symptoms associated with the affected site.",
+description:"Rhodococcus erythropolis is known for colorful colonies and its ability to metabolize many environmental compounds."
+}
+
+];
+
+
+/* =====================================================
+   ENVIRONMENTS
+===================================================== */
+
+const environments = {
+
+petri:{
+background:"radial-gradient(circle,#968b54,#574f2c)",
+temperature:82,
+ph:82,
+nutrients:80,
+moisture:90,
+oxygen:72,
+salinity:80,
+uv:0,
+antibiotic:0,
+immune:0,
+competition:5
+},
+
+soil:{
+background:"linear-gradient(#3b4b31,#4e3827)",
+temperature:65,
+ph:70,
+nutrients:64,
+moisture:60,
+oxygen:58,
+salinity:70,
+uv:6,
+antibiotic:0,
+immune:0,
+competition:68
+},
+
+pond:{
+background:"linear-gradient(#395d58,#4b705e)",
+temperature:66,
+ph:76,
+nutrients:58,
+moisture:100,
+oxygen:58,
+salinity:90,
+uv:15,
+antibiotic:0,
+immune:0,
+competition:64
+},
+
+ocean:{
+background:"linear-gradient(#174b5e,#1d7180)",
+temperature:62,
+ph:76,
+nutrients:43,
+moisture:100,
+oxygen:66,
+salinity:95,
+uv:23,
+antibiotic:0,
+immune:0,
+competition:60
+},
+
+skin:{
+background:"linear-gradient(#8c5d50,#bc8a70)",
+temperature:76,
+ph:66,
+nutrients:38,
+moisture:38,
+oxygen:72,
+salinity:68,
+uv:10,
+antibiotic:0,
+immune:38,
+competition:62
+},
+
+oral:{
+background:"linear-gradient(#7e4146,#ba6d6d)",
+temperature:85,
+ph:76,
+nutrients:72,
+moisture:96,
+oxygen:56,
+salinity:76,
+uv:0,
+antibiotic:0,
+immune:42,
+competition:72
+},
+
+intestinal:{
+background:"linear-gradient(#412927,#69433b)",
+temperature:87,
+ph:73,
+nutrients:85,
+moisture:100,
+oxygen:25,
+salinity:74,
+uv:0,
+antibiotic:0,
+immune:55,
+competition:82
+},
+
+hotspring:{
+background:"linear-gradient(#8b422e,#cf8347)",
+temperature:35,
+ph:60,
+nutrients:46,
+moisture:100,
+oxygen:44,
+salinity:62,
+uv:28,
+antibiotic:0,
+immune:0,
+competition:45
+},
+
+acidic:{
+background:"linear-gradient(#5d6232,#8a8641)",
+temperature:61,
+ph:25,
+nutrients:48,
+moisture:77,
+oxygen:60,
+salinity:65,
+uv:8,
+antibiotic:0,
+immune:0,
+competition:48
+},
+
+saltlake:{
+background:"linear-gradient(#517b87,#9b8f70)",
+temperature:58,
+ph:65,
+nutrients:36,
+moisture:100,
+oxygen:55,
+salinity:30,
+uv:35,
+antibiotic:0,
+immune:0,
+competition:42
+},
+
+dry:{
+background:"linear-gradient(#55514a,#2d2c29)",
+temperature:52,
+ph:65,
+nutrients:18,
+moisture:16,
+oxygen:85,
+salinity:65,
+uv:48,
+antibiotic:0,
+immune:0,
+competition:18
+},
+
+wastewater:{
+background:"linear-gradient(#354338,#60664c)",
+temperature:65,
+ph:68,
+nutrients:82,
+moisture:100,
+oxygen:45,
+salinity:62,
+uv:2,
+antibiotic:10,
+immune:0,
+competition:90
+}
+
+};
+
+
+/* =====================================================
+   REFERENCES
+===================================================== */
+
+const canvas =
+document.getElementById("canvas");
+
+const ctx =
+canvas.getContext("2d");
+
+const dish =
+document.getElementById("dish");
+
+const overlay =
+document.getElementById("pauseOverlay");
+
+const sampleTransition =
+document.getElementById("sampleTransition");
+
+const dishLabel =
+document.getElementById("dishLabel");
+
+const sampleInfoPanel =
+document.getElementById("sampleInfoPanel");
+
+
+/* =====================================================
+   STATE
+===================================================== */
+
+let running = false;
+
+let selectedBacteria =
+bacteriaSamples[0];
+
+let previousBacteria =
+selectedBacteria;
+
+let sampleBlend = 1;
+
+let sampleChanging = false;
+
+let cells = [];
+
+let colonies = [];
+
+let simulationTime = 0;
+
+let populationIndex = 100;
+
+let displayPopulation = 100;
+
+let viability = 1;
+
+let displayViability = 1;
+
+let resumeBlend = 0;
+
+let lastTime =
+performance.now();
+
+
+const smoothedEnvironment = {
+
+temperature:82,
+ph:82,
+nutrients:80,
+moisture:90,
+oxygen:72,
+salinity:80,
+uv:0,
+antibiotic:0,
+immune:0,
+competition:5
+
+};
+
+
+const targetEnvironment = {
+...smoothedEnvironment
+};
+
+
+/* =====================================================
+   HELPERS
+===================================================== */
+
+function clamp(
+value,
+min,
+max
+){
+
+return Math.max(
+min,
+Math.min(
+max,
+value
+)
+);
+
+}
+
+
+function lerp(
+a,
+b,
+t
+){
+
+return a +
+(b-a)*t;
+
+}
+
+
+/* =====================================================
+   CANVAS
+===================================================== */
+
+function resizeCanvas(){
+
+const rect =
+dish.getBoundingClientRect();
+
+
+canvas.width =
+Math.floor(
+rect.width
+);
+
+
+canvas.height =
+Math.floor(
+rect.height
+);
+
+}
+
+
+window.addEventListener(
+"resize",
+resizeCanvas
+);
+
+
+resizeCanvas();
+
+
+function randomPoint(){
+
+const radius =
+canvas.width*.39;
+
+
+const angle =
+Math.random() *
+Math.PI*2;
+
+
+const distance =
+Math.sqrt(
+Math.random()
+) *
+radius;
+
+
+return {
+
+x:
+canvas.width/2 +
+Math.cos(angle)*
+distance,
+
+y:
+canvas.height/2 +
+Math.sin(angle)*
+distance
+
+};
+
+}
+
+
+/* =====================================================
+   CELL
+===================================================== */
+
+class Cell{
+
+constructor(
+x,
+y,
+colony
+){
+
+this.x = x;
+this.y = y;
+
+this.colony =
+colony;
+
+this.vx =
+(Math.random()-.5)*.20;
+
+this.vy =
+(Math.random()-.5)*.20;
+
+this.targetVx =
+this.vx;
+
+this.targetVy =
+this.vy;
+
+this.size =
+2 +
+Math.random()*2;
+
+this.rotation =
+Math.random() *
+Math.PI*2;
+
+this.phase =
+Math.random() *
+Math.PI*2;
+
+}
+
+
+update(
+dt
+){
+
+this.phase +=
+dt*.0015;
+
+
+if(
+Math.random() <
+.012
+){
+
+this.targetVx +=
+(Math.random()-.5)*.055;
+
+this.targetVy +=
+(Math.random()-.5)*.055;
+
+}
+
+
+this.vx =
+lerp(
+this.vx,
+this.targetVx,
+.025 *
+resumeBlend
+);
+
+
+this.vy =
+lerp(
+this.vy,
+this.targetVy,
+.025 *
+resumeBlend
+);
+
+
+const maxSpeed =
+.28;
+
+
+const velocity =
+Math.hypot(
+this.vx,
+this.vy
+);
+
+
+if(
+velocity >
+maxSpeed
+){
+
+this.vx =
+this.vx /
+velocity *
+maxSpeed;
+
+this.vy =
+this.vy /
+velocity *
+maxSpeed;
+
+}
+
+
+const driftX =
+Math.sin(
+this.phase
+)*.018;
+
+
+const driftY =
+Math.cos(
+this.phase*.8
+)*.018;
+
+
+this.x +=
+(
+this.vx +
+driftX
+)
+*
+dt *
+.03 *
+resumeBlend;
+
+
+this.y +=
+(
+this.vy +
+driftY
+)
+*
+dt *
+.03 *
+resumeBlend;
+
+
+this.rotation +=
+this.vx *
+dt *
+.0005 *
+resumeBlend;
+
+
+const cx =
+canvas.width/2;
+
+
+const cy =
+canvas.height/2;
+
+
+const limit =
+canvas.width*.43;
+
+
+const dx =
+this.x-cx;
+
+
+const dy =
+this.y-cy;
+
+
+const distance =
+Math.hypot(
+dx,
+dy
+);
+
+
+if(
+distance >
+limit
+){
+
+const angle =
+Math.atan2(
+dy,
+dx
+);
+
+
+this.x =
+cx +
+Math.cos(angle) *
+limit;
+
+
+this.y =
+cy +
+Math.sin(angle) *
+limit;
+
+
+this.vx *=
+-.75;
+
+
+this.vy *=
+-.75;
+
+
+this.targetVx =
+this.vx;
+
+
+this.targetVy =
+this.vy;
+
+}
+
+}
+
+
+drawShape(
+shape,
+color
+){
+
+ctx.fillStyle =
+color;
+
+
+ctx.strokeStyle =
+color;
+
+
+if(
+shape ===
+"coccus"
+){
+
+ctx.beginPath();
+
+ctx.arc(
+0,
+0,
+this.size*1.4,
+0,
+Math.PI*2
+);
+
+ctx.fill();
+
+}
+
+
+else if(
+shape ===
+"cluster"
+){
+
+for(
+let i=0;
+i<4;
+i++
+){
+
+const angle =
+i *
+Math.PI/2;
+
+
+ctx.beginPath();
+
+
+ctx.arc(
+Math.cos(angle)*this.size,
+Math.sin(angle)*this.size,
+this.size,
+0,
+Math.PI*2
+);
+
+
+ctx.fill();
+
+}
+
+}
+
+
+else if(
+shape ===
+"chain"
+){
+
+for(
+let i=-2;
+i<=2;
+i++
+){
+
+ctx.beginPath();
+
+
+ctx.arc(
+i*this.size*1.5,
+0,
+this.size,
+0,
+Math.PI*2
+);
+
+
+ctx.fill();
+
+}
+
+}
+
+
+else if(
+shape ===
+"curved"
+){
+
+ctx.lineWidth =
+this.size*1.4;
+
+
+ctx.lineCap =
+"round";
+
+
+ctx.beginPath();
+
+
+ctx.arc(
+0,
+0,
+this.size*3,
+-.8,
+.8
+);
+
+
+ctx.stroke();
+
+}
+
+
+else if(
+shape ===
+"spiral"
+){
+
+ctx.lineWidth =
+this.size;
+
+
+ctx.beginPath();
+
+
+for(
+let i=0;
+i<18;
+i++
+){
+
+const x =
+(i-9) *
+this.size*.5;
+
+
+const y =
+Math.sin(
+i*.85
+) *
+this.size*1.2;
+
+
+if(
+i===0
+){
+
+ctx.moveTo(
+x,
+y
+);
+
+}
+else{
+
+ctx.lineTo(
+x,
+y
+);
+
+}
+
+}
+
+
+ctx.stroke();
+
+}
+
+
+else if(
+shape ===
+"filament"
+){
+
+ctx.lineWidth =
+this.size;
+
+
+ctx.beginPath();
+
+
+ctx.moveTo(
+-this.size*4,
+0
+);
+
+
+ctx.quadraticCurveTo(
+0,
+-this.size*2,
+this.size*4,
+0
+);
+
+
+ctx.stroke();
+
+}
+
+
+else if(
+shape ===
+"stalk"
+){
+
+ctx.beginPath();
+
+
+ctx.roundRect(
+-this.size*1.6,
+-this.size*.8,
+this.size*3.2,
+this.size*1.6,
+this.size
+);
+
+
+ctx.fill();
+
+
+ctx.beginPath();
+
+
+ctx.moveTo(
+this.size*1.5,
+0
+);
+
+
+ctx.lineTo(
+this.size*4,
+0
+);
+
+
+ctx.stroke();
+
+}
+
+
+else{
+
+let length =
+this.size*4;
+
+
+if(
+shape ===
+"longRod"
+){
+
+length =
+this.size*5.2;
+
+}
+
+
+if(
+shape ===
+"largeRod"
+){
+
+length =
+this.size*4.8;
+
+}
+
+
+ctx.beginPath();
+
+
+ctx.roundRect(
+-length/2,
+-this.size*.75,
+length,
+this.size*1.5,
+this.size
+);
+
+
+ctx.fill();
+
+}
+
+}
+
+
+draw(){
+
+ctx.save();
+
+
+ctx.translate(
+this.x,
+this.y
+);
+
+
+ctx.rotate(
+this.rotation
+);
+
+
+const alpha =
+.35 +
+displayViability*.65;
+
+
+if(
+sampleChanging
+){
+
+ctx.globalAlpha =
+alpha *
+(1-sampleBlend);
+
+
+this.drawShape(
+previousBacteria.shape,
+previousBacteria.color
+);
+
+
+ctx.globalAlpha =
+alpha *
+sampleBlend;
+
+
+this.drawShape(
+selectedBacteria.shape,
+selectedBacteria.color
+);
+
+}
+else{
+
+ctx.globalAlpha =
+alpha;
+
+
+this.drawShape(
+selectedBacteria.shape,
+selectedBacteria.color
+);
+
+}
+
+
+ctx.restore();
+
+}
+
+}
+
+
+/* =====================================================
+   COLONY
+===================================================== */
+
+class Colony{
+
+constructor(
+x,
+y
+){
+
+this.x =
+x;
+
+
+this.y =
+y;
+
+
+this.radius =
+5 +
+Math.random()*8;
+
+
+this.maxRadius =
+18 +
+Math.random()*28;
+
+}
+
+
+update(
+growth,
+dt
+){
+
+this.radius +=
+growth *
+dt *
+.0025 *
+resumeBlend;
+
+
+this.radius =
+clamp(
+this.radius,
+2,
+this.maxRadius
+);
+
+}
+
+
+draw(){
+
+const gradient =
+ctx.createRadialGradient(
+this.x,
+this.y,
+1,
+this.x,
+this.y,
+this.radius
+);
+
+
+gradient.addColorStop(
+0,
+selectedBacteria.secondary
+);
+
+
+gradient.addColorStop(
+.5,
+selectedBacteria.color
+);
+
+
+gradient.addColorStop(
+1,
+"rgba(0,0,0,0)"
+);
+
+
+ctx.save();
+
+
+ctx.globalAlpha =
+.55;
+
+
+ctx.fillStyle =
+gradient;
+
+
+ctx.beginPath();
+
+
+ctx.arc(
+this.x,
+this.y,
+this.radius,
+0,
+Math.PI*2
+);
+
+
+ctx.fill();
+
+
+ctx.restore();
+
+}
+
+}
+
+
+/* =====================================================
+   CULTURE
+===================================================== */
+
+function newColony(){
+
+if(
+colonies.length >
+70
+){
+
+return;
+
+}
+
+
+const p =
+randomPoint();
+
+
+const colony =
+new Colony(
+p.x,
+p.y
+);
+
+
+colonies.push(
+colony
+);
+
+
+for(
+let i=0;
+i<4;
+i++
+){
+
+cells.push(
+new Cell(
+p.x +
+(Math.random()-.5)*10,
+p.y +
+(Math.random()-.5)*10,
+colony
+)
+);
+
+}
+
+}
+
+
+function seedCells(
+amount
+){
+
+for(
+let i=0;
+i<amount;
+i++
+){
+
+const p =
+randomPoint();
+
+
+cells.push(
+new Cell(
+p.x,
+p.y,
+null
+)
+);
+
+}
+
+}
+
+
+/* =====================================================
+   ENVIRONMENT
+===================================================== */
+
+function updateSmoothEnvironment(
+dt
+){
+
+const speed =
+1 -
+Math.pow(
+.001,
+dt/1000
+);
+
+
+Object.keys(
+smoothedEnvironment
+)
+.forEach(
+key => {
+
+smoothedEnvironment[key] =
+lerp(
+smoothedEnvironment[key],
+targetEnvironment[key],
+speed
+);
+
+}
+);
+
+}
+
+
+function getGrowthScore(){
+
+const support =
+
+smoothedEnvironment.temperature/100*.14 +
+
+smoothedEnvironment.ph/100*.12 +
+
+smoothedEnvironment.nutrients/100*.20 +
+
+smoothedEnvironment.moisture/100*.16 +
+
+smoothedEnvironment.oxygen/100*.10 +
+
+smoothedEnvironment.salinity/100*.08;
+
+
+const stress =
+
+smoothedEnvironment.uv/100*.20 +
+
+smoothedEnvironment.antibiotic/100*.30 +
+
+smoothedEnvironment.immune/100*.18 +
+
+smoothedEnvironment.competition/100*.15;
+
+
+return clamp(
+support -
+stress -
+.22,
+-1,
+1
+);
+
+}
+
+
+/* =====================================================
+   SIMULATION
+===================================================== */
+
+function updateSimulation(
+dt
+){
+
+updateSmoothEnvironment(
+dt
+);
+
+
+if(
+sampleChanging
+){
+
+sampleBlend +=
+dt*.0018;
+
+
+if(
+sampleBlend >=
+1
+){
+
+sampleBlend =
+1;
+
+
+sampleChanging =
+false;
+
+
+sampleTransition.classList.remove(
+"active"
+);
+
+}
+
+}
+
+
+displayPopulation =
+lerp(
+displayPopulation,
+populationIndex,
+Math.min(
+1,
+dt*.006
+)
+);
+
+
+displayViability =
+lerp(
+displayViability,
+viability,
+Math.min(
+1,
+dt*.006
+)
+);
+
+
+if(
+!running
+){
+
+updateInterface();
+
+return;
+
+}
+
+
+resumeBlend +=
+(1-resumeBlend)
+*
+Math.min(
+1,
+dt*.004
+);
+
+
+const speed =
++document.getElementById(
+"speed"
+).value;
+
+
+const growth =
+getGrowthScore();
+
+
+simulationTime +=
+dt *
+.0013 *
+speed *
+resumeBlend;
+
+
+viability +=
+growth *
+dt *
+.00003 *
+speed *
+resumeBlend;
+
+
+viability =
+clamp(
+viability,
+.04,
+1
+);
+
+
+populationIndex *=
+Math.exp(
+growth *
+dt *
+.000025 *
+speed *
+resumeBlend
+);
+
+
+populationIndex =
+Math.max(
+1,
+populationIndex
+);
+
+
+colonies.forEach(
+colony =>
+colony.update(
+growth,
+dt*speed
+)
+);
+
+
+cells.forEach(
+cell =>
+cell.update(
+dt*speed
+)
+);
+
+
+if(
+growth >
+.12 &&
+Math.random() <
+growth *
+.028 *
+speed *
+resumeBlend
+){
+
+newColony();
+
+}
+
+
+if(
+growth >
+.2 &&
+cells.length <
+700 &&
+Math.random() <
+growth *
+.09 *
+speed *
+resumeBlend
+){
+
+const parent =
+cells[
+Math.floor(
+Math.random() *
+cells.length
+)
+];
+
+
+if(parent){
+
+cells.push(
+new Cell(
+parent.x +
+(Math.random()-.5)*7,
+parent.y +
+(Math.random()-.5)*7,
+parent.colony
+)
+);
+
+}
+
+}
+
+
+if(
+growth <
+-.15 &&
+cells.length >
+10 &&
+Math.random() <
+Math.abs(growth) *
+.07 *
+speed *
+resumeBlend
+){
+
+cells.splice(
+Math.floor(
+Math.random() *
+cells.length
+),
+1
+);
+
+}
+
+
+updateInterface();
+
+}
+
+
+/* =====================================================
+   DRAW
+===================================================== */
+
+function draw(){
+
+ctx.clearRect(
+0,
+0,
+canvas.width,
+canvas.height
+);
+
+
+colonies.forEach(
+colony =>
+colony.draw()
+);
+
+
+cells.forEach(
+cell =>
+cell.draw()
+);
+
+}
+
+
+/* =====================================================
+   UI
+===================================================== */
+
+function updateInterface(){
+
+const growth =
+getGrowthScore();
+
+
+document.getElementById(
+"population"
+).textContent =
+Math.round(
+displayPopulation
+).toLocaleString();
+
+
+document.getElementById(
+"colonies"
+).textContent =
+colonies.length;
+
+
+document.getElementById(
+"time"
+).textContent =
+simulationTime.toFixed(1)
++
+"h";
+
+
+document.getElementById(
+"viability"
+).textContent =
+Math.round(
+displayViability*100
+)
++
+"%";
+
+
+let trend =
+"Paused";
+
+
+if(
+running
+){
+
+if(
+growth >
+.35
+){
+
+trend =
+"Rapid ↑";
+
+}
+else if(
+growth >
+.10
+){
+
+trend =
+"Growing ↑";
+
+}
+else if(
+growth >
+-.08
+){
+
+trend =
+"Stable →";
+
+}
+else if(
+growth >
+-.35
+){
+
+trend =
+"Declining ↓";
+
+}
+else{
+
+trend =
+"Severe ↓";
+
+}
+
+}
+
+
+document.getElementById(
+"growth"
+).textContent =
+trend;
+
+
+document.getElementById(
+"status"
+).textContent =
+running
+?
+"Simulation: " +
+trend
+:
+"Paused";
+
+
+if(
+running
+){
+
+overlay.classList.add(
+"hidden"
+);
+
+}
+else{
+
+overlay.classList.remove(
+"hidden"
+);
+
+}
+
+
+let observation;
+
+
+if(
+!running
+){
+
+observation =
+"The simulation is paused.";
+
+}
+else if(
+growth >
+.25
+){
+
+observation =
+"The environmental conditions are broadly favorable in this simplified model. The simulated culture is expanding.";
+
+}
+else if(
+growth >
+-.05
+){
+
+observation =
+"Growth and environmental stress are close to balance. Population changes remain gradual.";
+
+}
+else{
+
+observation =
+"Environmental stress is exceeding growth support. Simulated viability is gradually declining.";
+
+}
+
+
+document.getElementById(
+"observation"
+).innerHTML =
+"<b>Observation:</b><br>"
++
+observation;
+
+}
+
+
+/* =====================================================
+   RESET
+===================================================== */
+
+function resetSimulation(){
+
+running =
+false;
+
+
+resumeBlend =
+0;
+
+
+simulationTime =
+0;
+
+
+populationIndex =
+100;
+
+
+displayPopulation =
+100;
+
+
+viability =
+1;
+
+
+displayViability =
+1;
+
+
+cells =
+[];
+
+
+colonies =
+[];
+
+
+for(
+let i=0;
+i<5;
+i++
+){
+
+newColony();
+
+}
+
+
+seedCells(
+30
+);
+
+
+updateInterface();
+
+
+draw();
+
+}
+
+
+/* =====================================================
+   ICONS
+===================================================== */
+
+function createBacteriaIcon(
+bacteria
+){
+
+let shape =
+"";
+
+
+if(
+bacteria.shape ===
+"coccus"
+){
+
+shape =
+`
+<circle
+cx="25"
+cy="25"
+r="10"
+fill="${bacteria.color}"/>
+`;
+
+}
+
+
+else if(
+bacteria.shape ===
+"cluster"
+){
+
+shape =
+`
+<circle cx="20" cy="19" r="7" fill="${bacteria.color}"/>
+<circle cx="30" cy="20" r="7" fill="${bacteria.color}"/>
+<circle cx="23" cy="30" r="7" fill="${bacteria.color}"/>
+<circle cx="33" cy="31" r="7" fill="${bacteria.color}"/>
+`;
+
+}
+
+
+else if(
+bacteria.shape ===
+"chain"
+){
+
+shape =
+`
+<circle cx="10" cy="25" r="5" fill="${bacteria.color}"/>
+<circle cx="20" cy="25" r="5" fill="${bacteria.color}"/>
+<circle cx="30" cy="25" r="5" fill="${bacteria.color}"/>
+<circle cx="40" cy="25" r="5" fill="${bacteria.color}"/>
+`;
+
+}
+
+
+else if(
+bacteria.shape ===
+"spiral"
+){
+
+shape =
+`
+<path
+d="M7 29 C12 8 19 42 25 18 S35 38 43 20"
+fill="none"
+stroke="${bacteria.color}"
+stroke-width="4"
+stroke-linecap="round"/>
+`;
+
+}
+
+
+else if(
+bacteria.shape ===
+"curved"
+){
+
+shape =
+`
+<path
+d="M12 30 Q25 10 39 26"
+fill="none"
+stroke="${bacteria.color}"
+stroke-width="7"
+stroke-linecap="round"/>
+`;
+
+}
+
+
+else if(
+bacteria.shape ===
+"filament"
+){
+
+shape =
+`
+<path
+d="M7 34 Q15 12 25 25 T44 13"
+fill="none"
+stroke="${bacteria.color}"
+stroke-width="4"
+stroke-linecap="round"/>
+`;
+
+}
+
+
+else if(
+bacteria.shape ===
+"stalk"
+){
+
+shape =
+`
+<rect
+x="10"
+y="19"
+width="26"
+height="12"
+rx="6"
+fill="${bacteria.color}"/>
+
+<path
+d="M36 25 L45 25"
+stroke="${bacteria.secondary}"
+stroke-width="2"/>
+`;
+
+}
+
+
+else{
+
+shape =
+`
+<rect
+x="9"
+y="19"
+width="32"
+height="13"
+rx="7"
+fill="${bacteria.color}"/>
+`;
+
+}
+
+
+return `
+<svg
+viewBox="0 0 50 50"
+width="50"
+height="50">
+
+<rect
+width="50"
+height="50"
+fill="#091519"/>
+
+${shape}
+
+</svg>
+`;
+
+}
+
+
+/* =====================================================
+   SAMPLE INFORMATION
+===================================================== */
+
+function updateSampleInformation(
+bacteria
+){
+
+sampleInfoPanel.classList.add(
+"changing"
+);
+
+
+setTimeout(
+() => {
+
+document.getElementById(
+"sampleInfoIcon"
+).innerHTML =
+createBacteriaIcon(
+bacteria
+);
+
+
+document.getElementById(
+"sampleInfoName"
+).textContent =
+bacteria.name;
+
+
+document.getElementById(
+"sampleInfoSubtitle"
+).textContent =
+bacteria.category +
+" • " +
+bacteria.phylum;
+
+
+document.getElementById(
+"sampleInfoShape"
+).textContent =
+bacteria.shapeLabel;
+
+
+document.getElementById(
+"sampleInfoColor"
+).textContent =
+bacteria.colorLabel;
+
+
+document.getElementById(
+"sampleInfoHabitat"
+).textContent =
+bacteria.habitat;
+
+
+document.getElementById(
+"sampleInfoOxygen"
+).textContent =
+bacteria.oxygen;
+
+
+document.getElementById(
+"sampleInfoNotes"
+).textContent =
+bacteria.notes;
+
+
+document.getElementById(
+"sampleInfoSymptoms"
+).textContent =
+bacteria.symptoms;
+
+
+document.getElementById(
+"sampleInfoDescription"
+).textContent =
+bacteria.description;
+
+
+sampleInfoPanel.classList.remove(
+"changing"
+);
+
+},
+180
+);
+
+}
+
+
+/* =====================================================
+   SAMPLE CHANGE
+===================================================== */
+
+function changeBacteria(
+bacteria
+){
+
+if(
+bacteria.name ===
+selectedBacteria.name
+){
+
+return;
+
+}
+
+
+previousBacteria =
+selectedBacteria;
+
+
+selectedBacteria =
+bacteria;
+
+
+sampleBlend =
+0;
+
+
+sampleChanging =
+true;
+
+
+sampleTransition.classList.add(
+"active"
+);
+
+
+dishLabel.classList.add(
+"fade"
+);
+
+
+setTimeout(
+() => {
+
+dishLabel.textContent =
+selectedBacteria.name
++
+" • "
++
+document.getElementById(
+"environment"
+).selectedOptions[0].text;
+
+
+dishLabel.classList.remove(
+"fade"
+);
+
+},
+220
+);
+
+
+cells.forEach(
+cell => {
+
+cell.targetVx +=
+(Math.random()-.5)*.05;
+
+
+cell.targetVy +=
+(Math.random()-.5)*.05;
+
+}
+);
+
+
+updateSampleInformation(
+bacteria
+);
+
+
+renderBacteriaList();
+
+}
+
+
+/* =====================================================
+   LIST
+===================================================== */
+
+function renderBacteriaList(){
+
+const list =
+document.getElementById(
+"bacteriaList"
+);
+
+
+const search =
+document.getElementById(
+"search"
+).value.toLowerCase();
+
+
+const activeCategory =
+document.querySelector(
+".category-tabs button.active"
+);
+
+
+const category =
+activeCategory
+?
+activeCategory.dataset.category
+:
+"All";
+
+
+list.innerHTML =
+"";
+
+
+bacteriaSamples
+.filter(
+bacteria =>
+
+(
+category ===
+"All" ||
+
+bacteria.category ===
+category
+)
+
+&&
+
+(
+bacteria.name
+.toLowerCase()
+.includes(
+search
+)
+
+||
+
+bacteria.category
+.toLowerCase()
+.includes(
+search
+)
+
+||
+
+bacteria.phylum
+.toLowerCase()
+.includes(
+search
+)
+)
+
+)
+.forEach(
+bacteria => {
+
+const card =
+document.createElement(
+"div"
+);
+
+
+card.className =
+"bacteria-card";
+
+
+if(
+bacteria.name ===
+selectedBacteria.name
+){
+
+card.classList.add(
+"selected"
+);
+
+}
+
+
+card.innerHTML =
+`
+
+<div class="bacteria-image">
+
+${createBacteriaIcon(
+bacteria
+)}
+
+</div>
+
+<div>
+
+<div class="bacteria-name">
+${bacteria.name}
+</div>
+
+<div class="bacteria-info">
+${bacteria.category}<br>
+${bacteria.phylum}
+</div>
+
+</div>
+`;
+
+
+card.addEventListener(
+"click",
+() => {
+
+changeBacteria(
+bacteria
+);
+
+}
+);
+
+
+list.appendChild(
+card
+);
+
+}
+);
+
+}
+
+
+/* =====================================================
+   CATEGORIES
+===================================================== */
+
+function renderCategories(){
+
+const categories =
+[
+"All",
+...new Set(
+bacteriaSamples.map(
+bacteria =>
+bacteria.category
+)
+)
+];
+
+
+const wrapper =
+document.getElementById(
+"categoryTabs"
+);
+
+
+wrapper.innerHTML =
+"";
+
+
+categories.forEach(
+category => {
+
+const button =
+document.createElement(
+"button"
+);
+
+
+button.textContent =
+category;
+
+
+button.dataset.category =
+category;
+
+
+if(
+category ===
+"All"
+){
+
+button.classList.add(
+"active"
+);
+
+}
+
+
+button.addEventListener(
+"click",
+() => {
+
+document
+.querySelectorAll(
+".category-tabs button"
+)
+.forEach(
+item =>
+item.classList.remove(
+"active"
+)
+);
+
+
+button.classList.add(
+"active"
+);
+
+
+renderBacteriaList();
+
+}
+);
+
+
+wrapper.appendChild(
+button
+);
+
+}
+);
+
+}
+
+
+/* =====================================================
+   ENVIRONMENT TRANSITION
+===================================================== */
+
+let envLayerFront =
+document.getElementById(
+"environmentLayerA"
+);
+
+
+let envLayerBack =
+document.getElementById(
+"environmentLayerB"
+);
+
+
+function transitionEnvironmentBackground(
+background
+){
+
+envLayerBack.style.background =
+background;
+
+
+envLayerBack.classList.add(
+"visible"
+);
+
+
+envLayerFront.classList.remove(
+"visible"
+);
+
+
+const oldFront =
+envLayerFront;
+
+
+envLayerFront =
+envLayerBack;
+
+
+envLayerBack =
+oldFront;
+
+}
+
+
+/* =====================================================
+   SMOOTH SLIDERS
+===================================================== */
+
+function animateSliderTo(
+id,
+target
+){
+
+const input =
+document.getElementById(
+id
+);
+
+
+const start =
++input.value;
+
+
+const duration =
+650;
+
+
+const started =
+performance.now();
+
+
+function frame(
+now
+){
+
+const progress =
+clamp(
+(now-started)/duration,
+0,
+1
+);
+
+
+const eased =
+1 -
+Math.pow(
+1-progress,
+3
+);
+
+
+const value =
+lerp(
+start,
+target,
+eased
+);
+
+
+input.value =
+value;
+
+
+document.getElementById(
+id+"Value"
+).textContent =
+Math.round(
+value
+)
++
+"%";
+
+
+if(
+progress <
+1
+){
+
+requestAnimationFrame(
+frame
+);
+
+}
+
+}
+
+
+requestAnimationFrame(
+frame
+);
+
+}
+
+
+/* =====================================================
+   APPLY ENVIRONMENT
+===================================================== */
+
+function applyEnvironment(
+key
+){
+
+const env =
+environments[
+key
+];
+
+
+transitionEnvironmentBackground(
+env.background
+);
+
+
+const properties =
+[
+"temperature",
+"ph",
+"nutrients",
+"moisture",
+"oxygen",
+"salinity",
+"uv",
+"antibiotic",
+"immune",
+"competition"
+];
+
+
+properties.forEach(
+id => {
+
+targetEnvironment[id] =
+env[id];
+
+
+animateSliderTo(
+id,
+env[id]
+);
+
+}
+);
+
+
+dishLabel.classList.add(
+"fade"
+);
+
+
+setTimeout(
+() => {
+
+dishLabel.textContent =
+selectedBacteria.name
++
+" • "
++
+document.getElementById(
+"environment"
+).selectedOptions[0].text;
+
+
+dishLabel.classList.remove(
+"fade"
+);
+
+},
+220
+);
+
+}
+
+
+/* =====================================================
+   VARIABLE LISTENERS
+===================================================== */
+
+const environmentalIds =
+[
+"temperature",
+"ph",
+"nutrients",
+"moisture",
+"oxygen",
+"salinity",
+"uv",
+"antibiotic",
+"immune",
+"competition"
+];
+
+
+environmentalIds.forEach(
+id => {
+
+const input =
+document.getElementById(
+id
+);
+
+
+input.addEventListener(
+"input",
+() => {
+
+const value =
++input.value;
+
+
+targetEnvironment[id] =
+value;
+
+
+document.getElementById(
+id+"Value"
+).textContent =
+Math.round(
+value
+)
++
+"%";
+
+}
+);
+
+}
+);
+
+
+/* =====================================================
+   BUTTONS
+===================================================== */
+
+document.getElementById(
+"playButton"
+).addEventListener(
+"click",
+() => {
+
+if(
+running
+){
+
+return;
+
+}
+
+
+running =
+true;
+
+
+resumeBlend =
+0;
+
+
+lastTime =
+performance.now();
+
+
+updateInterface();
+
+}
+);
+
+
+document.getElementById(
+"pauseButton"
+).addEventListener(
+"click",
+() => {
+
+running =
+false;
+
+
+resumeBlend =
+0;
+
+
+updateInterface();
+
+}
+);
+
+
+document.getElementById(
+"resetButton"
+).addEventListener(
+"click",
+resetSimulation
+);
+
+
+document.getElementById(
+"sampleButton"
+).addEventListener(
+"click",
+() => {
+
+for(
+let i=0;
+i<12;
+i++
+){
+
+const p =
+randomPoint();
+
+
+const cell =
+new Cell(
+p.x,
+p.y,
+null
+);
+
+
+cell.vx *=
+.25;
+
+
+cell.vy *=
+.25;
+
+
+cells.push(
+cell
+);
+
+}
+
+
+newColony();
+
+
+populationIndex *=
+1.05;
+
+}
+);
+
+
+document.getElementById(
+"environment"
+).addEventListener(
+"change",
+event => {
+
+applyEnvironment(
+event.target.value
+);
+
+}
+);
+
+
+document.getElementById(
+"search"
+).addEventListener(
+"input",
+renderBacteriaList
+);
+
+
+/* =====================================================
+   ANIMATION LOOP
+===================================================== */
+
+function animate(
+time
+){
+
+const dt =
+Math.min(
+32,
+time-lastTime
+);
+
+
+lastTime =
+time;
+
+
+updateSimulation(
+dt
+);
+
+
+draw();
+
+
+requestAnimationFrame(
+animate
+);
+
+}
+
+
+/* =====================================================
+   STARTUP
+===================================================== */
+
+renderCategories();
+
+
+renderBacteriaList();
+
+
+updateSampleInformation(
+selectedBacteria
+);
+
+
+envLayerFront.style.background =
+environments.petri.background;
+
+
+Object.assign(
+targetEnvironment,
+environments.petri
+);
+
+
+Object.assign(
+smoothedEnvironment,
+environments.petri
+);
+
+
+resetSimulation();
+
+
+requestAnimationFrame(
+animate
+);
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>CHI VIS PUPPETS | Skill Square</title>
+
+  <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
+
+  <style>
+
+    /* =========================
+       PAGE
+    ========================== */
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+    }
+
+    body {
+      background: #000;
+      color: #c9782b;
+      font-family: "Courier New", monospace;
+      overflow-x: hidden;
+    }
+
+
+    /* =========================
+       BACKGROUND
+    ========================== */
+
+    #backgroundEffect {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+
+      background:
+        radial-gradient(circle at 50% 35%, rgba(188, 93, 35, 0.08), transparent 42%),
+        radial-gradient(circle at 75% 70%, rgba(125, 136, 74, 0.05), transparent 35%);
+    }
+
+
+    /* =========================
+       BACKGROUND WORDS
+    ========================== */
+
+    .background-word {
+      position: absolute;
+      font-weight: bold;
+      white-space: nowrap;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      user-select: none;
+
+      animation:
+        floatWords 14s ease-in-out infinite alternate,
+        wordGlow 5s ease-in-out infinite alternate;
+    }
+
+    .word1 {
+      left: 3%;
+      top: 10%;
+      font-size: 70px;
+      color: rgba(205, 101, 38, 0.38);
+    }
+
+    .word2 {
+      right: 4%;
+      top: 25%;
+      font-size: 76px;
+      color: rgba(126, 138, 73, 0.38);
+      animation-delay: -2s;
+    }
+
+    .word3 {
+      left: 5%;
+      top: 43%;
+      font-size: 70px;
+      color: rgba(224, 132, 49, 0.38);
+      animation-delay: -4s;
+    }
+
+    .word4 {
+      right: 4%;
+      top: 62%;
+      font-size: 72px;
+      color: rgba(137, 145, 82, 0.36);
+      animation-delay: -6s;
+    }
+
+    .word5 {
+      left: 7%;
+      top: 80%;
+      font-size: 64px;
+      color: rgba(214, 145, 60, 0.36);
+      animation-delay: -8s;
+    }
+
+    @keyframes floatWords {
+      0% { transform: translate(0, 0) rotate(-1deg); }
+      50% { transform: translate(18px, -10px) rotate(1deg); }
+      100% { transform: translate(32px, -18px) rotate(-1deg); }
+    }
+
+    @keyframes wordGlow {
+      0% { opacity: 0.55; }
+      100% { opacity: 1; }
+    }
+
+
+    /* =========================
+       RANDOM NUMBERS
+    ========================== */
+
+    #numberLayer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .data-number {
+      position: absolute;
+      font-size: 11px;
+      letter-spacing: 2px;
+      user-select: none;
+      white-space: nowrap;
+
+      transition: transform 0.15s linear;
+      text-shadow: 0 0 5px currentColor;
+    }
+
+    .data-number:nth-child(odd) {
+      color: rgba(203, 119, 43, 0.35);
+    }
+
+    .data-number:nth-child(even) {
+      color: rgba(126, 138, 73, 0.35);
+    }
+
+
+    /* =========================
+       PAGE CONTENT
+    ========================== */
+
+    .page-content {
+      position: relative;
+      z-index: 2;
+    }
+
+
+    /* =========================
+       BANNER
+    ========================== */
+
+    .banner-container {
+      width: 100%;
+      height: 300px;
+      overflow: hidden;
+      background: #000;
+      border-bottom: 1px solid rgba(126, 138, 73, 0.45);
+    }
+
+    .banner-container iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      margin: 0;
+      padding: 0;
+      background: #000;
+    }
+
+
+    /* =========================
+       NAVIGATION
+    ========================== */
+
+    .navigation {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      list-style: none;
+
+      margin: 0;
+      padding: 0;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(15, 12, 9, 0.98),
+          rgba(47, 30, 14, 0.98),
+          rgba(26, 30, 17, 0.98),
+          rgba(15, 12, 9, 0.98)
+        );
+
+      border-top: 1px solid rgba(190, 100, 35, 0.35);
+      border-bottom: 1px solid rgba(126, 138, 73, 0.40);
+
+      font-size: 22px;
+    }
+
+    .navigation li { margin: 0 15px; }
+
+    .navigation a {
+      display: block;
+      padding: 12px 20px;
+
+      color: #c77931;
+      text-decoration: none;
+
+      border-radius: 4px;
+
+      transition:
+        color 0.3s ease,
+        background 0.3s ease,
+        transform 0.3s ease,
+        letter-spacing 0.3s ease;
+    }
+
+    .navigation a:hover {
+      color: #a3aa68;
+      background: rgba(126, 138, 73, 0.13);
+      transform: translateY(-2px);
+      letter-spacing: 1px;
+    }
+
+
+    /* =========================
+       TITLE
+    ========================== */
+
+    .page-title {
+      margin: 30px 0 15px;
+      text-align: center;
+
+      color: #c87932;
+
+      font-size: 28px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+
+      text-shadow: 0 0 8px rgba(185, 92, 35, 0.25);
+    }
+
+    .page-title::after {
+      content: "";
+      display: block;
+
+      width: 120px;
+      height: 3px;
+
+      margin: 10px auto 0;
+
+      background:
+        linear-gradient(
+          90deg,
+          #b3542b,
+          #d28a3b,
+          #8e955d
+        );
+
+      border-radius: 3px;
+    }
+
+
+    /* =========================
+       SKILL SQUARE FRAME
+    ========================== */
+
+    .iframe-container {
+      position: relative;
+
+      width: calc(100% - 40px);
+      max-width: 1200px;
+
+      margin: 30px auto 50px;
+
+      background: #000;
+
+      border: 2px solid rgba(134, 142, 81, 0.58);
+      border-radius: 8px;
+
+      overflow: hidden;
+
+      box-shadow:
+        0 15px 45px rgba(0, 0, 0, 0.9),
+        0 0 18px rgba(196, 104, 42, 0.12),
+        0 0 28px rgba(134, 142, 81, 0.14);
+    }
+
+    .iframe-container iframe {
+      display: block;
+
+      width: 100%;
+      height: 82vh;
+      min-height: 700px;
+
+      margin: 0;
+      padding: 0;
+
+      border: 0;
+
+      background: #000;
+    }
+
+
+    /* =========================
+       STATUS BAR
+    ========================== */
+
+    .frame-status {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      width: calc(100% - 40px);
+      max-width: 1200px;
+
+      margin: -35px auto 45px;
+
+      color: rgba(154, 160, 96, 0.78);
+
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .status-dot {
+      display: inline-block;
+
+      width: 7px;
+      height: 7px;
+
+      margin-right: 7px;
+
+      border-radius: 50%;
+
+      background: #9aa060;
+
+      box-shadow: 0 0 7px rgba(154, 160, 96, 0.65);
+
+      animation: statusPulse 1.7s ease-in-out infinite alternate;
+    }
+
+    @keyframes statusPulse {
+      from { opacity: 0.45; }
+      to { opacity: 1; }
+    }
+
+
+    /* =========================
+       FOOTER
+    ========================== */
+
+    footer {
+      position: relative;
+      z-index: 3;
+
+      padding: 14px 0;
+
+      text-align: center;
+
+      background: rgba(15, 13, 11, 0.97);
+
+      border-top: 1px solid rgba(134, 142, 81, 0.35);
+
+      color: rgba(197, 132, 62, 0.78);
+
+      font-size: 0.875rem;
+    }
+
+
+    /* =========================
+       MOBILE
+    ========================== */
+
+    @media screen and (max-width: 700px) {
+
+      .banner-container { height: 200px; }
+
+      .navigation {
+        flex-wrap: wrap;
+        font-size: 17px;
+      }
+
+      .navigation li { margin: 0 4px; }
+      .navigation a { padding: 10px 12px; }
+
+      .page-title {
+        padding: 0 12px;
+        font-size: 22px;
+      }
+
+      .background-word {
+        font-size: 34px !important;
+        letter-spacing: 2px;
+      }
+
+      .iframe-container {
+        width: calc(100% - 20px);
+      }
+
+      .iframe-container iframe {
+        height: 75vh;
+        min-height: 550px;
+      }
+
+      .frame-status {
+        width: calc(100% - 20px);
+        font-size: 8px;
+      }
+    }
+
+  </style>
+</head>
+
+
+<body>
+
+  <!-- =========================
+       BACKGROUND
+  ========================== -->
+
+  <div id="backgroundEffect">
+
+    <span class="background-word word1">SKILLS</span>
+    <span class="background-word word2">DESIGN</span>
+    <span class="background-word word3">MOVEMENT</span>
+    <span class="background-word word4">PUPPETRY</span>
+    <span class="background-word word5">EXPERIMENT</span>
+
+    <div id="numberLayer"></div>
+
+  </div>
+
+
+  <!-- =========================
+       PAGE
+  ========================== -->
+
+  <div class="page-content">
+
+
+    <!-- =========================
+         BANNER
+    ========================== -->
+
+    <div class="banner-container">
+
+      <iframe
+        src="Website design/Banner/Banner.html"
+        title="CHI VIS PUPPETS Banner"
+        scrolling="no"
+      ></iframe>
+
+    </div>
+
+
+    <!-- =========================
+         NAVIGATION
+    ========================== -->
+
+    <ul class="navigation">
+
+      <li>
+        <a href="Home.html">
+          HOME
+        </a>
+      </li>
+
+      <li>
+        <a href="ArchiveGallery.html">
+          ARCHIVE
+        </a>
+      </li>
+
+    </ul>
+
+
+    <!-- =========================
+         TITLE
+    ========================== -->
+
+    <h1 class="page-title">
+        OUR HISTORY
+    </h1>
+
+
+    <!-- =========================
+         SKILL SQUARE
+    ========================== -->
+
+    <section>
+
+      <div class="iframe-container">
+
+        <iframe
+          src="ARCHIVE_GALLERY/Information_Pages/HISTORY.html"
+          title="CHI VIS PUPPETS Skill Square"
+          loading="eager"
+          allow="fullscreen"
+          allowfullscreen
+        ></iframe>
+
+      </div>
+
+    </section>
+
+
+    <!-- =========================
+         STATUS
+    ========================== -->
+
+    <div class="frame-status">
+
+      <span>
+        <span class="status-dot"></span>
+        Skill Square
+      </span>
+
+      <span>
+        CHIVISPUPPETS
+      </span>
+
+    </div>
+
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+
+    <footer>
+      &copy; 2025 CHIVISPUPPETS
+      &bull;
+      All rights reserved
+    </footer>
+
+  </div>
+
+
+  <script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+      /* =========================
+         BACKGROUND NUMBERS
+      ========================== */
+
+      const numberLayer = document.getElementById("numberLayer");
+      const numbers = [];
+      const NUMBER_COUNT = 45;
+
+      function randomNumber() {
+        return Math.floor(Math.random() * 10000)
+          .toString()
+          .padStart(4, "0");
+      }
+
+      function createNumbers() {
+        for (let i = 0; i < NUMBER_COUNT; i++) {
+
+          const element = document.createElement("span");
+
+          element.className = "data-number";
+          element.innerText = randomNumber();
+
+          element.style.left = Math.random() * 95 + "%";
+          element.style.top = Math.random() * 95 + "%";
+          element.style.opacity = 0.3 + Math.random() * 0.35;
+          element.style.fontSize = (9 + Math.random() * 5) + "px";
+
+          numberLayer.appendChild(element);
+
+          numbers.push({
+            element: element,
+            movement: 5 + Math.random() * 28
+          });
+
+        }
+      }
+
+      function updateNumbers() {
+        numbers.forEach(function (item) {
+          item.element.innerText = randomNumber();
+        });
+      }
+
+      createNumbers();
+      setInterval(updateNumbers, 750);
+
+
+      /* =========================
+         MOUSE PARALLAX
+      ========================== */
+
+      const backgroundWords =
+        document.querySelectorAll(".background-word");
+
+      document.addEventListener("mousemove", function (event) {
+
+        const xRatio =
+          event.clientX / window.innerWidth - 0.5;
+
+        const yRatio =
+          event.clientY / window.innerHeight - 0.5;
+
+
+        numbers.forEach(function (item) {
+
+          const moveX =
+            xRatio * item.movement;
+
+          const moveY =
+            yRatio * item.movement;
+
+          item.element.style.transform =
+            "translate(" +
+            moveX +
+            "px," +
+            moveY +
+            "px)";
+
+        });
+
+
+        backgroundWords.forEach(function (word, index) {
+
+          const strength =
+            4 + index * 1.7;
+
+          word.style.marginLeft =
+            xRatio * strength + "px";
+
+          word.style.marginTop =
+            yRatio * strength + "px";
+
+        });
+
+      });
+
+    });
+
+  </script>
+
+</body>
+</html>

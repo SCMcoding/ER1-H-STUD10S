@@ -1,0 +1,2649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Newton's Cradle Simulator</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+:root{
+  --text:#20292f;
+  --muted:#69757d;
+  --panel:#ffffff;
+  --button:#d8dee2;
+  --buttonHover:#c8d1d6;
+  --dark:#263239;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:Arial,Helvetica,sans-serif;
+  color:var(--text);
+
+  background:
+    radial-gradient(circle at 50% 0%,#ffffff 0%,#eef1f3 48%,#d8dde0 100%);
+}
+
+.wrapper{
+  width:min(1000px,95%);
+  margin:0 auto;
+  padding:28px 0 42px;
+}
+
+header{
+  text-align:center;
+  margin-bottom:18px;
+}
+
+header h1{
+  margin:0;
+  font-size:clamp(30px,5vw,48px);
+  letter-spacing:-1px;
+}
+
+header p{
+  max-width:680px;
+  margin:8px auto 0;
+  color:var(--muted);
+  line-height:1.5;
+  font-size:14px;
+}
+
+.stage{
+  position:relative;
+  overflow:hidden;
+
+  border-radius:25px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #fcfcfc 0%,
+      #eff2f3 72%,
+      #dde3e6 100%
+    );
+
+  border:1px solid rgba(0,0,0,.075);
+
+  box-shadow:
+    0 26px 58px rgba(40,50,58,.14),
+    inset 0 1px 0 rgba(255,255,255,.95);
+
+  transition:
+    box-shadow .45s ease,
+    transform .45s ease;
+}
+
+.stage.active{
+  box-shadow:
+    0 30px 70px rgba(40,50,58,.17),
+    inset 0 1px 0 rgba(255,255,255,.95);
+}
+
+canvas{
+  display:block;
+  width:100%;
+  height:550px;
+  touch-action:none;
+
+  opacity:1;
+
+  transition:
+    opacity .45s ease,
+    filter .45s ease;
+}
+
+.controls{
+  margin-top:15px;
+
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:11px;
+}
+
+.control{
+  position:relative;
+
+  padding:13px 14px;
+
+  background:rgba(255,255,255,.92);
+
+  border:
+    1px solid
+    rgba(0,0,0,.065);
+
+  border-radius:14px;
+
+  box-shadow:
+    0 5px 16px rgba(40,50,55,.045);
+
+  transition:
+    transform .22s ease,
+    box-shadow .22s ease,
+    background .22s ease;
+}
+
+.control:hover{
+  transform:translateY(-2px);
+
+  box-shadow:
+    0 10px 24px rgba(40,50,55,.08);
+
+  background:#fff;
+}
+
+.control-top{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  align-items:center;
+
+  margin-bottom:8px;
+
+  font-size:12px;
+  color:#59666e;
+}
+
+.control-top strong{
+  color:#222c31;
+  min-width:48px;
+  text-align:right;
+
+  transition:
+    transform .2s ease,
+    opacity .2s ease;
+}
+
+.control-top strong.changing{
+  transform:scale(1.08);
+  opacity:.65;
+}
+
+input[type="range"]{
+  width:100%;
+  cursor:pointer;
+  accent-color:#52616a;
+}
+
+.buttons{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:10px;
+
+  margin-top:14px;
+}
+
+button{
+  position:relative;
+  overflow:hidden;
+
+  min-width:116px;
+  min-height:44px;
+
+  padding:0 17px;
+
+  border:none;
+  border-radius:11px;
+
+  cursor:pointer;
+
+  font-size:13px;
+  font-weight:700;
+
+  color:#263138;
+
+  background:
+    linear-gradient(
+      180deg,
+      #e3e8eb,
+      #d1d8dc
+    );
+
+  box-shadow:
+    0 4px 10px rgba(36,46,52,.10),
+    inset 0 1px 0 rgba(255,255,255,.8);
+
+  transform:
+    translateY(0)
+    scale(1);
+
+  transition:
+    transform .22s cubic-bezier(.2,.8,.2,1),
+    background .3s ease,
+    box-shadow .3s ease,
+    color .3s ease,
+    opacity .3s ease;
+}
+
+button::after{
+  content:"";
+
+  position:absolute;
+
+  width:12px;
+  height:12px;
+
+  left:50%;
+  top:50%;
+
+  border-radius:50%;
+
+  background:
+    rgba(255,255,255,.45);
+
+  transform:
+    translate(-50%,-50%)
+    scale(0);
+
+  opacity:0;
+
+  transition:
+    transform .45s ease,
+    opacity .45s ease;
+}
+
+button:hover{
+  transform:
+    translateY(-2px)
+    scale(1.015);
+
+  background:
+    linear-gradient(
+      180deg,
+      #edf1f3,
+      #c8d1d6
+    );
+
+  box-shadow:
+    0 8px 18px rgba(36,46,52,.14),
+    inset 0 1px 0 rgba(255,255,255,.9);
+}
+
+button:active{
+  transform:
+    translateY(1px)
+    scale(.97);
+
+  box-shadow:
+    0 2px 5px rgba(36,46,52,.12);
+}
+
+button.flash::after{
+  transform:
+    translate(-50%,-50%)
+    scale(14);
+
+  opacity:0;
+}
+
+button.primary{
+  color:white;
+
+  background:
+    linear-gradient(
+      180deg,
+      #34434c,
+      #222d34
+    );
+
+  box-shadow:
+    0 6px 16px rgba(25,35,40,.20),
+    inset 0 1px 0 rgba(255,255,255,.15);
+}
+
+button.primary:hover{
+  background:
+    linear-gradient(
+      180deg,
+      #40515b,
+      #29363e
+    );
+}
+
+button.enabled{
+  color:#fff;
+
+  background:
+    linear-gradient(
+      180deg,
+      #566771,
+      #39474f
+    );
+}
+
+.status{
+  min-height:23px;
+  margin-top:13px;
+
+  text-align:center;
+
+  color:#748087;
+  font-size:12px;
+
+  opacity:.85;
+
+  transition:
+    opacity .35s ease,
+    transform .35s ease;
+}
+
+.status.change{
+  opacity:.3;
+  transform:translateY(2px);
+}
+
+@media(max-width:720px){
+
+  canvas{
+    height:475px;
+  }
+
+  .controls{
+    grid-template-columns:1fr 1fr;
+  }
+}
+
+@media(max-width:450px){
+
+  .controls{
+    grid-template-columns:1fr;
+  }
+
+  button{
+    min-width:46%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+<header>
+
+<h1>Newton's Cradle</h1>
+
+<p>
+Drag the steel balls or use the controls below to explore
+momentum and energy transfer.
+</p>
+
+</header>
+
+<div class="stage" id="stage">
+
+<canvas id="canvas"></canvas>
+
+</div>
+
+<div class="controls">
+
+<div class="control">
+
+<div class="control-top">
+<span>Release Angle</span>
+<strong id="angleText">40°</strong>
+</div>
+
+<input
+id="angle"
+type="range"
+min="10"
+max="65"
+value="40">
+
+</div>
+
+<div class="control">
+
+<div class="control-top">
+<span>Released Balls</span>
+<strong id="countText">1</strong>
+</div>
+
+<input
+id="count"
+type="range"
+min="1"
+max="5"
+value="1">
+
+</div>
+
+<div class="control">
+
+<div class="control-top">
+<span>Gravity</span>
+<strong id="gravityText">9.8</strong>
+</div>
+
+<input
+id="gravity"
+type="range"
+min="4"
+max="16"
+step=".1"
+value="9.8">
+
+</div>
+
+<div class="control">
+
+<div class="control-top">
+<span>Energy Loss</span>
+<strong id="lossText">0.20%</strong>
+</div>
+
+<input
+id="loss"
+type="range"
+min="0"
+max="2"
+step=".05"
+value=".20">
+
+</div>
+
+</div>
+
+<div class="buttons">
+
+<button
+class="primary"
+id="releaseBtn">
+Release
+</button>
+
+<button
+id="resetBtn">
+Reset
+</button>
+
+<button
+id="pauseBtn">
+Pause
+</button>
+
+<button
+id="slowBtn">
+Slow Motion
+</button>
+
+</div>
+
+<div
+class="status"
+id="status">
+Ready
+</div>
+
+</div>
+
+<script>
+const canvas =
+document.getElementById("canvas");
+
+const ctx =
+canvas.getContext("2d");
+
+const stage =
+document.getElementById("stage");
+
+const statusText =
+document.getElementById("status");
+
+const angleInput =
+document.getElementById("angle");
+
+const countInput =
+document.getElementById("count");
+
+const gravityInput =
+document.getElementById("gravity");
+
+const lossInput =
+document.getElementById("loss");
+
+const angleText =
+document.getElementById("angleText");
+
+const countText =
+document.getElementById("countText");
+
+const gravityText =
+document.getElementById("gravityText");
+
+const lossText =
+document.getElementById("lossText");
+
+const releaseBtn =
+document.getElementById("releaseBtn");
+
+const resetBtn =
+document.getElementById("resetBtn");
+
+const pauseBtn =
+document.getElementById("pauseBtn");
+
+const slowBtn =
+document.getElementById("slowBtn");
+
+
+const BALL_COUNT = 11;
+
+let W = 900;
+let H = 550;
+
+let dpr =
+Math.min(
+window.devicePixelRatio || 1,
+2
+);
+
+let radius = 11;
+
+let spacing =
+radius*2;
+
+let rope = 188;
+
+let balls = [];
+
+let activeBall = null;
+
+let gravity = 9.8;
+
+let damping = .002;
+
+let paused = false;
+
+let slowMotion = false;
+
+
+/* Smooth global time multiplier */
+
+let motionScale = 1;
+
+let desiredMotionScale = 1;
+
+
+/* Reset animation */
+
+let resetting = false;
+
+let resetProgress = 0;
+
+let resetStarts = [];
+
+
+/* Release animation */
+
+let releasing = false;
+
+let releaseProgress = 0;
+
+
+/* Smooth parameter values */
+
+let displayGravity = gravity;
+
+let targetGravity = gravity;
+
+let displayDamping = damping;
+
+let targetDamping = damping;
+
+
+let last =
+performance.now();
+
+
+function resize(){
+
+const rect =
+canvas.getBoundingClientRect();
+
+W = rect.width;
+H = rect.height;
+
+canvas.width =
+W*dpr;
+
+canvas.height =
+H*dpr;
+
+ctx.setTransform(
+dpr,
+0,
+0,
+dpr,
+0,
+0
+);
+
+radius =
+Math.max(
+8.5,
+Math.min(
+11,
+W/80
+)
+);
+
+spacing =
+radius*2;
+
+rope =
+Math.min(
+194,
+H*.36
+);
+
+setup();
+
+}
+
+
+function geometry(){
+
+const centerX =
+W*.5;
+
+const total =
+spacing*
+(BALL_COUNT-1);
+
+const first =
+centerX-total/2;
+
+return{
+
+centerX,
+
+first,
+
+topY:
+H*.205,
+
+left:
+first-83,
+
+right:
+first+
+total+
+83,
+
+bottomY:
+H*.755
+
+};
+
+}
+
+
+function setup(){
+
+const g =
+geometry();
+
+balls=[];
+
+for(
+let i=0;
+i<BALL_COUNT;
+i++
+){
+
+const x =
+g.first+
+i*spacing;
+
+balls.push({
+
+pivotX:x,
+
+pivotY:g.topY,
+
+angle:0,
+
+av:0,
+
+x:x,
+
+y:
+g.topY+
+rope,
+
+dragging:false
+
+});
+
+}
+
+updatePositions();
+
+}
+
+
+function updatePositions(){
+
+for(const b of balls){
+
+b.x =
+b.pivotX+
+Math.sin(b.angle)*
+rope;
+
+b.y =
+b.pivotY+
+Math.cos(b.angle)*
+rope;
+
+}
+
+}
+
+
+function easeInOutCubic(t){
+
+return t < .5
+
+? 4*t*t*t
+
+: 1-
+Math.pow(
+-2*t+2,
+3
+)/2;
+
+}
+
+
+function smoothApproach(
+current,
+target,
+strength,
+dt
+){
+
+return current+
+(target-current)*
+(
+1-
+Math.exp(
+-strength*dt
+)
+);
+
+}
+
+
+/* --------------------
+   PHYSICS
+-------------------- */
+
+function simulate(dt){
+
+const force =
+displayGravity*92;
+
+for(const b of balls){
+
+if(b.dragging)
+continue;
+
+const acceleration =
+-(force/rope)*
+Math.sin(
+b.angle
+);
+
+b.av +=
+acceleration*
+dt;
+
+b.av *=
+Math.pow(
+1-displayDamping,
+dt*60
+);
+
+b.angle +=
+b.av*
+dt;
+
+}
+
+updatePositions();
+
+resolveCollisions();
+
+updatePositions();
+
+}
+
+
+function resolveCollisions(){
+
+for(
+let pass=0;
+pass<8;
+pass++
+){
+
+for(
+let i=0;
+i<balls.length-1;
+i++
+){
+
+const a=
+balls[i];
+
+const b=
+balls[i+1];
+
+const dx=
+b.x-a.x;
+
+const dy=
+b.y-a.y;
+
+const distance=
+Math.sqrt(
+dx*dx+
+dy*dy
+);
+
+if(
+distance <=
+radius*2+.15
+){
+
+const va =
+a.av*
+rope*
+Math.cos(
+a.angle
+);
+
+const vb =
+b.av*
+rope*
+Math.cos(
+b.angle
+);
+
+if(va>vb){
+
+const restitution=.998;
+
+const newA =
+vb*
+restitution;
+
+const newB =
+va*
+restitution;
+
+const ca =
+Math.max(
+.25,
+Math.cos(
+a.angle
+)
+);
+
+const cb =
+Math.max(
+.25,
+Math.cos(
+b.angle
+)
+);
+
+a.av =
+newA/
+(
+rope*
+ca
+);
+
+b.av =
+newB/
+(
+rope*
+cb
+);
+
+}
+
+}
+
+}
+
+}
+
+}
+
+
+/* --------------------
+   DRAWING
+-------------------- */
+
+function drawBackground(){
+
+const bg =
+ctx.createLinearGradient(
+0,
+0,
+0,
+H
+);
+
+bg.addColorStop(
+0,
+"#fdfdfd"
+);
+
+bg.addColorStop(
+.64,
+"#eef1f3"
+);
+
+bg.addColorStop(
+1,
+"#dce2e5"
+);
+
+ctx.fillStyle=bg;
+
+ctx.fillRect(
+0,
+0,
+W,
+H
+);
+
+
+const glow =
+ctx.createRadialGradient(
+
+W*.47,
+H*.07,
+10,
+
+W*.47,
+H*.07,
+W*.54
+
+);
+
+glow.addColorStop(
+0,
+"rgba(255,255,255,.98)"
+);
+
+glow.addColorStop(
+1,
+"rgba(255,255,255,0)"
+);
+
+ctx.fillStyle=
+glow;
+
+ctx.fillRect(
+0,
+0,
+W,
+H
+);
+
+}
+
+
+function drawGroundShadow(){
+
+const g =
+geometry();
+
+ctx.save();
+
+ctx.translate(
+g.centerX+7,
+g.bottomY+47
+);
+
+ctx.scale(
+1,
+.17
+);
+
+const shadow =
+ctx.createRadialGradient(
+
+0,
+0,
+10,
+
+0,
+0,
+W*.29
+
+);
+
+shadow.addColorStop(
+0,
+"rgba(24,32,36,.24)"
+);
+
+shadow.addColorStop(
+.42,
+"rgba(24,32,36,.13)"
+);
+
+shadow.addColorStop(
+1,
+"rgba(24,32,36,0)"
+);
+
+ctx.fillStyle =
+shadow;
+
+ctx.beginPath();
+
+ctx.arc(
+0,
+0,
+W*.29,
+0,
+Math.PI*2
+);
+
+ctx.fill();
+
+ctx.restore();
+
+}
+
+
+function chromeGradient(
+x1,
+x2
+){
+
+const g =
+ctx.createLinearGradient(
+x1,
+0,
+x2,
+0
+);
+
+g.addColorStop(
+0,
+"#465157"
+);
+
+g.addColorStop(
+.10,
+"#f7f9f9"
+);
+
+g.addColorStop(
+.23,
+"#9ca6aa"
+);
+
+g.addColorStop(
+.39,
+"#f7f8f8"
+);
+
+g.addColorStop(
+.52,
+"#657177"
+);
+
+g.addColorStop(
+.69,
+"#e8ebec"
+);
+
+g.addColorStop(
+.86,
+"#9ca5aa"
+);
+
+g.addColorStop(
+1,
+"#485359"
+);
+
+return g;
+
+}
+
+
+function drawBase(){
+
+const g =
+geometry();
+
+const left =
+g.left-24;
+
+const right =
+g.right+24;
+
+const top =
+g.bottomY+2;
+
+const depth =
+24;
+
+
+/*
+  broad shadow
+*/
+
+ctx.fillStyle =
+"rgba(28,36,40,.15)";
+
+ctx.beginPath();
+
+ctx.moveTo(
+left-5,
+top+16
+);
+
+ctx.lineTo(
+right+15,
+top+16
+);
+
+ctx.lineTo(
+right-2,
+top+depth+22
+);
+
+ctx.lineTo(
+left+2,
+top+depth+22
+);
+
+ctx.closePath();
+
+ctx.fill();
+
+
+/*
+  top surface
+*/
+
+const topMetal =
+ctx.createLinearGradient(
+0,
+top,
+0,
+top+depth
+);
+
+topMetal.addColorStop(
+0,
+"#f2f4f5"
+);
+
+topMetal.addColorStop(
+.24,
+"#d7dde0"
+);
+
+topMetal.addColorStop(
+.62,
+"#9ba6ac"
+);
+
+topMetal.addColorStop(
+1,
+"#748087"
+);
+
+ctx.fillStyle =
+topMetal;
+
+ctx.beginPath();
+
+ctx.moveTo(
+left,
+top
+);
+
+ctx.lineTo(
+right,
+top
+);
+
+ctx.lineTo(
+right-18,
+top+depth
+);
+
+ctx.lineTo(
+left+18,
+top+depth
+);
+
+ctx.closePath();
+
+ctx.fill();
+
+
+/*
+  lower front face
+*/
+
+const front =
+ctx.createLinearGradient(
+0,
+top+depth,
+0,
+top+depth+16
+);
+
+front.addColorStop(
+0,
+"#768188"
+);
+
+front.addColorStop(
+.45,
+"#59646a"
+);
+
+front.addColorStop(
+1,
+"#364047"
+);
+
+ctx.fillStyle =
+front;
+
+ctx.beginPath();
+
+ctx.moveTo(
+left+18,
+top+depth
+);
+
+ctx.lineTo(
+right-18,
+top+depth
+);
+
+ctx.lineTo(
+right-18,
+top+depth+14
+);
+
+ctx.lineTo(
+left+18,
+top+depth+14
+);
+
+ctx.closePath();
+
+ctx.fill();
+
+
+/*
+  side faces
+*/
+
+ctx.fillStyle =
+"#69757b";
+
+ctx.beginPath();
+
+ctx.moveTo(
+left,
+top
+);
+
+ctx.lineTo(
+left+18,
+top+depth
+);
+
+ctx.lineTo(
+left+18,
+top+depth+14
+);
+
+ctx.lineTo(
+left,
+top+13
+);
+
+ctx.closePath();
+
+ctx.fill();
+
+
+ctx.fillStyle =
+"#566168";
+
+ctx.beginPath();
+
+ctx.moveTo(
+right,
+top
+);
+
+ctx.lineTo(
+right-18,
+top+depth
+);
+
+ctx.lineTo(
+right-18,
+top+depth+14
+);
+
+ctx.lineTo(
+right,
+top+13
+);
+
+ctx.closePath();
+
+ctx.fill();
+
+
+/*
+  polished top highlight
+*/
+
+ctx.strokeStyle =
+"rgba(255,255,255,.82)";
+
+ctx.lineWidth =
+1.3;
+
+ctx.beginPath();
+
+ctx.moveTo(
+left+5,
+top+2
+);
+
+ctx.lineTo(
+right-5,
+top+2
+);
+
+ctx.stroke();
+
+}
+
+
+function drawFrame(){
+
+const g =
+geometry();
+
+const metal =
+chromeGradient(
+g.left,
+g.right
+);
+
+ctx.lineCap =
+"round";
+
+ctx.lineJoin =
+"round";
+
+
+/*
+  frame shadow
+*/
+
+ctx.strokeStyle =
+"rgba(30,38,42,.13)";
+
+ctx.lineWidth =
+12;
+
+ctx.beginPath();
+
+ctx.moveTo(
+g.left+6,
+g.bottomY+8
+);
+
+ctx.lineTo(
+g.left+12,
+g.topY+5
+);
+
+ctx.quadraticCurveTo(
+g.left+12,
+g.topY-15,
+g.left+32,
+g.topY-15
+);
+
+ctx.lineTo(
+g.right-32,
+g.topY-15
+);
+
+ctx.quadraticCurveTo(
+g.right-12,
+g.topY-15,
+g.right-12,
+g.topY+5
+);
+
+ctx.lineTo(
+g.right+6,
+g.bottomY+8
+);
+
+ctx.stroke();
+
+
+/*
+  polished frame
+*/
+
+ctx.strokeStyle =
+metal;
+
+ctx.lineWidth =
+8;
+
+ctx.beginPath();
+
+ctx.moveTo(
+g.left,
+g.bottomY
+);
+
+ctx.lineTo(
+g.left+7,
+g.topY
+);
+
+ctx.quadraticCurveTo(
+g.left+7,
+g.topY-19,
+g.left+29,
+g.topY-19
+);
+
+ctx.lineTo(
+g.right-29,
+g.topY-19
+);
+
+ctx.quadraticCurveTo(
+g.right-7,
+g.topY-19,
+g.right-7,
+g.topY
+);
+
+ctx.lineTo(
+g.right,
+g.bottomY
+);
+
+ctx.stroke();
+
+
+/*
+  inner highlights
+*/
+
+ctx.strokeStyle =
+"rgba(255,255,255,.45)";
+
+ctx.lineWidth =
+1.1;
+
+ctx.beginPath();
+
+ctx.moveTo(
+g.left+3,
+g.bottomY-5
+);
+
+ctx.lineTo(
+g.left+10,
+g.topY+4
+);
+
+ctx.stroke();
+
+
+ctx.beginPath();
+
+ctx.moveTo(
+g.right-3,
+g.bottomY-5
+);
+
+ctx.lineTo(
+g.right-10,
+g.topY+4
+);
+
+ctx.stroke();
+
+}
+
+
+function drawWires(){
+
+const g =
+geometry();
+
+for(const b of balls){
+
+const leftBall =
+b.x-
+radius*.28;
+
+const rightBall =
+b.x+
+radius*.28;
+
+const ballY =
+b.y-
+radius*.10;
+
+
+ctx.strokeStyle =
+"rgba(69,80,86,.72)";
+
+ctx.lineWidth =
+.9;
+
+
+ctx.beginPath();
+
+ctx.moveTo(
+b.pivotX-4,
+g.topY-19
+);
+
+ctx.lineTo(
+leftBall,
+ballY
+);
+
+ctx.stroke();
+
+
+ctx.beginPath();
+
+ctx.moveTo(
+b.pivotX+4,
+g.topY-19
+);
+
+ctx.lineTo(
+rightBall,
+ballY
+);
+
+ctx.stroke();
+
+
+/*
+  rod connections
+*/
+
+ctx.fillStyle =
+"#69757b";
+
+
+ctx.beginPath();
+
+ctx.arc(
+b.pivotX-4,
+g.topY-19,
+1.25,
+0,
+Math.PI*2
+);
+
+ctx.fill();
+
+
+ctx.beginPath();
+
+ctx.arc(
+b.pivotX+4,
+g.topY-19,
+1.25,
+0,
+Math.PI*2
+);
+
+ctx.fill();
+
+}
+
+}
+
+
+function drawBall(b){
+
+/*
+  moving shadow
+*/
+
+ctx.save();
+
+ctx.translate(
+b.x+4,
+b.y+radius+13
+);
+
+ctx.scale(
+1,
+.20
+);
+
+const shadow =
+ctx.createRadialGradient(
+0,
+0,
+0,
+0,
+0,
+radius*1.8
+);
+
+shadow.addColorStop(
+0,
+"rgba(20,25,28,.22)"
+);
+
+shadow.addColorStop(
+1,
+"rgba(20,25,28,0)"
+);
+
+ctx.fillStyle =
+shadow;
+
+ctx.beginPath();
+
+ctx.arc(
+0,
+0,
+radius*1.8,
+0,
+Math.PI*2
+);
+
+ctx.fill();
+
+ctx.restore();
+
+
+/*
+  steel sphere
+*/
+
+const steel =
+ctx.createRadialGradient(
+
+b.x-
+radius*.42,
+
+b.y-
+radius*.44,
+
+radius*.03,
+
+b.x,
+b.y,
+
+radius*1.1
+
+);
+
+steel.addColorStop(
+0,
+"#ffffff"
+);
+
+steel.addColorStop(
+.08,
+"#f8f8f8"
+);
+
+steel.addColorStop(
+.23,
+"#c1c6c9"
+);
+
+steel.addColorStop(
+.40,
+"#7b858a"
+);
+
+steel.addColorStop(
+.56,
+"#32383c"
+);
+
+steel.addColorStop(
+.70,
+"#858e93"
+);
+
+steel.addColorStop(
+.87,
+"#e4e7e8"
+);
+
+steel.addColorStop(
+1,
+"#4b555a"
+);
+
+ctx.fillStyle =
+steel;
+
+ctx.beginPath();
+
+ctx.arc(
+b.x,
+b.y,
+radius,
+0,
+Math.PI*2
+);
+
+ctx.fill();
+
+
+ctx.strokeStyle =
+"rgba(30,38,42,.52)";
+
+ctx.lineWidth =
+.55;
+
+ctx.stroke();
+
+
+/*
+  upper shine
+*/
+
+ctx.fillStyle =
+"rgba(255,255,255,.94)";
+
+ctx.beginPath();
+
+ctx.ellipse(
+
+b.x-
+radius*.31,
+
+b.y-
+radius*.35,
+
+radius*.16,
+
+radius*.067,
+
+-.5,
+
+0,
+
+Math.PI*2
+
+);
+
+ctx.fill();
+
+
+/*
+  lower reflected band
+*/
+
+ctx.strokeStyle =
+"rgba(10,15,18,.13)";
+
+ctx.lineWidth =
+Math.max(
+1,
+radius*.10
+);
+
+ctx.beginPath();
+
+ctx.arc(
+
+b.x,
+
+b.y+
+radius*.08,
+
+radius*.67,
+
+.30,
+
+2.7
+
+);
+
+ctx.stroke();
+
+}
+
+
+function draw(){
+
+ctx.clearRect(
+0,
+0,
+W,
+H
+);
+
+drawBackground();
+
+drawGroundShadow();
+
+drawFrame();
+
+drawBase();
+
+drawWires();
+
+for(const b of balls){
+
+drawBall(b);
+
+}
+
+}
+
+
+/* --------------------
+   SMOOTH TRANSITIONS
+-------------------- */
+
+function updateReset(dt){
+
+if(!resetting)
+return;
+
+resetProgress +=
+dt/0.65;
+
+const p =
+Math.min(
+1,
+resetProgress
+);
+
+const e =
+easeInOutCubic(p);
+
+for(
+let i=0;
+i<balls.length;
+i++
+){
+
+balls[i].angle =
+resetStarts[i]*
+(1-e);
+
+balls[i].av *=
+(1-e);
+
+}
+
+updatePositions();
+
+if(p>=1){
+
+resetting=false;
+
+for(const b of balls){
+
+b.angle=0;
+b.av=0;
+
+}
+
+updatePositions();
+
+setStatus(
+"Ready"
+);
+
+}
+
+}
+
+
+function smoothReset(){
+
+resetting=true;
+
+resetProgress=0;
+
+resetStarts =
+balls.map(
+b=>b.angle
+);
+
+desiredMotionScale=0;
+
+setTimeout(
+()=>{
+
+desiredMotionScale =
+slowMotion
+? .25
+: 1;
+
+},
+650
+);
+
+setStatus(
+"Resetting"
+);
+
+}
+
+
+function releaseBalls(){
+
+resetting=false;
+
+for(const b of balls){
+
+b.angle=0;
+b.av=0;
+
+}
+
+const amount =
+Number(
+countInput.value
+);
+
+const targetAngle =
+Number(
+angleInput.value
+)*
+Math.PI/180;
+
+
+/*
+  Start from center then
+  smoothly pull back.
+*/
+
+releasing=true;
+releaseProgress=0;
+
+const duration =
+420;
+
+const start =
+performance.now();
+
+function pull(now){
+
+const p =
+Math.min(
+1,
+(now-start)/
+duration
+);
+
+const e =
+easeInOutCubic(p);
+
+for(
+let i=0;
+i<amount;
+i++
+){
+
+balls[i].angle =
+-targetAngle*
+e;
+
+}
+
+updatePositions();
+
+draw();
+
+if(p<1){
+
+requestAnimationFrame(
+pull
+);
+
+}
+else{
+
+releasing=false;
+
+desiredMotionScale =
+slowMotion
+? .25
+: 1;
+
+motionScale=.05;
+
+stage.classList.add(
+"active"
+);
+
+setStatus(
+"Released"
+);
+
+}
+
+}
+
+desiredMotionScale=0;
+
+requestAnimationFrame(
+pull
+);
+
+}
+
+
+/* --------------------
+   ANIMATION LOOP
+-------------------- */
+
+function loop(now){
+
+const realDT =
+Math.min(
+(now-last)/1000,
+.03
+);
+
+last=now;
+
+
+/*
+  blend gravity / damping
+*/
+
+displayGravity =
+smoothApproach(
+displayGravity,
+targetGravity,
+5,
+realDT
+);
+
+displayDamping =
+smoothApproach(
+displayDamping,
+targetDamping,
+5,
+realDT
+);
+
+
+/*
+  all speed-state changes
+  interpolate smoothly
+*/
+
+motionScale =
+smoothApproach(
+motionScale,
+desiredMotionScale,
+5.5,
+realDT
+);
+
+
+/*
+  animated reset
+*/
+
+updateReset(
+realDT
+);
+
+
+/*
+  physics
+*/
+
+if(
+!resetting &&
+!releasing &&
+motionScale>.001
+){
+
+simulate(
+realDT*
+motionScale
+);
+
+}
+
+
+draw();
+
+requestAnimationFrame(
+loop
+);
+
+}
+
+
+/* --------------------
+   BUTTON ANIMATION
+-------------------- */
+
+function animateButton(button){
+
+button.classList.remove(
+"flash"
+);
+
+void button.offsetWidth;
+
+button.classList.add(
+"flash"
+);
+
+setTimeout(
+()=>{
+
+button.classList.remove(
+"flash"
+);
+
+},
+450
+);
+
+}
+
+
+function setStatus(text){
+
+statusText.classList.add(
+"change"
+);
+
+setTimeout(
+()=>{
+
+statusText.textContent=
+text;
+
+statusText.classList.remove(
+"change"
+);
+
+},
+140
+);
+
+}
+
+
+/* --------------------
+   DRAGGING
+-------------------- */
+
+canvas.addEventListener(
+"pointerdown",
+e=>{
+
+if(resetting || releasing)
+return;
+
+const rect =
+canvas.getBoundingClientRect();
+
+const x =
+e.clientX-
+rect.left;
+
+const y =
+e.clientY-
+rect.top;
+
+let nearest=null;
+
+let best=Infinity;
+
+for(const b of balls){
+
+const dx=x-b.x;
+
+const dy=y-b.y;
+
+const d=
+Math.sqrt(
+dx*dx+
+dy*dy
+);
+
+if(
+d<
+radius*2.1 &&
+d<best
+){
+
+nearest=b;
+best=d;
+
+}
+
+}
+
+if(nearest){
+
+activeBall=
+nearest;
+
+nearest.dragging=
+true;
+
+nearest.av=0;
+
+canvas.setPointerCapture(
+e.pointerId
+);
+
+desiredMotionScale=.1;
+
+}
+
+}
+);
+
+
+canvas.addEventListener(
+"pointermove",
+e=>{
+
+if(!activeBall)
+return;
+
+const rect =
+canvas.getBoundingClientRect();
+
+const x =
+e.clientX-
+rect.left;
+
+let ratio =
+(
+x-
+activeBall.pivotX
+)/
+rope;
+
+ratio =
+Math.max(
+-.94,
+Math.min(
+.94,
+ratio
+)
+);
+
+activeBall.angle =
+Math.asin(
+ratio
+);
+
+activeBall.av=0;
+
+updatePositions();
+
+}
+);
+
+
+function endDrag(){
+
+if(!activeBall)
+return;
+
+activeBall.dragging=
+false;
+
+activeBall=null;
+
+motionScale=.08;
+
+desiredMotionScale =
+paused
+? 0
+: (
+slowMotion
+? .25
+: 1
+);
+
+setStatus(
+"Released"
+);
+
+}
+
+
+canvas.addEventListener(
+"pointerup",
+endDrag
+);
+
+canvas.addEventListener(
+"pointercancel",
+endDrag
+);
+
+
+/* --------------------
+   SLIDERS
+-------------------- */
+
+function pulseText(el){
+
+el.classList.add(
+"changing"
+);
+
+clearTimeout(
+el._timer
+);
+
+el._timer =
+setTimeout(
+()=>{
+
+el.classList.remove(
+"changing"
+);
+
+},
+180
+);
+
+}
+
+
+angleInput.addEventListener(
+"input",
+()=>{
+
+angleText.textContent =
+angleInput.value+
+"°";
+
+pulseText(
+angleText
+);
+
+}
+);
+
+
+countInput.addEventListener(
+"input",
+()=>{
+
+countText.textContent =
+countInput.value;
+
+pulseText(
+countText
+);
+
+}
+);
+
+
+gravityInput.addEventListener(
+"input",
+()=>{
+
+targetGravity =
+Number(
+gravityInput.value
+);
+
+gravityText.textContent =
+targetGravity.toFixed(1);
+
+pulseText(
+gravityText
+);
+
+}
+);
+
+
+lossInput.addEventListener(
+"input",
+()=>{
+
+targetDamping =
+Number(
+lossInput.value
+)/
+100;
+
+lossText.textContent =
+Number(
+lossInput.value
+).toFixed(2)+
+"%";
+
+pulseText(
+lossText
+);
+
+}
+);
+
+
+/* --------------------
+   BUTTONS
+-------------------- */
+
+releaseBtn.addEventListener(
+"click",
+()=>{
+
+animateButton(
+releaseBtn
+);
+
+paused=false;
+
+pauseBtn.textContent=
+"Pause";
+
+releaseBalls();
+
+}
+);
+
+
+resetBtn.addEventListener(
+"click",
+()=>{
+
+animateButton(
+resetBtn
+);
+
+paused=false;
+
+pauseBtn.textContent=
+"Pause";
+
+stage.classList.remove(
+"active"
+);
+
+smoothReset();
+
+}
+);
+
+
+pauseBtn.addEventListener(
+"click",
+()=>{
+
+animateButton(
+pauseBtn
+);
+
+paused=
+!paused;
+
+if(paused){
+
+desiredMotionScale=0;
+
+pauseBtn.textContent=
+"Play";
+
+canvas.style.opacity=
+".95";
+
+canvas.style.filter=
+"saturate(.92)";
+
+stage.classList.remove(
+"active"
+);
+
+setStatus(
+"Pausing"
+);
+
+}
+else{
+
+desiredMotionScale =
+slowMotion
+? .25
+: 1;
+
+pauseBtn.textContent=
+"Pause";
+
+canvas.style.opacity=
+"1";
+
+canvas.style.filter=
+"saturate(1)";
+
+stage.classList.add(
+"active"
+);
+
+setStatus(
+"Playing"
+);
+
+}
+
+}
+);
+
+
+slowBtn.addEventListener(
+"click",
+()=>{
+
+animateButton(
+slowBtn
+);
+
+slowMotion=
+!slowMotion;
+
+if(!paused){
+
+desiredMotionScale =
+slowMotion
+? .25
+: 1;
+
+}
+
+slowBtn.classList.toggle(
+"enabled",
+slowMotion
+);
+
+slowBtn.textContent =
+slowMotion
+? "Normal Speed"
+: "Slow Motion";
+
+setStatus(
+slowMotion
+? "Slow motion"
+: "Normal speed"
+);
+
+}
+);
+
+
+/* --------------------
+   INITIALIZE
+-------------------- */
+
+window.addEventListener(
+"resize",
+resize
+);
+
+resize();
+
+requestAnimationFrame(
+loop
+);
+
+</script>
+
+</body>
+</html>

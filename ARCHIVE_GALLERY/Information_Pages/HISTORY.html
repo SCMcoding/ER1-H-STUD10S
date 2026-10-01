@@ -1,0 +1,444 @@
+]<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>About CHIVISPUPPETS</title>
+
+  <style>
+    /* =========================
+       PAGE
+    ========================== */
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at center, rgba(124, 134, 74, 0.06), transparent 42%),
+        #000;
+      color: #9da466;
+      font-family: "Courier New", monospace;
+      overflow-x: hidden;
+    }
+
+    /* =========================
+       CHI BACKGROUND SYMBOL
+    ========================== */
+    .chi-background {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      width: 680px;
+      height: 680px;
+      transform: translate(-50%, -50%);
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.065;
+    }
+
+    .chi-logo {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      overflow: hidden;
+      background: linear-gradient(90deg, #c9782b 50%, #858d58 50%);
+      box-shadow:
+        0 0 80px rgba(201, 120, 43, 0.12),
+        0 0 130px rgba(133, 141, 88, 0.10);
+      animation: chiSpin 38s linear infinite;
+    }
+
+    .chi-logo::before {
+      content: "";
+      position: absolute;
+      width: 50%;
+      height: 50%;
+      left: 25%;
+      top: 0;
+      border-radius: 50%;
+      background: #858d58;
+      box-shadow: 0 340px 0 #c9782b;
+    }
+
+    .chi-logo::after {
+      content: "";
+      position: absolute;
+      width: 85px;
+      height: 85px;
+      left: 50%;
+      top: 127px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: #c9782b;
+      box-shadow: 0 340px 0 #858d58;
+    }
+
+    @keyframes chiSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* =========================
+       BACKGROUND WORDS
+    ========================== */
+    .background-word {
+      position: fixed;
+      z-index: 0;
+      pointer-events: none;
+      user-select: none;
+      white-space: nowrap;
+      font-weight: bold;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      opacity: 0.17;
+      animation: floatWord 14s ease-in-out infinite alternate;
+    }
+
+    .word1 {
+      left: 4%;
+      top: 12%;
+      color: #c9782b;
+      font-size: 70px;
+    }
+
+    .word2 {
+      right: 4%;
+      top: 30%;
+      color: #8f975d;
+      font-size: 72px;
+      animation-delay: -3s;
+    }
+
+    .word3 {
+      left: 5%;
+      top: 63%;
+      color: #d28a3b;
+      font-size: 68px;
+      animation-delay: -6s;
+    }
+
+    .word4 {
+      right: 5%;
+      top: 80%;
+      color: #89915a;
+      font-size: 64px;
+      animation-delay: -9s;
+    }
+
+    @keyframes floatWord {
+      from { transform: translate(0, 0); }
+      to { transform: translate(25px, -14px); }
+    }
+
+    /* =========================
+       MAIN CONTENT
+    ========================== */
+    .page {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 60px 20px;
+    }
+
+    .content {
+      width: 90%;
+      max-width: 900px;
+      padding: 46px 50px;
+
+      background: rgba(8, 9, 6, 0.84);
+
+      border: 1px solid rgba(133, 145, 82, 0.50);
+      border-radius: 8px;
+
+      box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.85),
+        0 0 24px rgba(137, 145, 82, 0.10),
+        0 0 18px rgba(201, 120, 43, 0.06);
+
+      backdrop-filter: blur(7px);
+    }
+
+    /* =========================
+       TITLE
+    ========================== */
+    h1 {
+      margin: 0 0 34px;
+
+      color: #c9782b;
+
+      text-align: center;
+      font-size: 29px;
+      letter-spacing: 4px;
+
+      text-transform: uppercase;
+
+      text-shadow: 0 0 10px rgba(201, 120, 43, 0.24);
+    }
+
+    h1::after {
+      content: "";
+      display: block;
+
+      width: 145px;
+      height: 3px;
+
+      margin: 13px auto 0;
+
+      background:
+        linear-gradient(
+          90deg,
+          #b75b29,
+          #d28a3b,
+          #89915a
+        );
+
+      border-radius: 4px;
+    }
+
+    /* =========================
+       DESCRIPTION
+    ========================== */
+    .description p {
+      margin: 0 0 24px;
+
+      color: #a3aa6a;
+
+      font-size: 16px;
+      line-height: 1.85;
+
+      letter-spacing: 0.15px;
+    }
+
+    .description p:last-child {
+      margin-bottom: 0;
+    }
+
+    .description strong {
+      color: #d18436;
+    }
+
+    /* =========================
+       SYSTEM LABEL
+    ========================== */
+    .system-label {
+      margin-top: 32px;
+      padding-top: 18px;
+
+      border-top:
+        1px solid rgba(137, 145, 82, 0.24);
+
+      color:
+        rgba(145, 153, 91, 0.60);
+
+      font-size: 9px;
+      letter-spacing: 3px;
+
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .status-dot {
+      display: inline-block;
+
+      width: 6px;
+      height: 6px;
+
+      margin-right: 7px;
+
+      background: #90985e;
+
+      border-radius: 50%;
+
+      box-shadow:
+        0 0 7px rgba(144, 152, 94, 0.75);
+
+      animation:
+        pulse 1.8s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { opacity: 0.4; }
+      to { opacity: 1; }
+    }
+
+    /* =========================
+       MOBILE
+    ========================== */
+    @media screen and (max-width: 700px) {
+      .page {
+        padding: 30px 12px;
+      }
+
+      .content {
+        width: 100%;
+        padding: 30px 22px;
+      }
+
+      h1 {
+        font-size: 22px;
+        letter-spacing: 2px;
+      }
+
+      .description p {
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      .chi-background {
+        width: 430px;
+        height: 430px;
+      }
+
+      .chi-logo::before {
+        box-shadow: 0 215px 0 #c9782b;
+      }
+
+      .chi-logo::after {
+        width: 55px;
+        height: 55px;
+        top: 80px;
+        box-shadow: 0 215px 0 #858d58;
+      }
+
+      .background-word {
+        font-size: 34px !important;
+        letter-spacing: 2px;
+      }
+    }
+
+    /* =========================
+       EMBEDDED HTML PAGE
+    ========================== */
+    .html-window {
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto 32px;
+      overflow: hidden;
+      background: rgba(0,0,0,.78);
+      border: 1px solid rgba(201,120,43,.45);
+      border-radius: 7px;
+      box-shadow: 0 12px 35px rgba(0,0,0,.72), 0 0 18px rgba(201,120,43,.08);
+    }
+
+    .html-window-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      color: rgba(210,138,59,.78);
+      background: rgba(20,15,10,.88);
+      border-bottom: 1px solid rgba(137,145,82,.25);
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .html-window iframe {
+      display: block;
+      width: 100%;
+      height: 430px;
+      border: 0;
+      background: #000;
+    }
+
+    @media screen and (max-width:700px) {
+      .html-window iframe { height: 360px; }
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- =========================
+       DIM SPINNING CHI SYMBOL
+  ========================== -->
+  <div class="chi-background">
+    <div class="chi-logo"></div>
+  </div>
+
+  <!-- =========================
+       BACKGROUND WORDS
+  ========================== -->
+  <span class="background-word word1">PUPPETRY</span>
+  <span class="background-word word2">ARCHIVE</span>
+  <span class="background-word word3">CULTURE</span>
+  <span class="background-word word4">EXPERIMENT</span>
+
+  <!-- =========================
+       CONTENT
+  ========================== -->
+  <main class="page">
+
+    <div class="content">
+
+   
+
+      <!-- =========================
+           EMBEDDED HTML PAGE
+      ========================== -->
+      <div class="html-window">
+        <div class="html-window-header">
+          <span><span class="status-dot"></span>INTERACTIVE ARCHIVE</span>
+          <span>CHIVISPUPPETS</span>
+        </div>
+
+        <!-- Change the src below to the HTML page you want to display -->
+        <iframe
+          src="../Animated Html Posters/SpaceStation.html"
+          title="CHIVISPUPPETS Interactive Page"
+          loading="lazy"
+          allow="fullscreen"
+          allowfullscreen>
+        </iframe>
+      </div>
+
+
+      <div class="description">
+
+        <p>
+         Welcome to <strong>CHIVIS</strong>, an interactive digital space where puppetry, culture, technology, and science come together. Explore a growing virtual puppet archive, interactive projects, digital experiments, and an educational lab with science-based simulations.
+
+        </p>
+
+        <p>
+          CHIVIS grew from earlier work with City Tech’s Center for Holistic Integration (CHI), including a Wayang kulit shadow-puppet performance that combined traditional puppetry with digital technology. CHIVIS is a separate project that builds on those ideas in a new direction.
+
+        </p>
+
+        <p>
+          The site is designed as a place to explore, experiment, and discover. Through HTML coding, prompt engineering, visual design, and interactive media, CHIVIS brings traditional forms of puppetry into a digital space while also opening the door to new creative and educational experiences.
+        </p>
+
+      </div>
+
+        
+        
+    
+
+
+
+      <div class="system-label">
+        <span class="status-dot"></span>
+        CHIVISPUPPETS / VIRTUAL PUPPET ARCHIVE
+      </div>
+
+    </div>
+
+  </main>
+
+</body>
+</html>

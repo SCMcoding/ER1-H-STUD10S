@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CHIVISPUPPETS | Animated Backgrounds</title>
+
+  <style>
+    /* ==================================================
+       COLORS / BASE
+    ================================================== */
+    :root {
+      --black:#000;
+      --orange:#d28a3b;
+      --green:#9aa060;
+      --purple:#9b6bd3;
+      --text:#d7d7d0;
+      --max:1200px;
+    }
+
+    * { box-sizing:border-box; margin:0; padding:0; }
+
+    html,body { width:100%; min-height:100%; }
+
+    body {
+      background:#000;
+      color:var(--text);
+      font-family:"Courier New",monospace;
+      line-height:1.6;
+      overflow-x:hidden;
+    }
+
+    /* ==================================================
+       SPACE BACKGROUND
+    ================================================== */
+    #spaceBackground {
+      position:fixed;
+      inset:0;
+      z-index:0;
+      overflow:hidden;
+      pointer-events:none;
+      background:
+        radial-gradient(circle at 20% 25%,rgba(210,138,59,.08),transparent 25%),
+        radial-gradient(circle at 78% 68%,rgba(154,160,96,.07),transparent 27%),
+        radial-gradient(circle at 65% 18%,rgba(155,107,211,.07),transparent 25%),
+        #000;
+    }
+
+    #starField,#dataField {
+      position:absolute;
+      inset:0;
+    }
+
+    /* ==================================================
+       MILKY WAY
+    ================================================== */
+    .milkyway {
+      position:absolute;
+      left:-15%;
+      top:39%;
+      width:135%;
+      height:300px;
+      transform:rotate(-17deg);
+      opacity:.30;
+      filter:blur(3px);
+      background:
+        radial-gradient(
+          ellipse at center,
+          rgba(155,107,211,.18),
+          rgba(210,138,59,.10) 25%,
+          rgba(154,160,96,.09) 43%,
+          transparent 72%
+        );
+    }
+
+    .milkyway::after {
+      content:"";
+      position:absolute;
+      inset:35% 0;
+      filter:blur(22px);
+      background:linear-gradient(
+        90deg,
+        transparent,
+        rgba(155,107,211,.11),
+        rgba(210,138,59,.13),
+        rgba(154,160,96,.10),
+        transparent
+      );
+    }
+
+    /* ==================================================
+       STARS
+    ================================================== */
+    .star {
+      position:absolute;
+      border-radius:50%;
+      opacity:.5;
+      animation:twinkle var(--speed,4s) ease-in-out infinite alternate;
+    }
+
+    .star.orange { background:var(--orange); box-shadow:0 0 6px var(--orange); }
+    .star.green  { background:var(--green); box-shadow:0 0 6px var(--green); }
+    .star.purple { background:var(--purple); box-shadow:0 0 7px var(--purple); }
+    .star.white  { background:#fff; box-shadow:0 0 6px rgba(255,255,255,.8); }
+
+    @keyframes twinkle {
+      from { opacity:.12; transform:scale(.7); }
+      to { opacity:.9; transform:scale(1.2); }
+    }
+
+    /* ==================================================
+       GALAXIES
+    ================================================== */
+    .galaxy {
+      position:absolute;
+      border-radius:50%;
+      opacity:.32;
+      filter:blur(4px);
+      animation:galaxyFloat var(--float,28s) ease-in-out infinite alternate;
+    }
+
+    .galaxy::before {
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius:50%;
+      transform:rotate(var(--tilt)) scaleY(.43);
+      filter:blur(9px);
+      background:
+        radial-gradient(ellipse at 50% 50%,rgba(255,255,255,.8) 0 2%,transparent 6%),
+        radial-gradient(ellipse at 48% 52%,currentColor 0 8%,transparent 23%),
+        radial-gradient(ellipse at 56% 45%,currentColor 0 14%,transparent 42%);
+    }
+
+    .galaxy::after {
+      content:"";
+      position:absolute;
+      inset:-15%;
+      border-radius:50%;
+      opacity:.65;
+      background:
+        radial-gradient(circle at 25% 38%,#fff 0 1px,transparent 2px),
+        radial-gradient(circle at 68% 42%,currentColor 0 1px,transparent 2px),
+        radial-gradient(circle at 45% 72%,#fff 0 1px,transparent 2px);
+      background-size:48px 48px,61px 61px,73px 73px;
+    }
+
+    .galaxy.orange { color:var(--orange); }
+    .galaxy.green { color:var(--green); }
+    .galaxy.purple { color:var(--purple); }
+
+    .galaxy.one {
+      width:330px;
+      height:175px;
+      left:3%;
+      top:18%;
+      --tilt:-18deg;
+      --float:30s;
+    }
+
+    .galaxy.two {
+      width:400px;
+      height:210px;
+      right:-5%;
+      top:52%;
+      --tilt:14deg;
+      --float:36s;
+    }
+
+    .galaxy.three {
+      width:220px;
+      height:120px;
+      right:18%;
+      top:10%;
+      --tilt:-8deg;
+      --float:25s;
+    }
+
+    @keyframes galaxyFloat {
+      from { transform:translate(0,0) scale(1); }
+      to { transform:translate(14px,-10px) scale(1.04); }
+    }
+
+    /* ==================================================
+       FLOATING DATA
+    ================================================== */
+    .data-number {
+      position:absolute;
+      white-space:nowrap;
+      font-size:8px;
+      letter-spacing:1px;
+      opacity:.11;
+      text-shadow:0 0 5px currentColor;
+      transition:transform .2s linear;
+    }
+
+    .data-number.orange { color:var(--orange); }
+    .data-number.green { color:var(--green); }
+    .data-number.purple { color:var(--purple); }
+    .data-number.blue { color:#65a8d8; }
+    .data-number.cyan { color:#63c7c4; }
+
+    /* ==================================================
+       BACKGROUND WORDS
+    ================================================== */
+    .background-word {
+      position:absolute;
+      font-weight:bold;
+      letter-spacing:6px;
+      opacity:.08;
+      white-space:nowrap;
+      user-select:none;
+      animation:wordFloat 18s ease-in-out infinite alternate;
+    }
+
+    .word1 { left:3%; top:15%; font-size:65px; color:var(--orange); }
+    .word2 { right:4%; top:32%; font-size:52px; color:var(--green); }
+    .word3 { left:4%; top:66%; font-size:55px; color:var(--purple); }
+    .word4 { right:5%; top:80%; font-size:46px; color:var(--orange); }
+
+    @keyframes wordFloat {
+      from { transform:translate(0,0); }
+      to { transform:translate(15px,-10px); }
+    }
+
+    /* ==================================================
+       PAGE
+    ================================================== */
+    .page {
+      position:relative;
+      z-index:2;
+    }
+
+    /* ==================================================
+       BANNER
+    ================================================== */
+    .banner-header {
+      position:relative;
+      width:100%;
+      height:300px;
+      overflow:hidden;
+      background:#000;
+      border-bottom:1px solid rgba(154,160,96,.35);
+    }
+
+    .banner-header iframe {
+      display:block;
+      width:100%;
+      height:100%;
+      border:0;
+      background:#000;
+    }
+
+    /* ==================================================
+       NAVIGATION
+    ================================================== */
+    nav {
+      width:100%;
+      background:linear-gradient(
+        90deg,
+        rgba(10,10,9,.97),
+        rgba(45,29,15,.96),
+        rgba(28,31,18,.96),
+        rgba(10,10,9,.97)
+      );
+      border-bottom:1px solid rgba(154,160,96,.38);
+    }
+
+    nav ul {
+      display:flex;
+      justify-content:center;
+      list-style:none;
+    }
+
+    nav a {
+      display:block;
+      padding:13px 24px;
+      color:var(--orange);
+      text-decoration:none;
+      font-size:17px;
+      letter-spacing:1px;
+      transition:.25s ease;
+    }
+
+    nav a:hover {
+      color:#b6bc72;
+      background:rgba(154,160,96,.10);
+      transform:translateY(-2px);
+    }
+
+    /* ==================================================
+       CONTENT
+    ================================================== */
+    .container {
+      width:calc(100% - 40px);
+      max-width:var(--max);
+      margin:0 auto;
+      padding:25px 0;
+    }
+
+    /* ==================================================
+       FEATURE VIDEO
+    ================================================== */
+    .intro-video {
+      width:100%;
+      max-width:800px;
+      margin:15px auto 50px;
+      aspect-ratio:16 / 9;
+      overflow:hidden;
+      border:1px solid rgba(210,138,59,.40);
+      border-radius:6px;
+      background:#050505;
+      box-shadow:
+        0 18px 45px rgba(0,0,0,.8),
+        0 0 20px rgba(210,138,59,.08);
+    }
+
+    .intro-video iframe,
+    .video-box iframe {
+      display:block;
+      width:100%;
+      height:100%;
+      border:0;
+    }
+
+    /* ==================================================
+       VIDEO SECTION
+    ================================================== */
+    section {
+      padding:25px;
+      margin-bottom:55px;
+      background:rgba(5,6,5,.74);
+      border:1px solid rgba(154,160,96,.25);
+      border-radius:8px;
+      box-shadow:0 20px 55px rgba(0,0,0,.75);
+      backdrop-filter:blur(5px);
+    }
+
+    section h2 {
+      margin:0 auto 30px;
+      text-align:center;
+      color:var(--orange);
+      font-size:1.45rem;
+      letter-spacing:1px;
+    }
+
+    section h2::after {
+      content:"";
+      display:block;
+      width:130px;
+      height:2px;
+      margin:12px auto 0;
+      background:linear-gradient(
+        90deg,
+        var(--orange),
+        var(--green),
+        var(--purple)
+      );
+    }
+
+    section h2 a {
+      color:var(--green);
+      text-decoration:none;
+      transition:.25s;
+    }
+
+    section h2 a:hover {
+      color:var(--purple);
+      text-shadow:0 0 8px rgba(155,107,211,.4);
+    }
+
+    /* ==================================================
+       VIDEO GRID
+    ================================================== */
+    .video-row {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+      gap:22px;
+    }
+
+    .video-box {
+      width:100%;
+      aspect-ratio:16 / 9;
+      overflow:hidden;
+      border:1px solid rgba(154,160,96,.32);
+      border-radius:6px;
+      background:#030303;
+      box-shadow:0 12px 28px rgba(0,0,0,.7);
+      transition:
+        transform .3s ease,
+        border-color .3s ease,
+        box-shadow .3s ease;
+    }
+
+    .video-box:hover {
+      transform:translateY(-5px);
+      border-color:rgba(210,138,59,.7);
+      box-shadow:
+        0 18px 38px rgba(0,0,0,.85),
+        0 0 18px rgba(155,107,211,.10);
+    }
+
+    /* ==================================================
+       FOOTER
+    ================================================== */
+    footer {
+      padding:15px;
+      text-align:center;
+      color:rgba(210,138,59,.65);
+      background:rgba(8,8,7,.94);
+      border-top:1px solid rgba(154,160,96,.25);
+      font-size:11px;
+      letter-spacing:2px;
+    }
+
+    /* ==================================================
+       MOBILE
+    ================================================== */
+    @media(max-width:650px) {
+      .banner-header { height:190px; }
+
+      nav ul { flex-wrap:wrap; }
+
+      nav a {
+        padding:10px 13px;
+        font-size:14px;
+      }
+
+      .container {
+        width:calc(100% - 20px);
+        padding:15px 0;
+      }
+
+      section { padding:14px; }
+
+      .video-row { grid-template-columns:1fr; }
+
+      section h2 { font-size:1.1rem; }
+
+      .background-word {
+        font-size:28px !important;
+        letter-spacing:2px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ==================================================
+       SPACE BACKGROUND
+  ================================================== -->
+  <div id="spaceBackground">
+
+    <div class="milkyway"></div>
+
+    <div class="galaxy purple one"></div>
+    <div class="galaxy green two"></div>
+    <div class="galaxy orange three"></div>
+
+    <div id="starField"></div>
+    <div id="dataField"></div>
+
+    <span class="background-word word1">MOVEMENT</span>
+    <span class="background-word word2">PUPPETRY</span>
+    <span class="background-word word3">VISUAL</span>
+    <span class="background-word word4">ARCHIVE</span>
+
+  </div>
+
+  <!-- ==================================================
+       PAGE
+  ================================================== -->
+  <div class="page">
+
+    <!-- ==================================================
+         ANIMATED HTML BANNER
+    ================================================== -->
+    <header class="banner-header">
+      <iframe
+        src="../Website Design/Banner/Banner.html"
+        title="CHI VIS PUPPETS Banner"
+        scrolling="no">
+      </iframe>
+    </header>
+
+    <!-- ==================================================
+         NAVIGATION
+    ================================================== -->
+    <nav>
+      <ul>
+        <li><a href="../ArchiveGallery.html">ARCHIVE</a></li>
+      </ul>
+    </nav>
+
+    <!-- ==================================================
+         CONTENT
+    ================================================== -->
+    <main class="container">
+
+      <!-- FEATURE VIDEO -->
+      <div class="intro-video">
+        <iframe
+          src="https://www.youtube.com/embed/3AZlvbRQiEg"
+          title="CHI Animated Backgrounds Introduction"
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen>
+        </iframe>
+      </div>
+
+      <!-- ==================================================
+           ANIMATED BACKGROUNDS
+      ================================================== -->
+      <section>
+
+        <h2>
+          Animated Backgrounds | Spring Show 2025 |
+          <a
+            href="../Information Pages/ABOUTCHIBACKGROUNDS.html"
+            target="_blank">
+            About Our Project
+          </a>
+        </h2>
+
+        <div class="video-row">
+
+          <!-- VIDEO 1 -->
+          <div class="video-box">
+            <iframe
+              src="https://www.youtube.com/embed/nrXXiI1VdxQ"
+              title="Animated Background 1"
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen>
+            </iframe>
+          </div>
+
+          <!-- VIDEO 2 -->
+          <div class="video-box">
+            <iframe
+              src="https://www.youtube.com/embed/Q3ohcoE2Jm0"
+              title="Animated Background 2"
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen>
+            </iframe>
+          </div>
+
+          <!-- VIDEO 3 -->
+          <div class="video-box">
+            <iframe
+              src="https://www.youtube.com/embed/36OI8Nil1MM"
+              title="Animated Background 3"
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen>
+            </iframe>
+          </div>
+
+          <!-- VIDEO 4 -->
+          <div class="video-box">
+            <iframe
+              src="https://www.youtube.com/embed/TybeBdka4EA"
+              title="Animated Background 4"
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen>
+            </iframe>
+          </div>
+
+          <!-- VIDEO 5 -->
+          <div class="video-box">
+            <iframe
+              src="https://www.youtube.com/embed/aPmMiicsjNM"
+              title="Animated Background 5"
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen>
+            </iframe>
+          </div>
+
+          <!-- VIDEO 6 -->
+          <div class="video-box">
+            <iframe
+              src="https://www.youtube.com/embed/LVx1mC9tRs8"
+              title="Animated Background 6"
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen>
+            </iframe>
+          </div>
+
+          <!-- VIDEO 7 -->
+          <div class="video-box">
+            <iframe
+              src="https://www.youtube.com/embed/nlG8nGN870o"
+              title="Animated Background 7"
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen>
+            </iframe>
+          </div>
+
+          <!-- VIDEO 8 -->
+          <div class="video-box">
+            <iframe
+              src="https://www.youtube.com/embed/Z_I_Cjcdu_Y"
+              title="Animated Background 8"
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen>
+            </iframe>
+          </div>
+
+          <!-- VIDEO 9 -->
+          <div class="video-box">
+            <iframe
+              src="https://www.youtube.com/embed/7Te044a4UVc"
+              title="Animated Background 9"
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen>
+            </iframe>
+          </div>
+
+          <!-- VIDEO 10 -->
+          <div class="video-box">
+            <iframe
+              src="https://www.youtube.com/embed/yNxeSeBbDHM"
+              title="Animated Background 10"
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen>
+            </iframe>
+          </div>
+
+          <!-- VIDEO 11 -->
+          <div class="video-box">
+            <iframe
+              src="https://www.youtube.com/embed/a5jstEqm1NE"
+              title="Animated Background 11"
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen>
+            </iframe>
+          </div>
+
+          <!-- VIDEO 12 -->
+          <div class="video-box">
+            <iframe
+              src="https://www.youtube.com/embed/CgAF69D5EzA"
+              title="Animated Background 12"
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen>
+            </iframe>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ==================================================
+         FOOTER
+    ================================================== -->
+    <footer>
+      CHIVISPUPPETS &nbsp;•&nbsp; AN ARCHIVAL SANDBOX OF PUPPETRY
+    </footer>
+
+  </div>
+
+  <!-- ==================================================
+       BACKGROUND JAVASCRIPT
+  ================================================== -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+      /* STARS */
+      const starField = document.getElementById("starField");
+      const starColors = ["orange","green","purple","white"];
+
+      for (let i=0; i<230; i++) {
+        const star = document.createElement("span");
+        const size = Math.random()<.87 ? .6+Math.random()*1.5 : 2+Math.random()*2;
+
+        star.className = `star ${starColors[Math.floor(Math.random()*starColors.length)]}`;
+        star.style.left = `${Math.random()*100}%`;
+        star.style.top = `${Math.random()*100}%`;
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
+        star.style.setProperty("--speed",`${2+Math.random()*5}s`);
+        star.style.animationDelay = `${-Math.random()*6}s`;
+
+        starField.appendChild(star);
+      }
+
+      /* FLOATING DATA */
+      const dataField = document.getElementById("dataField");
+      const dataItems = [];
+
+      const colors = [
+        "orange",
+        "green",
+        "purple",
+        "blue",
+        "cyan"
+      ];
+
+      const labels = [
+        "CHI",
+        "ARC",
+        "MOV",
+        "OBJ",
+        "VIS",
+        "X",
+        "Y",
+        "SIG",
+        "FLUX",
+        "FRAME"
+      ];
+
+      function makeValue() {
+        const type = Math.floor(Math.random()*4);
+
+        if (type===0) {
+          return Math.floor(Math.random()*99999)
+            .toString()
+            .padStart(5,"0");
+        }
+
+        if (type===1) {
+          return "0x" +
+            Math.floor(Math.random()*65535)
+              .toString(16)
+              .toUpperCase()
+              .padStart(4,"0");
+        }
+
+        if (type===2) {
+          return labels[Math.floor(Math.random()*labels.length)] +
+            "_" +
+            Math.floor(Math.random()*999)
+              .toString()
+              .padStart(3,"0");
+        }
+
+        return (Math.random()*360).toFixed(3);
+      }
+
+      for (let i=0; i<75; i++) {
+        const item = document.createElement("span");
+
+        item.className =
+          `data-number ${colors[Math.floor(Math.random()*colors.length)]}`;
+
+        item.textContent = makeValue();
+        item.style.left = `${Math.random()*97}%`;
+        item.style.top = `${Math.random()*97}%`;
+        item.style.fontSize = `${6+Math.random()*4}px`;
+
+        dataField.appendChild(item);
+
+        dataItems.push({
+          element:item,
+          movement:2+Math.random()*8
+        });
+      }
+
+      /* CHANGE RANDOM DATA */
+      setInterval(() => {
+        dataItems.forEach(item => {
+          if (Math.random()>.76) {
+            item.element.textContent = makeValue();
+          }
+        });
+      },1100);
+
+      /* MOUSE DEPTH */
+      document.addEventListener("mousemove", e => {
+        const x = e.clientX/window.innerWidth-.5;
+        const y = e.clientY/window.innerHeight-.5;
+
+        dataItems.forEach(item => {
+          item.element.style.transform =
+            `translate(${x*item.movement}px, ${y*item.movement}px)`;
+        });
+      });
+
+    });
+  </script>
+
+</body>
+</html>

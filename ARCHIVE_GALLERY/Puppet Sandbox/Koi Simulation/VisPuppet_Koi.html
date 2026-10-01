@@ -1,0 +1,1203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Rigged Koi Fish - New Body 1 Adjustment</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+  body {
+    background:
+      radial-gradient(ellipse at 28% 18%, rgba(88,177,194,.12), transparent 34%),
+      radial-gradient(ellipse at 72% 64%, rgba(13,92,120,.10), transparent 38%),
+      linear-gradient(180deg, #0b4356 0%, #0b5268 46%, #082f45 100%);
+    font-family: system-ui, sans-serif;
+  }
+
+  /* Procedural animated water sits behind the fish. */
+  #waterCanvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .water {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    overflow: hidden;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse at 30% 26%, rgba(140,224,232,.035), transparent 30%),
+      radial-gradient(ellipse at 68% 72%, rgba(42,143,164,.028), transparent 36%);
+    animation: waterGlow 18s ease-in-out infinite alternate;
+  }
+
+  .water::before, .water::after {
+    content: "";
+    position: absolute;
+    inset: -35%;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    will-change: transform;
+  }
+
+  /* Long moving caustic streaks. */
+  .water::before {
+    background:
+      repeating-radial-gradient(ellipse at 40% 50%,
+        transparent 0 21px, rgba(161,235,255,.085) 22px 24px, transparent 25px 47px),
+      repeating-linear-gradient(112deg,
+        transparent 0 34px, rgba(190,243,255,.045) 35px 38px, transparent 39px 78px);
+    filter: blur(.4px);
+    opacity: .20;
+    animation: causticsA 22s linear infinite;
+  }
+
+  /* Smaller counter-moving ripple texture. */
+  .water::after {
+    background:
+      repeating-radial-gradient(ellipse at 60% 40%,
+        transparent 0 10px, rgba(255,255,255,.045) 11px 12px, transparent 13px 31px),
+      radial-gradient(circle at 40% 40%, rgba(100,211,255,.08), transparent 34%);
+    opacity: .14;
+    filter: blur(.7px);
+    animation: causticsB 23s linear infinite reverse;
+  }
+
+  @keyframes causticsA {
+    0%   { transform: translate3d(-2%,-2%,0) rotate(-2deg) scale(1.02); }
+    50%  { transform: translate3d(4%,3%,0) rotate(2deg) scale(1.08); }
+    100% { transform: translate3d(-1%,6%,0) rotate(5deg) scale(1.03); }
+  }
+  @keyframes causticsB {
+    0%   { transform: translate3d(4%,-3%,0) rotate(3deg) scale(1.04); }
+    50%  { transform: translate3d(-4%,4%,0) rotate(-3deg) scale(1.10); }
+    100% { transform: translate3d(2%,7%,0) rotate(-6deg) scale(1.05); }
+  }
+  @keyframes waterGlow {
+    from { filter: saturate(.98) brightness(.98); }
+    to   { filter: saturate(1.03) brightness(1.015); }
+  }
+
+  /* Entire fish coordinate space. */
+  #koi {
+    position: absolute;
+    z-index: 3;
+    width: 1060px;
+    height: 650px;
+    left: 0;
+    top: 0;
+    transform-origin: 50% 50%;
+    will-change: transform;
+    filter: drop-shadow(0 16px 14px rgba(0,0,0,.22));
+  }
+
+  #koi img {
+    position: absolute;
+    display: block;
+    max-width: none;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  /* Head remains the anchor. */
+  .head {
+    width: 257px;
+    height: 246px;
+    left: 32px;
+    top: 195px;
+    z-index: 10;
+  }
+
+  /*
+     IMPORTANT RIG RULE:
+     Every .joint div is placed at the CENTER of the circular socket.
+     The child image is shifted so its own socket center sits at 0,0.
+     Because the segments are nested, downstream pieces follow the parent
+     and cannot open gaps when a parent bends.
+  */
+  .joint {
+    position: absolute;
+    width: 0;
+    height: 0;
+    transform-origin: 0 0;
+    will-change: transform;
+  }
+
+  /* Head -> Body 1 socket center. */
+  .body1-joint {
+    left: 240px;
+    top: 338px;
+    z-index: 8;
+    animation: body1Swing 1.55s ease-in-out infinite;
+  }
+  .body1 {
+    width: 313px;
+    height: 368px;
+    left: -50px;   /* new Body 1: left socket center X */
+    top: -154px;   /* new Body 1: left socket center Y */
+    z-index: 8;
+  }
+
+  /* Body 1 -> Body 2. 217px is center-to-center between Body 1 sockets. */
+  .body2-joint {
+    left: 214px;   /* new Body 1 left socket -> right socket */
+    top: 0px;
+    z-index: 7;
+    animation: body2Swing 1.55s ease-in-out infinite;
+  }
+  .body2 {
+    width: 335px;
+    height: 245px;
+    left: -54px;   /* exact center of Body 2 left socket */
+    top: -128px;
+    z-index: 7;
+  }
+
+  /* Body 2 -> Tail. The tail's round socket is centered on Body 2's rear end. */
+  .tail-joint {
+    left: 261px;   /* Body 2 socket center -> rear attachment center */
+    top: 1px;
+    z-index: 6;
+    animation: tailSwing 1.55s ease-in-out infinite;
+  }
+  .tail {
+    width: 317px;
+    height: 338px;
+    left: -105px;  /* Tail socket center X */
+    top: -169px;   /* Tail socket center Y */
+    z-index: 6;
+  }
+
+  /* Body 1 top limb socket -> Fin 1 socket. */
+  .fin1-joint {
+    left: 42px;    /* fin socket centered on new Body 1 */
+    top: -63px;
+    z-index: 6;    /* behind Body 1 so the round joint is hidden cleanly */
+    animation: finTop 1.25s ease-in-out infinite;
+  }
+  .fin1 {
+    width: 324px;
+    height: 360px;
+    left: -127px;  /* exact center of Fin 1 round socket */
+    top: -230px;
+    z-index: 6;
+  }
+
+  /* Body 1 bottom limb socket -> Fin 2 socket. */
+  .fin2-joint {
+    left: 42px;    /* fin socket centered on new Body 1 */
+    top: 64px;
+    z-index: 6;    /* behind Body 1 for a clean socket overlap */
+    animation: finBottom 1.25s ease-in-out infinite;
+  }
+  .fin2 {
+    width: 318px;
+    height: 351px;
+    left: -154px;  /* exact center of Fin 2 round socket */
+    top: -118px;
+    z-index: 6;
+  }
+
+  /* Progressive bend: small at the front, larger toward the tail. */
+  @keyframes body1Swing {
+    0%,100% { transform: rotate(calc(var(--curl-b1, 0deg) - .7deg)); }
+    50%     { transform: rotate(calc(var(--curl-b1, 0deg) + .7deg)); }
+  }
+  @keyframes body2Swing {
+    0%,100% { transform: rotate(calc(var(--curl-b2, 0deg) + 2.6deg)); }
+    50%     { transform: rotate(calc(var(--curl-b2, 0deg) - 2.6deg)); }
+  }
+  @keyframes tailSwing {
+    0%,100% { transform: rotate(calc(var(--curl-tail, 0deg) - 7deg)); }
+    50%     { transform: rotate(calc(var(--curl-tail, 0deg) + 7deg)); }
+  }
+  @keyframes finTop {
+    0%,100% { transform: rotate(-2.5deg); }
+    50%     { transform: rotate( 4.5deg); }
+  }
+  @keyframes finBottom {
+    0%,100% { transform: rotate(2.5deg); }
+    50%     { transform: rotate(-4.5deg); }
+  }
+
+  .hint {
+    position: fixed;
+    z-index: 4;
+    left: 14px;
+    bottom: 12px;
+    padding: 7px 10px;
+    border-radius: 10px;
+    color: rgba(255,255,255,.88);
+    background: rgba(0,0,0,.22);
+    backdrop-filter: blur(5px);
+    font-size: 12px;
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .joint { animation: none !important; }
+  }
+
+  /* Subtle fish-like breathing.
+     The front of the fish expands the most, while the rear barely moves. */
+  .head{
+    transform-origin:78% 50%;
+    animation:koiHeadBreath 2.8s ease-in-out infinite;
+  }
+
+  .body1{
+    transform-origin:28% 50%;
+    animation:koiBodyBreath 2.8s ease-in-out infinite;
+  }
+
+  .body2{
+    transform-origin:20% 50%;
+    animation:koiRearBreath 2.8s ease-in-out infinite;
+  }
+
+  @keyframes koiHeadBreath{
+    0%,100%{ transform:scaleX(1) scaleY(1); }
+    48%{ transform:scaleX(1.006) scaleY(1.018); }
+    62%{ transform:scaleX(1.002) scaleY(.996); }
+  }
+
+  @keyframes koiBodyBreath{
+    0%,100%{ transform:scaleX(1) scaleY(1); }
+    48%{ transform:scaleX(1.004) scaleY(1.014); }
+    62%{ transform:scaleX(1.001) scaleY(.998); }
+  }
+
+  @keyframes koiRearBreath{
+    0%,100%{ transform:scaleX(1) scaleY(1); }
+    48%{ transform:scaleX(1.002) scaleY(1.006); }
+    62%{ transform:scaleX(1) scaleY(.999); }
+  }
+
+
+  /* Fins render over the body. */
+  .fin1-joint,
+  .fin2-joint {
+    z-index: 20;
+  }
+
+  .fin1,
+  .fin2 {
+    z-index: 21;
+  }
+
+
+  /* Brighter ocean lighting — preserves the existing animated water. */
+  body::after {
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:1;
+    background:
+      radial-gradient(ellipse at 48% 30%,
+        rgba(120,235,245,.22) 0%,
+        rgba(55,190,215,.12) 42%,
+        rgba(0,110,150,.04) 76%,
+        transparent 100%);
+    mix-blend-mode:screen;
+  }
+
+  #waterCanvas {
+    filter: brightness(1.20) saturate(1.08);
+  }
+
+
+  /* Command / live-data panel */
+  #commandPanel{
+    position:fixed;
+    right:16px;
+    top:16px;
+    z-index:10020;
+    width:270px;
+    padding:12px 14px;
+    border-radius:12px;
+    color:#eefcff;
+    background:rgba(0,20,34,.68);
+    border:1px solid rgba(180,240,255,.28);
+    box-shadow:0 10px 30px rgba(0,0,0,.24);
+    backdrop-filter:blur(8px);
+    font:12px/1.45 system-ui,sans-serif;
+    user-select:none;
+  }
+  #commandPanel.hidden{display:none}
+  #commandPanel .title{
+    font-size:14px;
+    font-weight:700;
+    margin-bottom:7px;
+  }
+  #commandPanel .row{display:flex;justify-content:space-between;gap:12px}
+  #commandPanel b{color:#bfefff}
+  #commandPanel .section{
+    margin-top:8px;
+    padding-top:7px;
+    border-top:1px solid rgba(210,245,255,.16);
+  }
+  #commandPanel .value{
+    font-variant-numeric:tabular-nums;
+    color:#fff;
+  }
+
+  /* Camera preview */
+  #cameraPreview{
+    position:fixed;
+    right:16px;
+    bottom:16px;
+    z-index:10010;
+    width:176px;
+    height:118px;
+    object-fit:cover;
+    transform:scaleX(-1);
+    border-radius:10px;
+    border:1px solid rgba(210,245,255,.32);
+    box-shadow:0 8px 25px rgba(0,0,0,.28);
+    opacity:.74;
+    display:none;
+  }
+  #cameraPreview.active{display:block}
+
+  /* Puppet idle: compact, softly curled resting pose. */
+  #koi.puppet-idle .body1-joint{
+    animation:none !important;
+    transform:rotate(18deg);
+    transition:transform 1.05s ease-in-out;
+  }
+  #koi.puppet-idle .body2-joint{
+    animation:none !important;
+    transform:rotate(31deg);
+    transition:transform 1.12s ease-in-out;
+  }
+  #koi.puppet-idle .tail-joint{
+    animation:none !important;
+    transform:rotate(43deg);
+    transition:transform 1.18s ease-in-out;
+  }
+  #koi.puppet-idle .fin1-joint{
+    animation:none !important;
+    transform:rotate(8deg);
+    transition:transform .9s ease-in-out;
+  }
+  #koi.puppet-idle .fin2-joint{
+    animation:none !important;
+    transform:rotate(-8deg);
+    transition:transform .9s ease-in-out;
+  }
+
+  /* Blue glow mode */
+  #koi.blue-glow{
+    filter:
+      drop-shadow(0 0 10px rgba(125,225,255,.90))
+      drop-shadow(0 0 24px rgba(30,160,255,.78))
+      drop-shadow(0 0 46px rgba(0,95,255,.48));
+  }
+
+  /* True transparent background toggle */
+  body.transparent-bg{
+    background:transparent !important;
+  }
+  body.transparent-bg #waterCanvas,
+  body.transparent-bg .water,
+  body.transparent-bg::after{
+    display:none !important;
+  }
+
+</style>
+</head>
+<body>
+<canvas id="waterCanvas" aria-hidden="true"></canvas>
+<div class="water"></div>
+
+<div id="koi" aria-label="Animated rigged koi fish">
+  <img class="head" src="Head 1.png" alt="" />
+
+  <div class="joint body1-joint">
+    <img class="body1" src="Body 1.png" alt="" />
+
+    <div class="joint fin1-joint">
+      <img class="fin1" src="Fin 1.png" alt="" />
+    </div>
+
+    <div class="joint fin2-joint">
+      <img class="fin2" src="Fin 2.png" alt="" />
+    </div>
+
+    <div class="joint body2-joint">
+      <img class="body2" src="Body 2.png" alt="" />
+
+      <div class="joint tail-joint">
+        <img class="tail" src="Tail 2.png" alt="" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="hint" id="statusText">Normal Mode — click anywhere to guide the koi.</div>
+
+<video id="cameraPreview" autoplay muted playsinline></video>
+
+<div id="commandPanel" class="hidden">
+  <div class="title">Virtual Puppet Mode</div>
+  <div><b>C</b> – Camera Tracking</div>
+  <div><b>P</b> – Puppet Mode</div>
+  <div><b>W A S D</b> – Movement</div>
+  <div><b>1</b> – Idle Curl Toggle</div>
+  <div><b>2</b> – Blue Glow Toggle</div>
+  <div><b>B</b> – Transparent Background</div>
+  <div><b>0</b> – Hide / Show Menu</div>
+
+  <div class="section">
+    <div class="row"><span>Puppet</span><span id="modeValue" class="value">OFF</span></div>
+    <div class="row"><span>Puppet X</span><span id="puppetX" class="value">0</span></div>
+    <div class="row"><span>Puppet Y</span><span id="puppetY" class="value">0</span></div>
+  </div>
+
+  <div class="section">
+    <div class="row"><span>Camera</span><span id="cameraValue" class="value">OFF</span></div>
+    <div class="row"><span>Motion X</span><span id="cameraX" class="value">0.000</span></div>
+    <div class="row"><span>Motion Y</span><span id="cameraY" class="value">0.000</span></div>
+    <div class="row"><span>Motion Amount</span><span id="cameraAmount" class="value">0</span></div>
+    <div class="row"><span>Δ X</span><span id="cameraDX" class="value">0.000</span></div>
+    <div class="row"><span>Δ Y</span><span id="cameraDY" class="value">0.000</span></div>
+  </div>
+</div>
+
+
+<script>
+(() => {
+  /* More realistic animated water: layered refraction, caustics, suspended particles and soft ripples. */
+  const canvas = document.getElementById('waterCanvas');
+  const ctx = canvas.getContext('2d');
+  let cw = 0, ch = 0, dpr = 1;
+  const motes = [];
+  const ripples = [];
+  const causticSeeds = Array.from({length: 14}, () => ({
+    x: Math.random(), y: Math.random(),
+    rx: 40 + Math.random()*120,
+    ry: 12 + Math.random()*42,
+    phase: Math.random()*Math.PI*2,
+    drift: .12 + Math.random()*.28
+  }));
+
+  function resizeWater() {
+    dpr = Math.min(1.25, window.devicePixelRatio || 1);
+    cw = innerWidth; ch = innerHeight;
+    canvas.width = Math.round(cw*dpr);
+    canvas.height = Math.round(ch*dpr);
+    canvas.style.width = cw+'px';
+    canvas.style.height = ch+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+
+    motes.length = 0;
+    const count = Math.max(36, Math.round((cw*ch)/26000));
+    for (let i=0;i<count;i++) {
+      motes.push({
+        x: Math.random()*cw,
+        y: Math.random()*ch,
+        r: .35 + Math.random()*1.35,
+        a: .025 + Math.random()*.13,
+        vx: -.04 + Math.random()*.08,
+        vy: -.025 + Math.random()*.05,
+        phase: Math.random()*Math.PI*2
+      });
+    }
+  }
+
+  function drawCaustic(seed, t, layer=0) {
+    const x = (seed.x*cw + Math.sin(t*seed.drift + seed.phase)*70 + layer*18) % (cw+180) - 90;
+    const y = (seed.y*ch + Math.cos(t*seed.drift*.83 + seed.phase)*55 + layer*11) % (ch+140) - 70;
+    const wobble = 1 + Math.sin(t*.55 + seed.phase)*.16;
+    ctx.save();
+    ctx.translate(x,y);
+    ctx.rotate(Math.sin(t*.22+seed.phase)*.42);
+    ctx.scale(wobble, 1/wobble);
+    ctx.beginPath();
+    ctx.ellipse(0,0,seed.rx*(1+layer*.35),seed.ry*(1+layer*.25),0,0,Math.PI*2);
+    ctx.strokeStyle = layer===0 ? 'rgba(205,245,255,.085)' : 'rgba(130,220,245,.045)';
+    ctx.lineWidth = layer===0 ? 1.2 : 2.2;
+        ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawSurfaceBands(t) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+    for (let row=0; row<8; row++) {
+      const y0 = ch*(row+.35)/8;
+      ctx.beginPath();
+      for (let x=-60; x<=cw+60; x+=24) {
+        const y = y0
+          + Math.sin(x*.0052 + t*.42 + row*.83)*7.5
+          + Math.sin(x*.0108 - t*.31 + row*.41)*3.2
+          + Math.sin(x*.0023 + t*.12)*5.0;
+        if (x===-60) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      }
+      ctx.strokeStyle = `rgba(170,232,245,${0.018 + (row%3)*0.005})`;
+      ctx.lineWidth = 1.0 + (row%2)*.6;
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawVignette() {
+    ctx.fillStyle = 'rgba(0,12,25,.035)';
+    ctx.fillRect(0,0,cw,ch);
+  }
+
+  function waterFrame(ms) {
+    const t = ms*.001;
+    ctx.clearRect(0,0,cw,ch);
+
+    // subtle depth haze
+    const haze = ctx.createLinearGradient(0,0,0,ch);
+    haze.addColorStop(0,'rgba(105,200,220,.025)');
+    haze.addColorStop(.55,'rgba(17,115,145,.02)');
+    haze.addColorStop(1,'rgba(0,20,42,.09)');
+    ctx.fillStyle = haze;
+    ctx.fillRect(0,0,cw,ch);
+
+    drawSurfaceBands(t);
+
+    // irregular refracted caustic loops
+    ctx.globalCompositeOperation = 'screen';
+    for (const c of causticSeeds) {
+      drawCaustic(c,t,0);
+      if (c.rx>112) drawCaustic(c,t+.9,1);
+    }
+
+    // drifting suspended particles, intentionally very faint
+    ctx.globalCompositeOperation = 'source-over';
+    for (const p of motes) {
+      p.x += p.vx + Math.sin(t*.5+p.phase)*.012;
+      p.y += p.vy + Math.cos(t*.42+p.phase)*.01;
+      if (p.x<-4) p.x=cw+4; if (p.x>cw+4) p.x=-4;
+      if (p.y<-4) p.y=ch+4; if (p.y>ch+4) p.y=-4;
+      const pulse=.7+.3*Math.sin(t*.85+p.phase);
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(205,240,245,${p.a*pulse})`;
+      ctx.fill();
+    }
+
+    // natural-looking occasional surface rings
+    if (Math.random()<.005 && ripples.length<5) {
+      ripples.push({x:Math.random()*cw,y:Math.random()*ch,r:6,life:1,stretch:.72+Math.random()*.38});
+    }
+    for (let i=ripples.length-1;i>=0;i--) {
+      const r=ripples[i];
+      r.r += .34;
+      r.life -= .0026;
+      const a=Math.max(0,r.life);
+      for (let ring=0;ring<2;ring++) {
+        ctx.beginPath();
+        ctx.ellipse(r.x,r.y,(r.r+ring*7)*1.55,(r.r+ring*7)*r.stretch,0,0,Math.PI*2);
+        ctx.strokeStyle=`rgba(180,230,238,${a*(ring===0?.040:.020)})`;
+        ctx.lineWidth=ring===0?1.05:.75;
+        ctx.stroke();
+      }
+      if (r.life<=0) ripples.splice(i,1);
+    }
+
+    drawVignette();
+    requestAnimationFrame(waterFrame);
+  }
+
+  addEventListener('resize', resizeWater);
+  resizeWater();
+  requestAnimationFrame(waterFrame);
+
+  const koi = document.getElementById('koi');
+  let x = innerWidth * 0.68;
+  let y = innerHeight * 0.52;
+  let vx = -0.75;
+  let vy = 0.18;
+  let targetX = innerWidth * 0.25;
+  let targetY = innerHeight * 0.45;
+  let last = performance.now();
+  let nextTargetAt = 0;
+
+  /* Rendered heading and progressive articulated curl.
+     The head leads; rear body sections follow with increasing bend. */
+  let visualHeading = Math.atan2(vy, vx) * 180 / Math.PI + 180;
+  let curl1 = 0;
+  let curl2 = 0;
+  let curlTail = 0;
+  let tailLag = 0;
+
+  /* Wall-turn state: the head slowly makes a 180-degree U-turn,
+     then the body and tail follow the curve. */
+  let wallTurning = false;
+  let wallTurnStart = 0;
+  let wallTurnDuration = 3100;
+  let wallTurnFromHeading = 0;
+  let wallTurnToHeading = 0;
+  let wallTurnSign = 1;
+  let wallTurnSpeed = 1.0;
+  let wallTurnSide = '';
+
+  const puppet = {
+    active:false,
+    keys:new Set(),
+    idle:false,
+    glow:false,
+    menuVisible:false,
+    speed:.30
+  };
+
+  const cameraMode = {
+    active:false,
+    stream:null,
+    canvas:document.createElement('canvas'),
+    ctx:null,
+    previous:null,
+    x:.5,
+    y:.5,
+    amount:0,
+    dx:0,
+    dy:0,
+    lastX:.5,
+    lastY:.5,
+    lastSample:0
+  };
+  cameraMode.canvas.width=96;
+  cameraMode.canvas.height=72;
+  cameraMode.ctx=cameraMode.canvas.getContext('2d',{willReadFrequently:true});
+
+  const cameraPreview=document.getElementById('cameraPreview');
+  const commandPanel=document.getElementById('commandPanel');
+  const statusText=document.getElementById('statusText');
+  const modeValue=document.getElementById('modeValue');
+  const puppetXValue=document.getElementById('puppetX');
+  const puppetYValue=document.getElementById('puppetY');
+  const cameraValue=document.getElementById('cameraValue');
+  const cameraXValue=document.getElementById('cameraX');
+  const cameraYValue=document.getElementById('cameraY');
+  const cameraAmountValue=document.getElementById('cameraAmount');
+  const cameraDXValue=document.getElementById('cameraDX');
+  const cameraDYValue=document.getElementById('cameraDY');
+
+  function setStatus(msg){
+    statusText.textContent=msg;
+  }
+
+  function updateLivePanel(){
+    modeValue.textContent=puppet.active?'ON':'OFF';
+    puppetXValue.textContent=Math.round(x);
+    puppetYValue.textContent=Math.round(y);
+    cameraValue.textContent=cameraMode.active?'ON':'OFF';
+    cameraXValue.textContent=cameraMode.x.toFixed(3);
+    cameraYValue.textContent=cameraMode.y.toFixed(3);
+    cameraAmountValue.textContent=Math.round(cameraMode.amount);
+    cameraDXValue.textContent=cameraMode.dx.toFixed(3);
+    cameraDYValue.textContent=cameraMode.dy.toFixed(3);
+  }
+
+  function setIdle(on){
+    puppet.idle=on;
+    koi.classList.toggle('puppet-idle',on);
+    if(on){vx=0;vy=0;wallTurning=false;}
+  }
+
+  function togglePuppet(){
+    puppet.active=!puppet.active;
+
+    if(puppet.active){
+      if(cameraMode.active) stopCamera();
+      wallTurning=false;
+      vx=0;
+      vy=0;
+      puppet.menuVisible=true;
+      commandPanel.classList.remove('hidden');
+      setStatus('Puppet Mode ON — WASD controls the koi');
+    }else{
+      puppet.keys.clear();
+      setIdle(false);
+      puppet.menuVisible=false;
+      commandPanel.classList.add('hidden');
+      nextTargetAt=performance.now()+1000;
+      setStatus('Normal Mode — click anywhere to guide the koi');
+    }
+
+    updateLivePanel();
+  }
+
+  async function startCamera(){
+    if(cameraMode.active) return;
+    if(puppet.active) togglePuppet();
+    try{
+      cameraMode.stream=await navigator.mediaDevices.getUserMedia({
+        video:{facingMode:'user'},audio:false
+      });
+      cameraPreview.srcObject=cameraMode.stream;
+      await cameraPreview.play();
+      cameraPreview.classList.add('active');
+      cameraMode.active=true;
+      setIdle(false);
+      cameraMode.previous=null;
+      wallTurning=false;
+      nextTargetAt=Infinity;
+      puppet.menuVisible=true;
+      commandPanel.classList.remove('hidden');
+      setStatus('Camera Mode ON — koi follows detected movement');
+      updateLivePanel();
+    }catch(err){
+      console.warn('Camera unavailable:',err);
+    }
+  }
+
+  function stopCamera(){
+    cameraMode.active=false;
+    cameraMode.previous=null;
+    if(cameraMode.stream){
+      cameraMode.stream.getTracks().forEach(t=>t.stop());
+      cameraMode.stream=null;
+    }
+    cameraPreview.srcObject=null;
+    cameraPreview.classList.remove('active');
+    nextTargetAt=performance.now()+1200;
+
+    if(!puppet.active){
+      puppet.menuVisible=false;
+      commandPanel.classList.add('hidden');
+    }
+
+    setStatus('Normal Mode — click anywhere to guide the koi');
+    updateLivePanel();
+  }
+
+  function toggleCamera(){
+    if(cameraMode.active) stopCamera();
+    else startCamera();
+  }
+
+  function sampleCamera(now){
+    if(!cameraMode.active || cameraPreview.readyState<2 || now-cameraMode.lastSample<55) return;
+    cameraMode.lastSample=now;
+
+    const c=cameraMode.canvas, cc=cameraMode.ctx;
+    cc.save();
+    cc.scale(-1,1);
+    cc.drawImage(cameraPreview,-c.width,0,c.width,c.height);
+    cc.restore();
+
+    const frame=cc.getImageData(0,0,c.width,c.height).data;
+    if(!cameraMode.previous){
+      cameraMode.previous=new Uint8ClampedArray(frame);
+      return;
+    }
+
+    let sum=0,sx=0,sy=0,count=0;
+    const threshold=34*3;
+    for(let py=0;py<c.height;py+=2){
+      for(let px=0;px<c.width;px+=2){
+        const i=(py*c.width+px)*4;
+        const diff=
+          Math.abs(frame[i]-cameraMode.previous[i])+
+          Math.abs(frame[i+1]-cameraMode.previous[i+1])+
+          Math.abs(frame[i+2]-cameraMode.previous[i+2]);
+        if(diff>threshold){
+          const w=diff-threshold;
+          sum+=w;
+          sx+=px*w;
+          sy+=py*w;
+          count++;
+        }
+      }
+    }
+    cameraMode.previous.set(frame);
+
+    cameraMode.amount=count;
+    if(sum>0 && count>8){
+      const nx=(sx/sum)/c.width;
+      const ny=(sy/sum)/c.height;
+      cameraMode.dx=nx-cameraMode.lastX;
+      cameraMode.dy=ny-cameraMode.lastY;
+      cameraMode.lastX=nx;
+      cameraMode.lastY=ny;
+      cameraMode.x=nx;
+      cameraMode.y=ny;
+
+      /* Camera movement becomes the swimming target. */
+      const marginX=Math.max(145,Math.min(innerWidth*.18,220));
+      const marginY=Math.max(115,Math.min(innerHeight*.18,185));
+      targetX=marginX+nx*Math.max(1,innerWidth-marginX*2);
+      targetY=marginY+ny*Math.max(1,innerHeight-marginY*2);
+      nextTargetAt=Infinity;
+    }else{
+      cameraMode.dx*=.82;
+      cameraMode.dy*=.82;
+    }
+  }
+
+  window.addEventListener('keydown',e=>{
+    const k=e.key.toLowerCase();
+
+    /* Global mode toggles, matching the earlier puppet rigs. */
+    if(k==='p'&&!e.repeat){
+      e.preventDefault();
+      togglePuppet();
+      return;
+    }
+
+    if(k==='c'&&!e.repeat){
+      e.preventDefault();
+      toggleCamera();
+      return;
+    }
+
+    /* 0 shows/hides the live command panel while a control mode is active. */
+    if(k==='0'&&!e.repeat && (puppet.active || cameraMode.active)){
+      puppet.menuVisible=!puppet.menuVisible;
+      commandPanel.classList.toggle('hidden',!puppet.menuVisible);
+      return;
+    }
+
+    /* Remaining commands belong to Puppet Mode only. */
+    if(!puppet.active) return;
+
+    if(k==='1'&&!e.repeat){
+      setIdle(!puppet.idle);
+      setStatus(puppet.idle?'Puppet Idle ON — koi curled and resting':'Puppet Idle OFF');
+      return;
+    }
+
+    if(k==='2'&&!e.repeat){
+      puppet.glow=!puppet.glow;
+      koi.classList.toggle('blue-glow',puppet.glow);
+      setStatus(puppet.glow?'Blue Glow ON':'Blue Glow OFF');
+      return;
+    }
+
+    if(k==='b'&&!e.repeat){
+      const transparent=document.body.classList.toggle('transparent-bg');
+      setStatus(transparent?'Transparent Background ON':'Ocean Background ON');
+      return;
+    }
+
+    if(['w','a','s','d'].includes(k)){
+      e.preventDefault();
+      puppet.keys.add(k);
+      if(puppet.idle) setIdle(false);
+    }
+  });
+
+  window.addEventListener('keyup',e=>{
+    puppet.keys.delete(e.key.toLowerCase());
+  });
+
+  function shortestAngleDelta(fromDeg, toDeg) {
+    return (toDeg - fromDeg + 540) % 360 - 180;
+  }
+
+  function chooseTarget() {
+    /* Keep the koi on-screen. New targets stay comfortably inside the bounds,
+       causing it to reverse direction before any artwork can leave the frame. */
+    const margin = Math.max(145, Math.min(innerWidth, innerHeight) * 0.18);
+    targetX = margin + Math.random() * Math.max(1, innerWidth - margin * 2);
+    targetY = margin + Math.random() * Math.max(1, innerHeight - margin * 2);
+    nextTargetAt = performance.now() + 5000 + Math.random() * 5000;
+  }
+
+  addEventListener('pointerdown', e => {
+    if (wallTurning || puppet.active || cameraMode.active) return;
+    targetX = e.clientX;
+    targetY = e.clientY;
+    nextTargetAt = performance.now() + 8000;
+  });
+
+  function animate(now) {
+    const dt = Math.min(2.2, (now - last) / 16.6667);
+    last = now;
+
+    sampleCamera(now);
+    updateLivePanel();
+
+    /* Puppet Mode owns movement and disables normal autonomous swimming. */
+    if(puppet.active){
+      wallTurning=false;
+
+      if(!puppet.idle){
+        let ix=0,iy=0;
+        if(puppet.keys.has('a')) ix-=1;
+        if(puppet.keys.has('d')) ix+=1;
+        if(puppet.keys.has('w')) iy-=1;
+        if(puppet.keys.has('s')) iy+=1;
+
+        if(ix||iy){
+          const mag=Math.hypot(ix,iy)||1;
+          ix/=mag; iy/=mag;
+          vx += ix*puppet.speed*dt;
+          vy += iy*puppet.speed*dt;
+        }
+
+        vx*=Math.pow(.965,dt);
+        vy*=Math.pow(.965,dt);
+
+        const maxSpeed=3.15;
+        const sp=Math.hypot(vx,vy);
+        if(sp>maxSpeed){vx=vx/sp*maxSpeed;vy=vy/sp*maxSpeed;}
+
+        x+=vx*dt;
+        y+=vy*dt;
+
+        const wallX=Math.max(135,Math.min(innerWidth*.18,220));
+        const wallY=Math.max(115,Math.min(innerHeight*.18,185));
+        if(x<wallX){x=wallX;vx=Math.abs(vx)*.25;}
+        if(x>innerWidth-wallX){x=innerWidth-wallX;vx=-Math.abs(vx)*.25;}
+        if(y<wallY){y=wallY;vy=Math.abs(vy)*.25;}
+        if(y>innerHeight-wallY){y=innerHeight-wallY;vy=-Math.abs(vy)*.25;}
+
+        if(Math.hypot(vx,vy)>.06){
+          const targetHeading=Math.atan2(vy,vx)*180/Math.PI+180;
+          const headingDelta=shortestAngleDelta(visualHeading,targetHeading);
+          const step=Math.max(-.82*dt,Math.min(.82*dt,headingDelta*.036*dt));
+          visualHeading+=step;
+
+          const curlTarget=Math.max(-22,Math.min(22,headingDelta*.72));
+          curl1+=(curlTarget*.48-curl1)*Math.min(1,.065*dt);
+          curl2+=(curlTarget*.78-curl2)*Math.min(1,.046*dt);
+          tailLag+=(curl2-tailLag)*Math.min(1,.024*dt);
+          curlTail+=(tailLag*.92+curlTarget*.16-curlTail)*Math.min(1,.021*dt);
+        }
+      }else{
+        vx=0;vy=0;
+        /* Idle class owns the visible curl; zero dynamic curl underneath. */
+        curl1+=(0-curl1)*Math.min(1,.04*dt);
+        curl2+=(0-curl2)*Math.min(1,.035*dt);
+        curlTail+=(0-curlTail)*Math.min(1,.03*dt);
+      }
+
+      koi.style.setProperty('--curl-b1',`${curl1.toFixed(3)}deg`);
+      koi.style.setProperty('--curl-b2',`${curl2.toFixed(3)}deg`);
+      koi.style.setProperty('--curl-tail',`${curlTail.toFixed(3)}deg`);
+
+      const fit=Math.min(innerWidth/1350,innerHeight/850);
+      const scale=Math.max(.28,Math.min(.76,fit));
+      koi.style.transform=
+        `translate3d(${x-530}px, ${y-325}px, 0) rotate(${visualHeading}deg) scale(${scale})`;
+
+      requestAnimationFrame(animate);
+      return;
+    }
+
+    if (!wallTurning && !cameraMode.active &&
+        (now > nextTargetAt || Math.hypot(targetX - x, targetY - y) < 100)) {
+      chooseTarget();
+    }
+
+    if(puppet.idle){
+      wallTurning=false;
+      vx=0;vy=0;
+      const fit=Math.min(innerWidth/1350,innerHeight/850);
+      const scale=Math.max(.28,Math.min(.76,fit));
+      koi.style.transform=
+        `translate3d(${x-530}px, ${y-325}px, 0) rotate(${visualHeading}deg) scale(${scale})`;
+      requestAnimationFrame(animate);
+      return;
+    }
+
+    if (wallTurning) {
+      /* Slow, fish-like U-turn at the wall.
+         The head turns first. The bend then travels through Body 1,
+         Body 2 and finally the tail. */
+      const t = Math.min(1, (now - wallTurnStart) / wallTurnDuration);
+      const smooth = t * t * (3 - 2 * t);
+
+      visualHeading =
+        wallTurnFromHeading + wallTurnSign * 180 * smooth;
+
+      /* Strongest curl occurs around the middle of the U-turn. */
+      const curve = Math.sin(t * Math.PI) * wallTurnSign;
+      const b1Target = curve * 14;
+      const b2Target = curve * 24;
+
+      /* The tail reacts to the body with delayed counter-flex.
+         It starts gently, trails behind Body 2, then settles after the turn. */
+      tailLag += (curl2 - tailLag) * Math.min(1, .030 * dt);
+      const tailTarget = tailLag * .92 + curve * 6;
+
+      curl1 += (b1Target - curl1) * Math.min(1, .070 * dt);
+      curl2 += (b2Target - curl2) * Math.min(1, .052 * dt);
+      curlTail += (tailTarget - curlTail) * Math.min(1, .026 * dt);
+
+      koi.style.setProperty('--curl-b1', `${curl1.toFixed(3)}deg`);
+      koi.style.setProperty('--curl-b2', `${curl2.toFixed(3)}deg`);
+      koi.style.setProperty('--curl-tail', `${curlTail.toFixed(3)}deg`);
+
+      /* Almost stop at the wall while turning, with only a tiny inward creep.
+         This avoids a rigid pivot while keeping the fish on-screen. */
+      const motionRad = (visualHeading - 180) * Math.PI / 180;
+      const creep = wallTurnSpeed * (.045 + .13 * smooth);
+
+      let cx = Math.cos(motionRad) * creep;
+      let cy = Math.sin(motionRad) * creep;
+
+      if (wallTurnSide === 'left' && cx < 0) cx = 0;
+      if (wallTurnSide === 'right' && cx > 0) cx = 0;
+      if (wallTurnSide === 'top' && cy < 0) cy = 0;
+      if (wallTurnSide === 'bottom' && cy > 0) cy = 0;
+
+      x += cx * dt;
+      y += cy * dt;
+
+      const wallX = Math.max(135, Math.min(innerWidth * .18, 220));
+      const wallY = Math.max(115, Math.min(innerHeight * .18, 185));
+      x = Math.max(wallX, Math.min(innerWidth - wallX, x));
+      y = Math.max(wallY, Math.min(innerHeight - wallY, y));
+
+      const fit = Math.min(innerWidth / 1350, innerHeight / 850);
+      const scale = Math.max(0.28, Math.min(0.76, fit));
+
+      koi.style.transform =
+        `translate3d(${x - 530}px, ${y - 325}px, 0) rotate(${visualHeading}deg) scale(${scale})`;
+
+      if (t >= 1) {
+        wallTurning = false;
+
+        /* After the head has completed the turn, movement follows exactly
+           where the head is now pointing. */
+        const outRad = (visualHeading - 180) * Math.PI / 180;
+        const outSpeed = Math.max(1.15, wallTurnSpeed);
+        vx = Math.cos(outRad) * outSpeed;
+        vy = Math.sin(outRad) * outSpeed;
+
+        const travel = Math.max(480, Math.min(innerWidth, innerHeight) * .82);
+        targetX = Math.max(wallX, Math.min(innerWidth - wallX, x + Math.cos(outRad) * travel));
+        targetY = Math.max(wallY, Math.min(innerHeight - wallY, y + Math.sin(outRad) * travel));
+        nextTargetAt = now + 5200;
+      }
+
+      requestAnimationFrame(animate);
+      return;
+    }
+
+    const dx = targetX - x;
+    const dy = targetY - y;
+    const d = Math.max(1, Math.hypot(dx, dy));
+    const desiredSpeed = Math.min(2.0, 0.82 + d / 650);
+    const desiredVX = dx / d * desiredSpeed;
+    const desiredVY = dy / d * desiredSpeed;
+
+    const steer = 0.0145 * dt;
+    vx += (desiredVX - vx) * steer;
+    vy += (desiredVY - vy) * steer;
+
+    x += vx * dt;
+    y += vy * dt;
+
+    /* Keep the koi's center inside a safe visible area. If it reaches a wall,
+       choose a fresh inward target instead of allowing the rig offscreen. */
+    const wallX = Math.max(135, Math.min(innerWidth * .18, 220));
+    const wallY = Math.max(115, Math.min(innerHeight * .18, 185));
+
+    let hitWall = false;
+    let wallSide = '';
+
+    if (x < wallX) {
+      x = wallX;
+      hitWall = true;
+      wallSide = 'left';
+    } else if (x > innerWidth - wallX) {
+      x = innerWidth - wallX;
+      hitWall = true;
+      wallSide = 'right';
+    }
+
+    if (y < wallY) {
+      y = wallY;
+      hitWall = true;
+      wallSide = 'top';
+    } else if (y > innerHeight - wallY) {
+      y = innerHeight - wallY;
+      hitWall = true;
+      wallSide = 'bottom';
+    }
+
+    if (hitWall && !wallTurning) {
+      /* Begin a committed U-turn.
+         The destination is exactly opposite the incoming heading. */
+      wallTurning = true;
+      wallTurnStart = now;
+      wallTurnFromHeading = visualHeading;
+      wallTurnSpeed = Math.max(1.0, Math.hypot(vx, vy));
+      wallTurnSide = wallSide;
+
+      /* Pick the curl direction that naturally carries the head into the tank
+         instead of wrapping the body toward the wall. */
+      if (wallSide === 'left') {
+        wallTurnSign = (vy >= 0) ? -1 : 1;
+      } else if (wallSide === 'right') {
+        wallTurnSign = (vy >= 0) ? 1 : -1;
+      } else if (wallSide === 'top') {
+        wallTurnSign = (vx >= 0) ? 1 : -1;
+      } else {
+        wallTurnSign = (vx >= 0) ? -1 : 1;
+      }
+
+      wallTurnToHeading = wallTurnFromHeading + wallTurnSign * 180;
+      vx = 0;
+      vy = 0;
+      nextTargetAt = now + 6000;
+
+      requestAnimationFrame(animate);
+      return;
+    }
+
+    /* Head orientation changes gradually. */
+    const targetHeading = Math.atan2(vy, vx) * 180 / Math.PI + 180;
+    const headingDelta = shortestAngleDelta(visualHeading, targetHeading);
+
+    const maxHeadTurn = .82 * dt;
+    const headStep = headingDelta * Math.min(1, .036 * dt);
+    visualHeading += Math.max(-maxHeadTurn, Math.min(maxHeadTurn, headStep));
+
+    /* Ordinary swimming stays soft. The dramatic snake-like bend is reserved
+       for actual wall U-turns. */
+    const turnStrength = Math.min(1, Math.abs(headingDelta) / 80);
+    const curlTarget = Math.max(-22, Math.min(22, headingDelta * .72));
+
+    curl1 += (curlTarget * .48 - curl1) *
+      Math.min(1, (.065 + turnStrength * .011) * dt);
+
+    curl2 += (curlTarget * .78 - curl2) *
+      Math.min(1, (.046 + turnStrength * .009) * dt);
+
+    /* Tail follows the rear body instead of independently snapping toward
+       the heading. This produces a softer fish-like trailing motion. */
+    tailLag += (curl2 - tailLag) *
+      Math.min(1, (.024 + turnStrength * .005) * dt);
+
+    const naturalTailTarget = tailLag * .92 + curlTarget * .16;
+    curlTail += (naturalTailTarget - curlTail) *
+      Math.min(1, (.021 + turnStrength * .004) * dt);
+
+    koi.style.setProperty('--curl-b1', `${curl1.toFixed(3)}deg`);
+    koi.style.setProperty('--curl-b2', `${curl2.toFixed(3)}deg`);
+    koi.style.setProperty('--curl-tail', `${curlTail.toFixed(3)}deg`);
+
+    const fit = Math.min(innerWidth / 1350, innerHeight / 850);
+    const scale = Math.max(0.28, Math.min(0.76, fit));
+
+    koi.style.transform =
+      `translate3d(${x - 530}px, ${y - 325}px, 0) rotate(${visualHeading}deg) scale(${scale})`;
+
+    requestAnimationFrame(animate);
+  }
+
+  chooseTarget();
+  setStatus('Normal Mode — click anywhere to guide the koi');
+  updateLivePanel();
+  requestAnimationFrame(animate);
+})();
+</script>
+</body>
+</html>

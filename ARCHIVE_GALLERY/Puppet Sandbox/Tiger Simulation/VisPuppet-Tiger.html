@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Roaming Tiger Rig</title>
+<style>
+  html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background: linear-gradient(180deg, #536b45 0%, #73845a 48%, #3f5137 100%);
+    font-family:system-ui,Segoe UI,Arial,sans-serif;
+  }
+
+  .ground{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    background:
+      repeating-linear-gradient(110deg,
+        rgba(255,255,255,.018) 0 2px,
+        transparent 2px 13px);
+    opacity:.7;
+  }
+
+  #tiger{
+    position:absolute;
+    left:50%;
+    top:55%;
+    width:500px;
+    height:330px;
+    transform:translate(-50%,-50%);
+    transform-origin:50% 60%;
+    will-change:left,top,transform;
+    pointer-events:auto;
+    cursor:pointer;
+  }
+
+  #facing{
+    position:absolute;
+    inset:0;
+    transform-origin:50% 50%;
+    will-change:transform;
+  }
+
+  .part{
+    position:absolute;
+    display:block;
+    user-select:none;
+    pointer-events:none;
+    -webkit-user-drag:none;
+    transform:translateZ(0);
+    backface-visibility:hidden;
+  }
+
+  /* BODY */
+  #body{
+    width:480px;
+    left:0;
+    top:10px;
+    z-index:5;
+    transform-origin:50% 75%;
+    will-change:transform;
+  }
+
+  /* FRONT LEG */
+  #leg1{
+    width:175px;
+    left:50px;
+    top:135px;
+    z-index:7;
+    transform-origin:49% 24%;
+    will-change:transform;
+  }
+
+  /* BACK LEG */
+  #leg2{
+    width:175px;
+    left:208px;
+    top:149px;
+    z-index:6;
+    transform-origin:49% 24%;
+    will-change:transform;
+  }
+
+  /* TAIL - root is the round end near lower-left of the PNG */
+  #tail{
+    width:285px;
+    left:318px;
+    top:22px;
+    z-index:3;
+    transform-origin:16% 82%;
+    will-change:transform;
+  }
+
+  #shadow{
+    position:absolute;
+    left:76px;
+    top:270px;
+    width:365px;
+    height:46px;
+    border-radius:50%;
+    background:rgba(0,0,0,.33);
+    filter:blur(8px);
+    z-index:0;
+    transform-origin:center;
+    transition:transform 1.4s ease, opacity 1.4s ease;
+  }
+
+  #zzz{
+    position:absolute;
+    left:72px;
+    top:4px;
+    z-index:20;
+    font-weight:700;
+    font-size:24px;
+    letter-spacing:4px;
+    color:white;
+    opacity:0;
+    transform:translateY(12px);
+    pointer-events:none;
+  }
+
+  #status{
+    position:fixed;
+    left:16px;
+    bottom:14px;
+    color:rgba(255,255,255,.72);
+    font-size:13px;
+    background:rgba(0,0,0,.28);
+    padding:7px 10px;
+    border-radius:8px;
+    pointer-events:none;
+  }
+
+  /* Sleeping pose */
+  #tiger.sleeping #body{
+    animation:sleepBreath 3.4s ease-in-out infinite;
+  }
+  #tiger.sleeping #leg1{
+    transform:translate(45px,20px) rotate(72deg) scale(.92);
+  }
+  #tiger.sleeping #leg2{
+    transform:translate(-25px,28px) rotate(63deg) scale(.92);
+  }
+  #tiger.sleeping #tail{
+    transform:translate(-28px,112px) rotate(-33deg) scale(.94);
+  }
+  #tiger.sleeping #shadow{
+    transform:scaleX(1.15) scaleY(.8);
+    opacity:.42;
+  }
+  #tiger.sleeping #zzz{
+    animation:zzz 2.3s ease-in-out infinite;
+  }
+
+  @keyframes sleepBreath{
+    0%,100%{ transform:translateY(34px) rotate(.5deg) scaleY(.985); }
+    50%{ transform:translateY(32px) rotate(.5deg) scaleY(1.01); }
+  }
+
+  @keyframes zzz{
+    0%{opacity:0; transform:translate(0,12px) scale(.9)}
+    25%{opacity:.9}
+    75%{opacity:.65}
+    100%{opacity:0; transform:translate(24px,-26px) scale(1.18)}
+  }
+
+  @media (max-width:700px){
+    #tiger{ transform:translate(-50%,-50%) scale(.72); }
+  }
+
+#commandBox{position:fixed;right:16px;top:16px;z-index:1000;min-width:260px;max-width:320px;padding:12px 14px;border-radius:12px;background:rgba(18,22,16,.86);color:#fff;border:1px solid rgba(255,255,255,.22);box-shadow:0 8px 28px rgba(0,0,0,.28);font-size:13px;line-height:1.5;display:none}
+#commandBox.visible{display:block} #commandBox .title{font-weight:800;margin-bottom:8px} #commandBox .group{margin-top:8px;padding-top:7px;border-top:1px solid rgba(255,255,255,.14)} #commandBox b{color:#ffd987}
+html.transparent-bg,body.transparent-bg{background:transparent!important;background-image:none!important} body.transparent-bg .ground{display:none!important}
+#tiger{transition:opacity .8s ease} #tiger.vanished{opacity:0!important}
+#tiger.puppet-idle #body{animation:sleepBreath 3.4s ease-in-out infinite}
+#tiger.puppet-idle #leg1{transform:translate(45px,20px) rotate(72deg) scale(.92)}
+#tiger.puppet-idle #leg2{transform:translate(-25px,28px) rotate(63deg) scale(.92)}
+#tiger.puppet-idle #tail{transform:rotate(0deg)}
+#tiger.puppet-idle #zzz{display:none!important;animation:none!important}
+#tiger.puppet-sit #body{transform:translateY(-26px) rotate(-10deg)}
+#tiger.puppet-sit #leg1{transform:translate(48px,40px) rotate(72deg)}
+#tiger.puppet-sit #leg2{transform:translate(-12px,58px) rotate(82deg)}
+#tiger.puppet-sit #tail{transform:translate(28px,30px) rotate(-28deg)}
+#tiger.puppet-crouch #body{transform:translateY(26px) scaleY(.92)}
+#tiger.puppet-crouch #leg1{transform:translate(18px,26px) rotate(38deg)}
+#tiger.puppet-crouch #leg2{transform:translate(-18px,26px) rotate(48deg)}
+#tiger.puppet-crouch #tail{transform:translate(-18px,40px) rotate(-20deg)}
+#tiger.roaring{animation:tigerRoarShake .55s ease-in-out}
+@keyframes tigerRoarShake{0%,100%{transform:translate(-50%,-50%) scale(1)}20%{transform:translate(-50%,-50%) scale(1.045) rotate(-1.4deg)}40%{transform:translate(-50%,-50%) scale(1.075) rotate(1.2deg)}60%{transform:translate(-50%,-50%) scale(1.055) rotate(-1deg)}80%{transform:translate(-50%,-50%) scale(1.025) rotate(.8deg)}}
+
+
+#coords{
+  margin:0 0 9px 0;
+  padding:7px 9px;
+  border:1px solid rgba(255,255,255,.24);
+  border-radius:7px;
+  background:rgba(0,0,0,.24);
+  font-family:Consolas,Monaco,monospace;
+  font-weight:700;
+  text-align:center;
+  color:#fff1bf;
+}
+
+
+/* Reference-based puppet helpers added without replacing the original rig CSS. */
+#tiger.air-stretch #body{
+  transform:translateY(-4px) rotate(-5deg) scaleX(1.02) !important;
+}
+#tiger.air-stretch #leg1{
+  /* Front leg hangs clearly lower during all jump/leap poses. */
+  transform:translate(-32px,24px) rotate(103deg) scale(1.02) !important;
+}
+#tiger.air-stretch #leg2{
+  transform:translate(-48px,-16px) rotate(-56deg) scale(1.02) !important;
+}
+#tiger.air-stretch.jump-in-pose #leg1{
+  /* Command 3: front leg hangs even farther down while leaping into frame. */
+  transform:translate(-32px,36px) rotate(103deg) scale(1.02) !important;
+}
+#tiger.air-stretch #tail{
+  transform:rotate(-15deg) !important;
+}
+
+#tiger.pounce-out-pose #body{
+  transform:translateY(-24px) rotate(-17deg) scaleY(1.02) !important;
+}
+#tiger.pounce-out-pose #leg1{
+  transform:translate(75px,-30px) rotate(108deg) scale(1.02) !important;
+}
+#tiger.pounce-out-pose #leg2{
+  transform:translate(-44px,8px) rotate(-42deg) scale(.98) !important;
+}
+#tiger.pounce-out-pose #tail{
+  transform:rotate(-25deg) !important;
+}
+
+/* Command 6 - upright dog-like sit from the supplied reference. */
+#tiger.puppet-sit #body{
+  transform:translate(4px,36px) rotate(16deg) scaleY(1.03);
+}
+#tiger.puppet-sit #leg1{
+  transform:translate(-14px,0px) rotate(0deg);
+}
+#tiger.puppet-sit #leg2{
+  left:276px;
+  transform:translate(-18px,78px) rotate(63deg) scale(.92);
+}
+#tiger:not(.puppet-sit) #leg2{
+  left:208px;
+}
+#tiger.puppet-sit #shadow{
+  transform:translateY(8px) scaleX(.78) scaleY(.86);
+}
+
+/* Command 7 - compact crouch, ready to spring. */
+#tiger.puppet-crouch #body{
+  /* Crouch: rotate body farther so rear/back rises and head points down. */
+  transform:translate(-4px,48px) rotate(-30deg) scaleY(.88) scaleX(1.03);
+}
+#tiger.puppet-crouch #leg1{
+  /* Front leg reaches forward and stays low to the ground. */
+  transform:translate(-6px,90px) rotate(42deg) scale(.96);
+}
+#tiger.puppet-crouch #leg2{
+  /* Rear leg stays standing, just slightly lower in the crouch. */
+  transform:translateY(14px) rotate(0deg);
+}
+#tiger.puppet-crouch #tail{
+  /* Tail stays raised but sits farther forward. */
+  transform:translate(-24px,-30px) rotate(-48deg) scale(1.02);
+}
+/* Smooth transitions between puppet poses without slowing continuous movement. */
+#tiger.pose-transition #body,
+#tiger.pose-transition #leg1,
+#tiger.pose-transition #leg2,
+#tiger.pose-transition #tail,
+#tiger.pose-transition #shadow{
+  transition:
+    transform .30s cubic-bezier(.22,.75,.25,1),
+    left .30s cubic-bezier(.22,.75,.25,1),
+    top .30s cubic-bezier(.22,.75,.25,1),
+    opacity .30s ease;
+}
+
+/* Smooth Command 3 landing transition into and out of crouch. */
+#tiger.pounce-landing #body,
+#tiger.pounce-landing #leg1,
+#tiger.pounce-landing #leg2,
+#tiger.pounce-landing #tail{
+  transition:transform .32s ease-out;
+}
+
+#tiger.puppet-crouch #shadow{
+  transform:translateY(22px) scaleX(1.15) scaleY(.58);
+}
+
+
+#cameraPreview{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  width:180px;
+  height:120px;
+  object-fit:cover;
+  transform:scaleX(-1);
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.35);
+  box-shadow:0 8px 24px rgba(0,0,0,.28);
+  opacity:.72;
+  z-index:50;
+  display:none;
+}
+#cameraPreview.active{display:block;}
+
+</style>
+</head>
+<body>
+<div class="ground"></div>
+
+<div id="tiger">
+  <div id="facing">
+    <div id="shadow"></div>
+    <img id="tail" class="part" src="Tiger Tail.png" alt="">
+    <img id="body" class="part" src="Tiger Body.png" alt="">
+    <img id="leg2" class="part" src="Tiger Leg 2.png" alt="">
+    <img id="leg1" class="part" src="Tiger Leg 1.png" alt="">
+    <div id="zzz">Z z z</div>
+  </div>
+</div>
+
+<div id="status">Play With Me</div>
+
+<div id="commandBox">
+<div class="title">VIRTUAL PUPPET MODE</div>
+<div id="coords">X: 0 &nbsp;&nbsp; Y: 0</div>
+<div><b>WASD</b> – Move tiger</div><div><b>R</b> – Reverse direction (Running Mode only)</div>
+<div class="group"><div><b>I</b> – Toggle idle</div><div><b>0</b> – Toggle vanish</div><div><b>1</b> – Rush in from left</div><div><b>2</b> – Dash out right</div><div><b>3</b> – Pounce into frame</div><div><b>4</b> – Pounce out</div></div>
+<div class="group"><div><b>5</b> – Toggle running</div><div><b>6</b> – Toggle sit</div><div><b>7</b> – Toggle crouch</div><div><b>8</b> – Jump</div><div><b>9</b> – Roar</div></div>
+<div class="group"><div><b>B</b> – Toggle background</div><div><b>M</b> – Toggle command box</div><div><b>P</b> – Exit puppet mode</div></div>
+</div>
+
+
+<script>
+(() => {
+const tiger=document.getElementById('tiger'), facing=document.getElementById('facing'),
+leg1=document.getElementById('leg1'), leg2=document.getElementById('leg2'),
+tail=document.getElementById('tail'), status=document.getElementById('status'),
+commandBox=document.getElementById('commandBox'), zzz=document.getElementById('zzz'), coords=document.getElementById('coords'), bodyPart=document.getElementById('body');
+
+const state={x:innerWidth*.5,y:innerHeight*.55,targetX:innerWidth*.5,targetY:innerHeight*.55,vx:0,vy:0,face:-1,sleeping:false,lastInteraction:performance.now(),lastPointerMove:0,nextWander:0};
+const puppet={active:false,menuVisible:true,keys:new Set(),forcedIdle:false,vanished:false,running:false,sitting:false,crouching:false,jumping:false,scripted:false};
+const SLEEP_AFTER=10000, POINTER_CONTROL_MS=3200;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const setStatus=t=>{if(status)status.textContent=t};
+
+let poseTransitionTimer=null;
+function smoothPoseTransition(ms=320){
+  tiger.classList.add('pose-transition');
+  clearTimeout(poseTransitionTimer);
+  poseTransitionTimer=setTimeout(()=>tiger.classList.remove('pose-transition'),ms);
+}
+function clearPose(keep=''){
+  smoothPoseTransition();
+  if(keep!=='idle'){puppet.forcedIdle=false;tiger.classList.remove('puppet-idle')}
+  if(keep!=='sit'){puppet.sitting=false;tiger.classList.remove('puppet-sit')}
+  if(keep!=='crouch'){puppet.crouching=false;tiger.classList.remove('puppet-crouch')}
+}
+function wake(){state.lastInteraction=performance.now();state.sleeping=false;tiger.classList.remove('sleeping')}
+function interact(x,y){if(puppet.active)return;wake();state.lastPointerMove=performance.now();state.targetX=x;state.targetY=y}
+addEventListener('pointermove',e=>interact(e.clientX,e.clientY),{passive:true});
+addEventListener('pointerdown',e=>interact(e.clientX,e.clientY),{passive:true});
+
+function chooseWander(now){if(now<state.nextWander)return;state.nextWander=now+1800+Math.random()*2200;state.targetX=190+Math.random()*Math.max(50,innerWidth-380);state.targetY=120+Math.random()*Math.max(50,innerHeight-240)}
+
+function togglePuppet(){puppet.active=!puppet.active;puppet.keys.clear();state.vx=state.vy=0;if(puppet.active){wake();commandBox.classList.toggle('visible',puppet.menuVisible);setStatus('Puppet Mode ON — keyboard control enabled')}else{clearPose();puppet.running=false;puppet.scripted=false;commandBox.classList.remove('visible');state.lastInteraction=performance.now();setStatus('Puppet Mode OFF')}}
+function reverse(){
+  if(!puppet.running){
+    setStatus('R is available only while Running Mode is ON');
+    return;
+  }
+  state.face *= -1;
+  state.vx = 0;
+  state.vy = 0;
+  setStatus('Tiger direction reversed');
+}
+function idle(){let on=!puppet.forcedIdle;clearPose(on?'idle':'');puppet.forcedIdle=on;tiger.classList.toggle('puppet-idle',on);if(zzz)zzz.style.display='none';state.vx=state.vy=0;setStatus(on?'Tiger idle':'Idle off')}
+function vanish(){puppet.vanished=!puppet.vanished;tiger.classList.toggle('vanished',puppet.vanished);setStatus(puppet.vanished?'Tiger fading away':'Tiger fading back in')}
+function bg(){let on=!document.body.classList.contains('transparent-bg');document.body.classList.toggle('transparent-bg',on);document.documentElement.classList.toggle('transparent-bg',on);setStatus(on?'Transparent background':'Forest background')}
+function menu(){puppet.menuVisible=!puppet.menuVisible;commandBox.classList.toggle('visible',puppet.active&&puppet.menuVisible)}
+
+function animatePath(kind){
+  clearPose();
+  puppet.vanished=false;
+  tiger.classList.remove('vanished','air-stretch','jump-in-pose','pounce-out-pose','pounce-landing','puppet-crouch');
+  puppet.scripted=true;
+
+  let sx,sy,ex,ey,dur,arc,hide=false;
+
+  if(kind===1){
+    sx=-300; sy=innerHeight*.56;
+    ex=Math.max(240,innerWidth*.42); ey=innerHeight*.56;
+    dur=1200; arc=18; state.face=1;
+    setStatus('Tiger rushing into frame');
+  }
+
+  if(kind===2){
+    sx=state.x; sy=state.y;
+    ex=innerWidth+360; ey=state.y;
+    dur=1050; arc=14; hide=true; state.face=1;
+    setStatus('Tiger dashing out right');
+  }
+
+  if(kind===3){
+    sx=-260; sy=innerHeight*.62;
+    ex=Math.max(260,innerWidth*.43); ey=innerHeight*.56;
+    dur=1350; arc=165; state.face=1;
+    setStatus('Tiger pouncing into frame');
+  }
+
+  if(kind===4){
+    sx=state.x; sy=state.y;
+    ex=innerWidth+340; ey=Math.max(90,innerHeight*.34);
+    dur=1350; arc=165; hide=true; state.face=1;
+    setStatus('Tiger preparing to pounce out');
+  }
+
+  state.x=sx;
+  state.y=sy;
+
+  function beginFlight(){
+    const start=performance.now();
+
+    function step(now){
+      if(!puppet.scripted) return;
+
+      const t=Math.min(1,(now-start)/dur);
+      const ease=(kind===1 || kind===3)
+        ? 1-Math.pow(1-t,3)
+        : t*t*(3-2*t);
+
+      state.x=sx+(ex-sx)*ease;
+      state.y=sy+(ey-sy)*ease-Math.sin(t*Math.PI)*arc;
+
+      if(kind===1 || kind===2){
+        const gait=now*.020;
+        const stride=24;
+        leg1.style.transform=`rotate(${Math.sin(gait)*stride}deg)`;
+        leg2.style.transform=`rotate(${Math.sin(gait+Math.PI)*stride}deg)`;
+        tail.style.transform=`rotate(${Math.sin(now*.006)*12}deg)`;
+      }
+
+      if(kind===3){
+        tiger.classList.add('air-stretch','jump-in-pose');
+        leg1.style.transform='';
+        leg2.style.transform='';
+        tail.style.transform='';
+
+        if(bodyPart){
+          const landingPrep=Math.max(0,Math.min(1,(t-.42)/.58));
+          const prepY=landingPrep*28;
+          const prepRot=landingPrep*-24;
+          const prepScaleY=1-(landingPrep*.07);
+          bodyPart.style.transform=`translateY(${prepY}px) rotate(${prepRot}deg) scaleY(${prepScaleY})`;
+        }
+      }
+
+      if(kind===4){
+        /* Reverse of pounce-in: stay stretched in a leap while leaving. */
+        tiger.classList.add('air-stretch');
+        leg1.style.transform='';
+        leg2.style.transform='';
+        tail.style.transform='';
+
+        if(bodyPart){
+          const launch=Math.min(1,t/.28);
+          bodyPart.style.transform=`translateY(${28*(1-launch)}px) rotate(${-24*(1-launch)}deg) scaleY(${.93+.07*launch})`;
+        }
+      }
+
+      if(t<1){
+        requestAnimationFrame(step);
+      }else{
+        state.x=ex;
+        state.y=ey;
+
+        tiger.classList.remove('air-stretch','jump-in-pose','pounce-out-pose','pounce-landing','puppet-crouch');
+        leg1.style.transform='';
+        leg2.style.transform='';
+        tail.style.transform='';
+        if(bodyPart) bodyPart.style.transform='';
+
+        if(kind===3){
+          tiger.classList.add('pounce-landing');
+          if(bodyPart){
+            bodyPart.style.transform='translateY(28px) rotate(-24deg) scaleY(.93)';
+          }
+          setStatus('Tiger landing');
+
+          requestAnimationFrame(()=>{
+            requestAnimationFrame(()=>{
+              if(bodyPart) bodyPart.style.transform='';
+              leg1.style.transform='';
+              leg2.style.transform='';
+              tail.style.transform='';
+              tiger.classList.add('puppet-crouch');
+
+              setTimeout(()=>{
+                tiger.classList.remove('puppet-crouch');
+
+                setTimeout(()=>{
+                  tiger.classList.remove('pounce-landing');
+                  if(bodyPart) bodyPart.style.transform='';
+                  leg1.style.transform='';
+                  leg2.style.transform='';
+                  tail.style.transform='';
+                  puppet.scripted=false;
+                  setStatus('Tiger entered');
+                },340);
+              },430);
+            });
+          });
+        }else{
+          puppet.scripted=false;
+
+          if(hide){
+            puppet.vanished=true;
+            tiger.classList.add('vanished');
+          }
+
+          setStatus(hide?'Tiger exited':'Tiger entered');
+        }
+      }
+    }
+
+    requestAnimationFrame(step);
+  }
+
+  if(kind===4){
+    /* Command 4: if starting from standing, ease smoothly into the
+       established pounce/crouch formation before launching. */
+    tiger.classList.add('pounce-landing');
+    if(bodyPart) bodyPart.style.transform='';
+    leg1.style.transform='';
+    leg2.style.transform='';
+    tail.style.transform='';
+    setStatus('Tiger preparing to pounce');
+
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        tiger.classList.add('puppet-crouch');
+
+        setTimeout(()=>{
+          /* Smooth launch: keep the transition system active while moving
+             from crouch toward the airborne pounce pose. */
+          tiger.classList.remove('puppet-crouch');
+          tiger.classList.add('air-stretch');
+
+          /* Let the body/legs/tail interpolate toward the leap formation
+             before the tiger starts travelling out of frame. */
+          if(bodyPart) bodyPart.style.transform='translateY(12px) rotate(-10deg) scaleY(.97)';
+          leg1.style.transform='';
+          leg2.style.transform='';
+          tail.style.transform='';
+
+          setTimeout(()=>{
+            if(bodyPart) bodyPart.style.transform='';
+          },90);
+
+          /* Faster lift-off after the crouch while keeping the transition smooth. */
+          setTimeout(()=>{
+            tiger.classList.remove('pounce-landing');
+            beginFlight();
+          },170);
+        },430);
+      });
+    });
+  }else{
+    beginFlight();
+  }
+}
+
+function running(){
+  if(puppet.scripted || puppet.jumping || puppet.vanished) return;
+
+  puppet.running=!puppet.running;
+  clearPose();
+  smoothPoseTransition(280);
+  state.vx=0;
+  state.vy=0;
+
+  /* When Running Mode turns off, let the legs/tail settle smoothly. */
+  if(!puppet.running){
+    leg1.style.transform='';
+    leg2.style.transform='';
+    tail.style.transform='';
+  }
+
+  setStatus(
+    puppet.running
+      ? 'Running Mode ON — direction locked; press R to reverse'
+      : 'Running Mode OFF — R disabled'
+  );
+}
+
+function sit(){
+  if(puppet.scripted || puppet.jumping || puppet.vanished) return;
+
+  const on=!puppet.sitting;
+  smoothPoseTransition(360);
+  clearPose(on?'sit':'');
+  puppet.sitting=on;
+
+  requestAnimationFrame(()=>{
+    tiger.classList.toggle('puppet-sit',on);
+  });
+
+  state.vx=0;
+  state.vy=0;
+
+  if(!on){
+    setTimeout(()=>{
+      if(bodyPart) bodyPart.style.transform='';
+      leg1.style.transform='';
+      leg2.style.transform='';
+      tail.style.transform='';
+    },320);
+  }
+
+  setStatus(on?'Tiger sitting upright':'Sit off');
+}
+
+function crouch(){
+  if(puppet.scripted || puppet.jumping || puppet.vanished) return;
+
+  const on=!puppet.crouching;
+  smoothPoseTransition(360);
+  clearPose(on?'crouch':'');
+  puppet.crouching=on;
+
+  requestAnimationFrame(()=>{
+    tiger.classList.toggle('puppet-crouch',on);
+  });
+
+  state.vx=0;
+  state.vy=0;
+
+  if(!on){
+    setTimeout(()=>{
+      if(bodyPart) bodyPart.style.transform='';
+      leg1.style.transform='';
+      leg2.style.transform='';
+      tail.style.transform='';
+    },320);
+  }
+
+  setStatus(on?'Tiger crouching — ready to jump':'Crouch off');
+}
+
+function jump(){
+  if(puppet.jumping || puppet.scripted || puppet.vanished) return;
+
+  const fromCrouch=puppet.crouching;
+
+  if(fromCrouch){
+    puppet.crouching=false;
+    tiger.classList.remove('puppet-crouch');
+  }else{
+    clearPose();
+  }
+
+  puppet.jumping=true;
+  smoothPoseTransition(240);
+  requestAnimationFrame(()=>tiger.classList.add('air-stretch'));
+
+  const baseY=state.y;
+  const start=performance.now();
+  const duration=900;
+
+  setStatus(fromCrouch?'Tiger launches from crouch':'Tiger jumps');
+
+  function jumpStep(now){
+    const t=Math.min(1,(now-start)/duration);
+    state.y=baseY-Math.sin(t*Math.PI)*135;
+
+    if(t<1){
+      requestAnimationFrame(jumpStep);
+    }else{
+      state.y=baseY;
+      puppet.jumping=false;
+      smoothPoseTransition(300);
+      tiger.classList.remove('air-stretch');
+      leg1.style.transform='';
+      leg2.style.transform='';
+      tail.style.transform='';
+      if(bodyPart) bodyPart.style.transform='';
+      setStatus('Tiger landed — standing position');
+    }
+  }
+
+  requestAnimationFrame(jumpStep);
+}
+function roar(){if(puppet.vanished)return;tiger.classList.remove('roaring');void tiger.offsetWidth;tiger.classList.add('roaring');setStatus('Tiger roars!');setTimeout(()=>tiger.classList.remove('roaring'),600)}
+
+
+const cameraMode={
+  active:false,
+  stream:null,
+  video:null,
+  canvas:document.createElement('canvas'),
+  ctx:null,
+  prev:null,
+  raf:0,
+  lastMotionY:null,
+  lastMotionTime:0,
+  lastJumpTime:0,
+  lastSitTime:0
+};
+
+async function toggleCameraMode(){
+  cameraMode.active=!cameraMode.active;
+
+  if(cameraMode.active){
+    try{
+      if(!cameraMode.video) cameraMode.video=document.getElementById('cameraPreview');
+      cameraMode.stream=await navigator.mediaDevices.getUserMedia({
+        video:{facingMode:'user'},
+        audio:false
+      });
+      cameraMode.video.srcObject=cameraMode.stream;
+      cameraMode.video.classList.add('active');
+
+      cameraMode.canvas.width=96;
+      cameraMode.canvas.height=72;
+      cameraMode.ctx=cameraMode.canvas.getContext('2d',{willReadFrequently:true});
+      cameraMode.prev=null;
+      cameraMode.lastMotionY=null;
+      cameraMode.lastMotionTime=0;
+      cameraMode.lastJumpTime=0;
+      cameraMode.lastSitTime=0;
+
+      setStatus('Camera Mode ON — move in front of the camera');
+      cameraTrackLoop();
+    }catch(err){
+      cameraMode.active=false;
+      setStatus('Camera Mode unavailable — camera permission is required');
+      console.error(err);
+    }
+  }else{
+    stopCameraMode();
+    setStatus('Camera Mode OFF — mouse control restored');
+  }
+}
+
+function stopCameraMode(){
+  cameraMode.active=false;
+  if(cameraMode.raf) cancelAnimationFrame(cameraMode.raf);
+  cameraMode.raf=0;
+  cameraMode.prev=null;
+  cameraMode.lastMotionY=null;
+  cameraMode.lastMotionTime=0;
+
+  if(cameraMode.stream){
+    cameraMode.stream.getTracks().forEach(t=>t.stop());
+    cameraMode.stream=null;
+  }
+
+  if(cameraMode.video){
+    cameraMode.video.classList.remove('active');
+    cameraMode.video.srcObject=null;
+  }
+}
+
+function cameraTrackLoop(){
+  if(!cameraMode.active || !cameraMode.video || !cameraMode.ctx) return;
+
+  const v=cameraMode.video;
+  if(v.readyState>=2){
+    const w=cameraMode.canvas.width, h=cameraMode.canvas.height;
+    cameraMode.ctx.drawImage(v,0,0,w,h);
+    const frame=cameraMode.ctx.getImageData(0,0,w,h).data;
+
+    if(cameraMode.prev){
+      let sum=0, sx=0, sy=0;
+      const threshold=34;
+
+      for(let y=0;y<h;y+=2){
+        for(let x=0;x<w;x+=2){
+          const i=(y*w+x)*4;
+          const d=
+            Math.abs(frame[i]-cameraMode.prev[i])+
+            Math.abs(frame[i+1]-cameraMode.prev[i+1])+
+            Math.abs(frame[i+2]-cameraMode.prev[i+2]);
+
+          if(d>threshold*3){
+            const weight=d;
+            sum+=weight;
+            sx+=x*weight;
+            sy+=y*weight;
+          }
+        }
+      }
+
+      if(sum>22000){
+        // Mirror X so the tiger follows the user's movement naturally.
+        const mx=1-(sx/sum)/w;
+        const my=(sy/sum)/h;
+        const now=performance.now();
+
+        // Any renewed camera movement wakes the tiger out of idle/sleep.
+        wake();
+        state.lastPointerMove=now;
+        state.targetX=mx*innerWidth;
+        state.targetY=my*innerHeight;
+
+        // Detect a clear upward movement and turn it into a jump.
+        // A short cooldown prevents one upward gesture from firing repeatedly.
+        if(
+          cameraMode.lastMotionY!==null &&
+          now-cameraMode.lastMotionTime<650 &&
+          cameraMode.lastMotionY-my>0.10 &&
+          now-cameraMode.lastJumpTime>1200 &&
+          !puppet.jumping &&
+          !puppet.scripted
+        ){
+          cameraMode.lastJumpTime=now;
+          jump();
+          setStatus('Camera detected upward movement — Tiger jumps');
+        }
+
+        /* A clear downward camera gesture makes the tiger sit.
+           Only activate Sit if it is not already sitting, so continued
+           downward movement cannot immediately toggle the pose back off. */
+        if(
+          cameraMode.lastMotionY!==null &&
+          now-cameraMode.lastMotionTime<650 &&
+          my-cameraMode.lastMotionY>0.10 &&
+          now-cameraMode.lastSitTime>1200 &&
+          !puppet.sitting &&
+          !puppet.jumping &&
+          !puppet.scripted
+        ){
+          cameraMode.lastSitTime=now;
+          smoothPoseTransition(360);
+          clearPose('sit');
+          puppet.sitting=true;
+          state.vx=0;
+          state.vy=0;
+          requestAnimationFrame(()=>tiger.classList.add('puppet-sit'));
+          setStatus('Camera detected downward movement — Tiger sits');
+        }
+
+        cameraMode.lastMotionY=my;
+        cameraMode.lastMotionTime=now;
+      }
+    }
+
+    cameraMode.prev=new Uint8ClampedArray(frame);
+  }
+
+  cameraMode.raf=requestAnimationFrame(cameraTrackLoop);
+}
+
+addEventListener('keydown',e=>{
+  if(e.key.toLowerCase()==='c'){ toggleCameraMode(); return; }
+let k=e.key.toLowerCase();if(k==='p'){e.preventDefault();togglePuppet();return}if(!puppet.active)return;if(['w','a','s','d'].includes(k)){e.preventDefault();puppet.keys.add(k);return}if(e.repeat)return;
+if(k==='m')menu();else if(k==='r')reverse();else if(k==='i')idle();else if(k==='0')vanish();else if(k==='1')animatePath(1);else if(k==='2')animatePath(2);else if(k==='3')animatePath(3);else if(k==='4')animatePath(4);else if(k==='5')running();else if(k==='6')sit();else if(k==='7')crouch();else if(k==='8')jump();else if(k==='9')roar();else if(k==='b')bg()});
+addEventListener('keyup',e=>puppet.keys.delete(e.key.toLowerCase()));
+
+function normal(now){
+ let idleTime=now-state.lastInteraction;
+ if(!state.sleeping&&idleTime>=SLEEP_AFTER){state.sleeping=true;tiger.classList.add('sleeping');state.vx=state.vy=0;state.targetX=state.x;state.targetY=state.y}
+ if(!state.sleeping){
+  if(puppet.sitting){
+    /* Camera Mode can use the sitting pose independently of Puppet Mode. */
+    state.vx=0;
+    state.vy=0;
+    const breath=Math.sin(now*.0020);
+    tail.style.transform=`translate(28px,30px) rotate(${-28+Math.sin(now*.004)*8}deg)`;
+    if(bodyPart){
+      bodyPart.style.transform=`translate(4px,${36-breath*1.5}px) rotate(${16+breath*.25}deg) scaleX(${1+breath*.006}) scaleY(${1.03+breath*.010})`;
+    }
+    leg1.style.transform='';
+    leg2.style.transform='';
+  }else if(!puppet.jumping){
+    if(now-state.lastPointerMove>POINTER_CONTROL_MS)chooseWander(now);
+    let dx=state.targetX-state.x,dy=state.targetY-state.y,dist=Math.hypot(dx,dy);
+    if(dist>5){let desired=clamp(dist*.010,.7,3.1),tx=dx/dist*desired,ty=dy/dist*desired;state.vx+=(tx-state.vx)*.045;state.vy+=(ty-state.vy)*.045}else{state.vx*=.91;state.vy*=.91}
+    state.x+=state.vx;state.y+=state.vy;state.x=clamp(state.x,165,innerWidth-165);state.y=clamp(state.y,110,innerHeight-110);
+    if(Math.abs(state.vx)>.08)state.face=state.vx>0?1:-1;
+    let speed=Math.hypot(state.vx,state.vy),gait=now*(.00165+speed*.00016),stride=Math.min(9,3+speed*1.8);
+    leg1.style.transform=`rotate(${Math.sin(gait)*stride}deg)`;leg2.style.transform=`rotate(${Math.sin(gait+Math.PI)*stride}deg)`;tail.style.transform=`rotate(${Math.sin(now*.0048)*(7+speed*2.5)}deg)`;
+  }
+ }else{
+  /* Camera idle uses the exact same tail/leg pose as regular idle. */
+  leg1.style.transform='';
+  leg2.style.transform='';
+  tail.style.transform='';
+ }
+ tiger.style.left=state.x+'px';tiger.style.top=state.y+'px';facing.style.transform=state.face===1?'scaleX(-1)':'scaleX(1)';
+
+  if(!state.sleeping && !puppet.jumping && !puppet.sitting && bodyPart){
+    const normalBreath=Math.sin(now*.0020);
+    bodyPart.style.transform=`translateY(${-normalBreath*1.2}px) scaleX(${1+normalBreath*.004}) scaleY(${1+normalBreath*.007})`;
+  }
+}
+function manual(now){
+  state.sleeping=false;
+  tiger.classList.remove('sleeping');
+  if(zzz) zzz.style.display='none';
+
+  if(!puppet.scripted&&!puppet.jumping&&!puppet.vanished&&!puppet.forcedIdle&&!puppet.sitting&&!puppet.crouching){
+    let dx=0,dy=0;
+    if(puppet.keys.has('w'))dy--;
+    if(puppet.keys.has('s'))dy++;
+    if(puppet.keys.has('a'))dx--;
+    if(puppet.keys.has('d'))dx++;
+
+    if(dx||dy){
+      const m=Math.hypot(dx,dy)||1;
+
+      if(puppet.running){
+        /* Running Mode: facing stays locked until R is pressed.
+           A moves left and D moves right, so the tiger can run
+           backward without automatically turning around. */
+        state.vx+=(dx/m)*.58;
+        state.vy+=(dy/m)*.34;
+      }else{
+        state.vx+=(dx/m)*.42;
+        state.vy+=(dy/m)*.42;
+      }
+    }
+
+    state.vx*=puppet.running?.94:.92;
+    state.vy*=puppet.running?.94:.92;
+
+    const max=puppet.running?8.5:5.2;
+    const speed=Math.hypot(state.vx,state.vy);
+
+    if(speed>max){
+      state.vx=state.vx/speed*max;
+      state.vy=state.vy/speed*max;
+    }
+
+    state.x+=state.vx;
+    state.y+=state.vy;
+    state.x=clamp(state.x,120,innerWidth-120);
+    state.y=clamp(state.y,90,innerHeight-90);
+
+    /* Walking keeps original auto-facing. Running does not. */
+    if(!puppet.running && Math.abs(state.vx)>.08){
+      state.face=state.vx>0?1:-1;
+    }
+  }
+
+  const moving=Math.hypot(state.vx,state.vy);
+
+  /* Do not overwrite transforms while a scripted entrance/pounce or jump owns them. */
+  if(!puppet.scripted && !puppet.jumping){
+    if(puppet.sitting){
+      /* Natural sitting breath: tiny whole-body rise/fall, no squeezing. */
+      const breath=Math.sin(now*.0020);
+      tail.style.transform=`translate(28px,30px) rotate(${-28+Math.sin(now*.004)*8}deg)`;
+      if(bodyPart){
+        bodyPart.style.transform=`translate(4px,${36-breath*1.5}px) rotate(${16+breath*.25}deg) scaleX(${1+breath*.006}) scaleY(${1.03+breath*.010})`;
+      }
+    }else if(puppet.crouching){
+      /* Natural crouch breath: preserve body shape and only add a tiny lift/settle. */
+      const breath=Math.sin(now*.0022);
+      if(bodyPart){
+        bodyPart.style.transform=`translate(-4px,${48-breath*1.2}px) rotate(${-30+breath*.2}deg) scaleX(${1.03+breath*.005}) scaleY(${.88+breath*.008})`;
+      }
+      tail.style.transform=`translate(-24px,-30px) rotate(${-48+Math.sin(now*.0045)*7}deg) scale(1.02)`;
+      leg1.style.transform='';
+      leg2.style.transform='';
+    }else if(!puppet.forcedIdle){
+      const gait=now*(puppet.running?.018:.010);
+      const stride=puppet.running?22:Math.min(10,4+moving*1.4);
+
+      if(puppet.running || moving>.18){
+        leg1.style.transform=`rotate(${Math.sin(gait)*stride}deg)`;
+        leg2.style.transform=`rotate(${Math.sin(gait+Math.PI)*stride}deg)`;
+      }else{
+        leg1.style.transform='';
+        leg2.style.transform='';
+      }
+
+      tail.style.transform=`rotate(${Math.sin(now*.0055)*(8+moving*1.2)}deg)`;
+      if(bodyPart){
+        const puppetBreath=Math.sin(now*.0020);
+        bodyPart.style.transform=`translateY(${-puppetBreath*1.2}px) scaleX(${1+puppetBreath*.004}) scaleY(${1+puppetBreath*.007})`;
+      }
+    }else{
+      leg1.style.transform='';
+      leg2.style.transform='';
+      /* Idle tail stays at its DEFAULT location; only a slow gentle sway is added. */
+      tail.style.transform=`rotate(${Math.sin(now*.0018)*5}deg)`;
+      if(bodyPart && !puppet.sitting) bodyPart.style.transform='';
+    }
+  }
+
+  tiger.style.left=state.x+'px';
+  tiger.style.top=state.y+'px';
+  facing.style.transform=state.face===1?'scaleX(-1)':'scaleX(1)';
+}
+function update(now){
+  puppet.active?manual(now):normal(now);
+  if(coords){
+    coords.textContent=`X: ${Math.round(state.x)}   Y: ${Math.round(state.y)}`;
+  }
+  requestAnimationFrame(update);
+}
+requestAnimationFrame(update);
+})();
+</script>
+<video id="cameraPreview" autoplay muted playsinline></video>
+</body>
+</html>

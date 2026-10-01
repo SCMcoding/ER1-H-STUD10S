@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CHIVISPUPPETS | Interactive Puppet Template</title>
+
+  <style>
+    /* ==================================================
+       COLORS / BASE
+    ================================================== */
+    :root {
+      --black:#000;
+      --orange:#d28a3b;
+      --green:#9aa060;
+      --purple:#9b6bd3;
+      --text:#d7d7d0;
+      --max:1200px;
+    }
+
+    * { box-sizing:border-box; margin:0; padding:0; }
+
+    html,body { width:100%; min-height:100%; }
+
+    body {
+      background:#000;
+      color:var(--text);
+      font-family:"Courier New",monospace;
+      line-height:1.6;
+      overflow-x:hidden;
+    }
+
+    /* ==================================================
+       SPACE BACKGROUND
+    ================================================== */
+    #spaceBackground {
+      position:fixed;
+      inset:0;
+      z-index:0;
+      overflow:hidden;
+      pointer-events:none;
+      background:
+        radial-gradient(circle at 20% 25%,rgba(210,138,59,.08),transparent 25%),
+        radial-gradient(circle at 78% 68%,rgba(154,160,96,.07),transparent 27%),
+        radial-gradient(circle at 65% 18%,rgba(155,107,211,.07),transparent 25%),
+        #000;
+    }
+
+    #starField,#dataField {
+      position:absolute;
+      inset:0;
+    }
+
+    /* ==================================================
+       MILKY WAY
+    ================================================== */
+    .milkyway {
+      position:absolute;
+      left:-15%;
+      top:39%;
+      width:135%;
+      height:300px;
+      transform:rotate(-17deg);
+      opacity:.30;
+      filter:blur(3px);
+      background:
+        radial-gradient(
+          ellipse at center,
+          rgba(155,107,211,.18),
+          rgba(210,138,59,.10) 25%,
+          rgba(154,160,96,.09) 43%,
+          transparent 72%
+        );
+    }
+
+    .milkyway::after {
+      content:"";
+      position:absolute;
+      inset:35% 0;
+      filter:blur(22px);
+      background:linear-gradient(
+        90deg,
+        transparent,
+        rgba(155,107,211,.11),
+        rgba(210,138,59,.13),
+        rgba(154,160,96,.10),
+        transparent
+      );
+    }
+
+    /* ==================================================
+       STARS
+    ================================================== */
+    .star {
+      position:absolute;
+      border-radius:50%;
+      opacity:.5;
+      animation:twinkle var(--speed,4s) ease-in-out infinite alternate;
+    }
+
+    .star.orange { background:var(--orange); box-shadow:0 0 6px var(--orange); }
+    .star.green  { background:var(--green); box-shadow:0 0 6px var(--green); }
+    .star.purple { background:var(--purple); box-shadow:0 0 7px var(--purple); }
+    .star.white  { background:#fff; box-shadow:0 0 6px rgba(255,255,255,.8); }
+
+    @keyframes twinkle {
+      from { opacity:.12; transform:scale(.7); }
+      to { opacity:.9; transform:scale(1.2); }
+    }
+
+    /* ==================================================
+       GALAXIES
+    ================================================== */
+    .galaxy {
+      position:absolute;
+      border-radius:50%;
+      opacity:.32;
+      filter:blur(4px);
+      animation:galaxyFloat var(--float,28s) ease-in-out infinite alternate;
+    }
+
+    .galaxy::before {
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius:50%;
+      transform:rotate(var(--tilt)) scaleY(.43);
+      filter:blur(9px);
+      background:
+        radial-gradient(ellipse at 50% 50%,rgba(255,255,255,.8) 0 2%,transparent 6%),
+        radial-gradient(ellipse at 48% 52%,currentColor 0 8%,transparent 23%),
+        radial-gradient(ellipse at 56% 45%,currentColor 0 14%,transparent 42%);
+    }
+
+    .galaxy::after {
+      content:"";
+      position:absolute;
+      inset:-15%;
+      border-radius:50%;
+      opacity:.65;
+      background:
+        radial-gradient(circle at 25% 38%,#fff 0 1px,transparent 2px),
+        radial-gradient(circle at 68% 42%,currentColor 0 1px,transparent 2px),
+        radial-gradient(circle at 45% 72%,#fff 0 1px,transparent 2px);
+      background-size:48px 48px,61px 61px,73px 73px;
+    }
+
+    .galaxy.orange { color:var(--orange); }
+    .galaxy.green { color:var(--green); }
+    .galaxy.purple { color:var(--purple); }
+
+    .galaxy.one {
+      width:330px;
+      height:175px;
+      left:3%;
+      top:18%;
+      --tilt:-18deg;
+      --float:30s;
+    }
+
+    .galaxy.two {
+      width:400px;
+      height:210px;
+      right:-5%;
+      top:52%;
+      --tilt:14deg;
+      --float:36s;
+    }
+
+    .galaxy.three {
+      width:220px;
+      height:120px;
+      right:18%;
+      top:10%;
+      --tilt:-8deg;
+      --float:25s;
+    }
+
+    @keyframes galaxyFloat {
+      from { transform:translate(0,0) scale(1); }
+      to { transform:translate(14px,-10px) scale(1.04); }
+    }
+
+    /* ==================================================
+       FLOATING DATA
+    ================================================== */
+    .data-number {
+      position:absolute;
+      white-space:nowrap;
+      font-size:8px;
+      letter-spacing:1px;
+      opacity:.11;
+      text-shadow:0 0 5px currentColor;
+      transition:transform .2s linear;
+    }
+
+    .data-number.orange { color:var(--orange); }
+    .data-number.green { color:var(--green); }
+    .data-number.purple { color:var(--purple); }
+    .data-number.blue { color:#65a8d8; }
+    .data-number.cyan { color:#63c7c4; }
+
+    /* ==================================================
+       BACKGROUND WORDS
+    ================================================== */
+    .background-word {
+      position:absolute;
+      font-weight:bold;
+      letter-spacing:6px;
+      opacity:.08;
+      white-space:nowrap;
+      user-select:none;
+      animation:wordFloat 18s ease-in-out infinite alternate;
+    }
+
+    .word1 { left:3%; top:15%; font-size:65px; color:var(--orange); }
+    .word2 { right:4%; top:32%; font-size:52px; color:var(--green); }
+    .word3 { left:4%; top:66%; font-size:55px; color:var(--purple); }
+    .word4 { right:5%; top:80%; font-size:46px; color:var(--orange); }
+
+    @keyframes wordFloat {
+      from { transform:translate(0,0); }
+      to { transform:translate(15px,-10px); }
+    }
+
+    /* ==================================================
+       PAGE
+    ================================================== */
+    .page {
+      position:relative;
+      z-index:2;
+    }
+
+    /* ==================================================
+       BANNER
+    ================================================== */
+    .banner-header {
+      position:relative;
+      width:100%;
+      height:300px;
+      overflow:hidden;
+      background:#000;
+      border-bottom:1px solid rgba(154,160,96,.35);
+    }
+
+    .banner-header iframe {
+      display:block;
+      width:100%;
+      height:100%;
+      border:0;
+      background:#000;
+    }
+
+    /* ==================================================
+       NAVIGATION
+    ================================================== */
+    nav {
+      width:100%;
+      background:linear-gradient(
+        90deg,
+        rgba(10,10,9,.97),
+        rgba(45,29,15,.96),
+        rgba(28,31,18,.96),
+        rgba(10,10,9,.97)
+      );
+      border-bottom:1px solid rgba(154,160,96,.38);
+    }
+
+    nav ul {
+      display:flex;
+      justify-content:center;
+      list-style:none;
+    }
+
+    nav a {
+      display:block;
+      padding:13px 24px;
+      color:var(--orange);
+      text-decoration:none;
+      font-size:17px;
+      letter-spacing:1px;
+      transition:.25s ease;
+    }
+
+    nav a:hover {
+      color:#b6bc72;
+      background:rgba(154,160,96,.10);
+      transform:translateY(-2px);
+    }
+
+    /* ==================================================
+       CONTENT
+    ================================================== */
+    .container {
+      width:calc(100% - 40px);
+      max-width:var(--max);
+      margin:0 auto;
+      padding:25px 0;
+    }
+
+    /* ==================================================
+       FEATURE VIDEO
+    ================================================== */
+    .intro-video {
+      width:100%;
+      max-width:800px;
+      margin:15px auto 50px;
+      aspect-ratio:16 / 9;
+      overflow:hidden;
+      border:1px solid rgba(210,138,59,.40);
+      border-radius:6px;
+      background:#050505;
+      box-shadow:
+        0 18px 45px rgba(0,0,0,.8),
+        0 0 20px rgba(210,138,59,.08);
+    }
+
+    .intro-video iframe,
+    .video-box iframe {
+      display:block;
+      width:100%;
+      height:100%;
+      border:0;
+    }
+
+    /* ==================================================
+       VIDEO SECTION
+    ================================================== */
+    section {
+      padding:25px;
+      margin-bottom:55px;
+      background:rgba(5,6,5,.74);
+      border:1px solid rgba(154,160,96,.25);
+      border-radius:8px;
+      box-shadow:0 20px 55px rgba(0,0,0,.75);
+      backdrop-filter:blur(2px);
+    }
+
+    section h2 {
+      margin:0 auto 30px;
+      text-align:center;
+      color:var(--orange);
+      font-size:1.45rem;
+      letter-spacing:1px;
+    }
+
+    section h2::after {
+      content:"";
+      display:block;
+      width:130px;
+      height:2px;
+      margin:12px auto 0;
+      background:linear-gradient(
+        90deg,
+        var(--orange),
+        var(--green),
+        var(--purple)
+      );
+    }
+
+    section h2 a {
+      color:var(--green);
+      text-decoration:none;
+      transition:.25s;
+    }
+
+    section h2 a:hover {
+      color:var(--purple);
+      text-shadow:0 0 8px rgba(155,107,211,.4);
+    }
+
+    /* ==================================================
+       VIDEO GRID
+    ================================================== */
+    .video-row {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+      gap:22px;
+    }
+
+    .video-box {
+      width:100%;
+      aspect-ratio:16 / 9;
+      overflow:hidden;
+      border:1px solid rgba(154,160,96,.32);
+      border-radius:6px;
+      background:#030303;
+      box-shadow:0 12px 28px rgba(0,0,0,.7);
+      transition:
+        transform .3s ease,
+        border-color .3s ease,
+        box-shadow .3s ease;
+    }
+
+    .video-box:hover {
+      transform:translateY(-5px);
+      border-color:rgba(210,138,59,.7);
+      box-shadow:
+        0 18px 38px rgba(0,0,0,.85),
+        0 0 18px rgba(155,107,211,.10);
+    }
+
+    /* ==================================================
+       FOOTER
+    ================================================== */
+    footer {
+      padding:15px;
+      text-align:center;
+      color:rgba(210,138,59,.65);
+      background:rgba(8,8,7,.94);
+      border-top:1px solid rgba(154,160,96,.25);
+      font-size:11px;
+      letter-spacing:2px;
+    }
+
+    /* ==================================================
+       MOBILE
+    ================================================== */
+    @media(max-width:650px) {
+      .banner-header { height:190px; }
+
+      nav ul { flex-wrap:wrap; }
+
+      nav a {
+        padding:10px 13px;
+        font-size:14px;
+      }
+
+      .container {
+        width:calc(100% - 20px);
+        padding:15px 0;
+      }
+
+      section { padding:14px; }
+
+      .video-row { grid-template-columns:1fr; }
+
+      section h2 { font-size:1.1rem; }
+
+      .background-word {
+        font-size:28px !important;
+        letter-spacing:2px;
+      }
+    }
+  
+
+    /* INTERACTIVE HTML PAGE HOST */
+    .page-host{content-visibility:auto;contain-intrinsic-size:900px;position:relative;padding:18px;margin:15px 0 55px;background:rgba(5,6,5,.78);border:1px solid rgba(154,160,96,.28);border-radius:8px;box-shadow:0 20px 55px rgba(0,0,0,.78);backdrop-filter:blur(2px)}
+    .host-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;padding:4px 4px 16px}.host-head small{color:var(--green);letter-spacing:3px;font-size:9px}.host-head h1{color:var(--orange);font-size:clamp(1.3rem,3vw,2rem);line-height:1.15}.host-buttons{display:flex;gap:8px}.host-buttons button,.tab{font-family:"Courier New",monospace;cursor:pointer;background:rgba(0,0,0,.75);color:var(--green);border:1px solid rgba(154,160,96,.4);letter-spacing:1.5px;transition:.22s}.host-buttons button{padding:9px 12px;font-size:10px}.host-buttons button:hover,.tab:hover,.tab.active{color:#fff;border-color:var(--orange);background:rgba(210,138,59,.14)}
+    .host-frame{width:100%;height:min(70vh,760px);min-height:500px;overflow:hidden;background:#000;border:1px solid rgba(210,138,59,.42);border-radius:6px;box-shadow:inset 0 0 35px #000}.host-frame iframe{display:block;width:100%;height:100%;border:0;background:#000}.host-frame:fullscreen{width:100vw;height:100vh;min-height:0;border:0;border-radius:0}
+    .exit-fullscreen{display:none;position:absolute;top:16px;right:18px;z-index:9999;padding:10px 14px;font-family:"Courier New",monospace;font-size:11px;letter-spacing:1.5px;color:#fff;background:rgba(0,0,0,.78);border:1px solid var(--orange);border-radius:4px;cursor:pointer;box-shadow:0 0 18px rgba(210,138,59,.18)}
+    .host-frame:fullscreen .exit-fullscreen{display:block}
+    .exit-fullscreen:hover{background:rgba(210,138,59,.22);color:#fff}
+    .bottom-panel{position:relative;z-index:5;margin-top:14px;background:rgba(6,7,6,.97);border:1px solid rgba(154,160,96,.3);border-radius:7px;box-shadow:0 -12px 35px rgba(0,0,0,.55);will-change:transform}.drag-handle{height:34px;display:flex;align-items:center;justify-content:center;gap:12px;color:rgba(215,215,208,.55);font-size:9px;letter-spacing:2px;cursor:ns-resize;user-select:none;touch-action:none}.drag-handle i{display:block;width:55px;height:1px;background:linear-gradient(90deg,transparent,var(--purple),transparent)}
+    .tabs{display:flex;border-top:1px solid rgba(154,160,96,.15);border-bottom:1px solid rgba(154,160,96,.22)}.tab{flex:1;padding:12px;border-width:0 1px 0 0;font-size:11px}.tab:last-child{border-right:0}.panel{display:none;min-height:145px;padding:22px 25px;color:#adb478}.panel.active{display:block;animation:panelIn .25s ease}.panel h2{margin:0 0 10px;text-align:left;color:var(--orange);font-size:1rem;letter-spacing:1.5px}.panel h2::after{display:none}.panel p{max-width:900px;color:#adb478;font-size:13px;line-height:1.75}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:17px}.steps div{display:flex;gap:10px;padding:12px;background:rgba(0,0,0,.35);border:1px solid rgba(155,107,211,.18)}.steps b{color:var(--purple);font-size:11px}.steps span{color:#adb478;font-size:11px;line-height:1.5}@keyframes panelIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+    @media(max-width:650px){.page-host{padding:9px}.host-head{align-items:flex-start;flex-direction:column}.host-frame{height:62vh;min-height:390px}.steps{grid-template-columns:1fr}.panel{padding:17px}}
+
+    /* PHOENIX PUPPET CONTROL CHART */
+    .puppet-note{margin:0 0 16px;padding:12px 14px;border:1px solid rgba(210,138,59,.35);background:rgba(210,138,59,.08);color:#d7d7d0;font-size:12px;line-height:1.65}
+    .puppet-note strong{color:#ffd166}
+    .control-chart{width:100%;margin-top:16px;border-collapse:collapse;background:rgba(0,0,0,.28);font-size:12px}
+    .control-chart th{padding:10px 12px;text-align:left;color:#ffd166;background:rgba(92,39,0,.72);border:1px solid rgba(210,138,59,.32);letter-spacing:1px;text-transform:uppercase}
+    .control-chart td{padding:9px 12px;border:1px solid rgba(154,160,96,.22);vertical-align:top;color:#d7d7d0}
+    .control-chart .section{width:150px;color:#ffc857;font-weight:bold;text-transform:uppercase;letter-spacing:1px;background:rgba(210,138,59,.06)}
+    .control-chart .key{width:105px;color:#fff;font-weight:bold;white-space:nowrap}
+    .camera-status{display:inline-block;margin-top:10px;padding:7px 10px;border:1px solid rgba(154,160,96,.35);color:var(--green);font-size:10px;letter-spacing:1px}
+    @media(max-width:650px){.control-chart{font-size:10px}.control-chart th,.control-chart td{padding:7px 6px}.control-chart .section{width:auto}.control-chart .key{width:auto}}
+
+    /* LOWER-POWER MODE */
+    @media (prefers-reduced-motion: reduce) {
+      .star,
+      .galaxy,
+      .background-word {
+        animation-duration: 24s !important;
+      }
+
+      .data-number {
+        transition: none;
+      }
+    }
+
+  
+    /* FROZEN EMBED PREVIEW / PLAY */
+    .host-frame{position:relative}
+    #projectFrame{opacity:0;transition:opacity .6s ease}
+    #projectFrame.embed-ready{opacity:1}
+    .frozen-embed,.embed-loader{position:absolute;inset:0;z-index:30;background:#000}
+    .frozen-embed[hidden],.embed-loader[hidden]{display:none!important}
+    .frozen-embed{overflow:hidden}
+    #previewFrame{display:block;width:100%;height:100%;border:0;pointer-events:none;background:#000}
+    .freeze-glass{position:absolute;inset:0;z-index:2;background:linear-gradient(180deg,rgba(0,0,0,.03),rgba(0,0,0,.08) 55%,rgba(0,0,0,.72));pointer-events:auto}
+    .freeze-controls{position:absolute;z-index:3;left:50%;bottom:32px;transform:translateX(-50%);width:min(92%,500px);display:flex;flex-direction:column;align-items:center;text-align:center;pointer-events:none}
+    .freeze-controls span{margin-bottom:9px;color:#b8be78;font-size:9px;letter-spacing:2.3px;text-shadow:0 0 8px #000}
+    #playProgramBtn{pointer-events:auto;padding:12px 24px;border:1px solid var(--orange);border-radius:4px;background:rgba(0,0,0,.80);color:#fff;font:bold 11px "Courier New",monospace;letter-spacing:2px;cursor:pointer;box-shadow:0 0 22px rgba(210,138,59,.18);transition:.2s}
+    #playProgramBtn:hover{background:rgba(210,138,59,.24);transform:translateY(-2px)}
+    .freeze-controls small{margin-top:8px;color:rgba(230,230,220,.66);font-size:9px;letter-spacing:1px;text-shadow:0 1px 3px #000}
+    .embed-loader{display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle,rgba(54,29,13,.72),rgba(0,0,0,.98) 62%);transition:opacity .5s ease}
+    .embed-loader.fade-out{opacity:0;pointer-events:none}
+    .loader-orbit{position:relative;width:66px;height:66px;margin-bottom:17px;border:1px solid rgba(210,138,59,.18);border-radius:50%;animation:loaderRotate 2.2s linear infinite}
+    .loader-orbit i{position:absolute;width:7px;height:7px;border-radius:50%}.loader-orbit i:nth-child(1){left:29px;top:-4px;background:var(--orange);box-shadow:0 0 10px var(--orange)}.loader-orbit i:nth-child(2){right:-3px;bottom:14px;background:var(--green);box-shadow:0 0 10px var(--green)}.loader-orbit i:nth-child(3){left:1px;bottom:8px;background:var(--purple);box-shadow:0 0 10px var(--purple)}
+    @keyframes loaderRotate{to{transform:rotate(360deg)}}.embed-loader strong{color:var(--orange);font-size:12px;letter-spacing:2px}.embed-loader span{margin:6px 0 15px;color:var(--green);font-size:9px}.loader-track{width:min(72%,380px);height:3px;background:rgba(255,255,255,.08);overflow:hidden;border-radius:5px}.loader-track b{display:block;width:8%;height:100%;background:linear-gradient(90deg,var(--orange),var(--green),var(--purple));transition:width .3s ease}
+    .embed-pause{position:absolute;z-index:40;left:14px;bottom:14px;padding:8px 12px;border:1px solid rgba(154,160,96,.55);border-radius:4px;background:rgba(0,0,0,.78);color:#fff;font:9px "Courier New",monospace;letter-spacing:1.3px;cursor:pointer}
+
+  
+    /* SMOOTH PAUSE TRANSITION */
+    .pause-transition{position:absolute;inset:0;z-index:45;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle,rgba(54,29,13,.55),rgba(0,0,0,.94) 65%);opacity:0;pointer-events:none;transition:opacity .45s ease}
+    .pause-transition.active{opacity:1;pointer-events:auto}
+    .pause-transition strong{color:var(--orange);font-size:12px;letter-spacing:2px}
+    .pause-transition span{margin-top:6px;color:var(--green);font-size:9px;letter-spacing:1px}
+    .pause-transition .pause-ring{width:54px;height:54px;margin-bottom:16px;border:2px solid rgba(154,160,96,.18);border-top-color:var(--purple);border-right-color:var(--orange);border-radius:50%;animation:loaderRotate 1.15s ease-in-out infinite}
+    /* Never show the pause/unload control in fullscreen. */
+    .host-frame:fullscreen .embed-pause{display:none!important}
+
+  
+    /* FULLSCREEN CAMERA CONTROL */
+    .fullscreen-camera{display:none;position:absolute;top:16px;left:18px;z-index:9999;padding:10px 14px;font-family:"Courier New",monospace;font-size:10px;letter-spacing:1.4px;color:#fff;background:rgba(0,0,0,.78);border:1px solid var(--green);border-radius:4px;cursor:pointer}
+    .host-frame:fullscreen .fullscreen-camera{display:block}
+    .fullscreen-camera:hover{background:rgba(154,160,96,.20)}
+
+  </style>
+</head>
+
+<body>
+
+  <!-- ==================================================
+       SPACE BACKGROUND
+  ================================================== -->
+  <div id="spaceBackground">
+
+    <div class="milkyway"></div>
+
+    <div class="galaxy purple one"></div>
+    <div class="galaxy green two"></div>
+    <div class="galaxy orange three"></div>
+
+    <div id="starField"></div>
+    <div id="dataField"></div>
+
+    <span class="background-word word1">MOVEMENT</span>
+    <span class="background-word word2">PUPPETRY</span>
+    <span class="background-word word3">VISUAL</span>
+    <span class="background-word word4">ARCHIVE</span>
+
+  </div>
+
+  <!-- ==================================================
+       PAGE
+  ================================================== -->
+  <div class="page">
+
+    <!-- ==================================================
+         ANIMATED HTML BANNER
+    ================================================== -->
+    <header class="banner-header">
+      <iframe
+        src="../Website Design/Banner/Banner.html"
+        title="CHI VIS PUPPETS Banner"
+        scrolling="no">
+      </iframe>
+    </header>
+
+    <!-- ==================================================
+         NAVIGATION
+    ================================================== -->
+     <nav>
+      <ul>
+        <li><a href="../WorldSimulations.html">World Simulations</a></li>
+      </ul>
+    </nav>
+
+
+    <!-- ==================================================
+         CONTENT
+    ================================================== -->
+    <main class="container">
+      <section class="page-host">
+        <div class="host-head">
+          <div><small>VisVirtual</small><h1>Interactive Puppet</h1></div>
+          <div class="host-buttons"><button id="reloadBtn">RELOAD</button><button id="fullBtn">FULLSCREEN</button></div>
+        </div>
+
+        <div class="host-frame" id="hostFrame">
+          <button id="exitFullBtn" class="exit-fullscreen" type="button">✕ EXIT FULLSCREEN</button>
+          <button id="fullscreenCameraBtn" class="fullscreen-camera" type="button">◉ ENABLE CAMERA</button>
+          <!-- Page_EMBED IMPORTANT -->
+          <div id="frozenEmbed" class="frozen-embed">
+            <iframe id="previewFrame"
+              src="../WorldSimulationsPrograms/Virtual_Room_Simulations/flood_room_simulator.html"
+              title="Puppet Preview"
+              tabindex="-1"
+              aria-hidden="true"></iframe>
+            <div class="freeze-glass"></div>
+            <div class="freeze-controls">
+              <span>PUPPET • PREVIEW</span>
+              <button id="playProgramBtn" type="button">▶ PLAY</button>
+              <small>Press Play to start the interactive puppet.</small>
+            </div>
+          </div>
+
+          <div id="embedLoader" class="embed-loader" hidden>
+            <div class="loader-orbit"><i></i><i></i><i></i></div>
+            <strong>STARTING PUPPET</strong>
+            <span id="loaderText">Preparing interactive controls...</span>
+            <div class="loader-track"><b id="loaderBar"></b></div>
+          </div>
+
+          <iframe id="projectFrame"
+            data-src="../WorldSimulationsPrograms/Virtual_Room_Simulations/flood_room_simulator.html"
+            src="about:blank"
+            title="Interactive Puppet"
+            allow="camera; microphone; autoplay; fullscreen"
+            allowfullscreen tabindex="0"></iframe>
+
+          <div id="pauseTransition" class="pause-transition" aria-hidden="true">
+            <div class="pause-ring"></div>
+            <strong>PAUSING PUPPET</strong>
+            <span>Returning to preview...</span>
+          </div>
+          <button id="pauseProgramBtn" class="embed-pause" type="button" hidden>Ⅱ PAUSE</button>
+        </div>
+
+        <div class="bottom-panel" id="bottomPanel">
+          <div class="drag-handle" id="dragHandle"><i></i><span></span><i></i></div>
+          <div class="tabs">
+            <button class="tab active" data-panel="descriptionPanel">DESCRIPTION</button>
+            <button class="tab" data-panel="instructionsPanel">HOW TO USE</button>
+          </div>
+          <div class="panel active" id="descriptionPanel">
+            <h2>Description</h2>
+            <p>
+              The Flooded Room Simulator is an interactive educational model showing how a finished-basement
+              home office changes as floodwater rises. The room begins completely dry. As water enters, the rug
+              becomes soaked and can lift, storage boxes shift or float, the office chair moves, loose objects
+              drift, lower shelves become submerged, and furniture becomes progressively surrounded by water.
+            </p>
+            <p style="margin-top:12px">
+              You can control the target water depth, rise speed, water movement, water clarity, contamination,
+              and electrical power. Live information tracks the current water depth, percentage of the target
+              reached, room state, floating objects, electrical state, and water condition. The simulator also
+              demonstrates electrical danger when powered floodwater reaches the simulated wall outlet and shows
+              a water-depth history graph. It is an educational flood-response model rather than a real-world
+              electrical, structural, or flood-safety calculation.
+            </p>
+          </div>
+
+          <div class="panel" id="instructionsPanel">
+            <h2>How To Use</h2>
+            <div class="puppet-note">
+              <strong>FLOOD ROOM CONTROLS</strong><br>
+              Start the flood and adjust the settings to observe how water depth, movement, contamination,
+              and electricity affect the room and its objects.
+            </div>
+
+            <table class="control-chart" aria-label="Flooded Room Simulator controls">
+              <thead><tr><th>Control</th><th>Setting</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr><td class="section">Flood</td><td class="key">Start / Pause</td><td>Starts the water rising or pauses the flood at its current depth.</td></tr>
+                <tr><td class="section">Reset Room</td><td class="key">Button</td><td>Returns the room, water, and movable objects to their starting state.</td></tr>
+                <tr><td class="section">Target Water Depth</td><td class="key">0.05–1.80 m</td><td>Sets the target depth that the simulated floodwater will rise toward.</td></tr>
+                <tr><td class="section">Rise Speed</td><td class="key">0.25×–2×</td><td>Changes how quickly the water rises toward the selected target depth.</td></tr>
+                <tr><td class="section">Water Movement</td><td class="key">Select</td><td>Changes the current from nearly still water to a strong indoor current, affecting floating-object drift.</td></tr>
+                <tr><td class="section">Water Clarity</td><td class="key">Select</td><td>Changes the visual appearance from clearer water to very muddy water.</td></tr>
+                <tr><td class="section">Contamination</td><td class="key">Select</td><td>Changes between a clean-water demonstration, dirty floodwater, and heavily contaminated water.</td></tr>
+                <tr><td class="section">Electrical Power</td><td class="key">ON / OFF</td><td>Controls whether the simulated electrical supply is energized during the flood.</td></tr>
+                <tr><td class="section">Live Flood State</td><td class="key">Readout</td><td>Shows water depth, target progress, room state, floating objects, electrical state, and water condition.</td></tr>
+                <tr><td class="section">Electrical Danger</td><td class="key">Warning</td><td>Shows when powered floodwater reaches the simulated wall outlet and becomes a shock hazard.</td></tr>
+                <tr><td class="section">Water-Depth History</td><td class="key">Graph</td><td>Shows the simulated water depth over time.</td></tr>
+              </tbody>
+            </table>
+
+            <div class="steps">
+              <div><b>01</b><span>Choose a target water depth and press Start Flooding to begin the simulation.</span></div>
+              <div><b>02</b><span>Change the rise speed and water movement to observe how furniture and loose objects respond.</span></div>
+              <div><b>03</b><span>Compare water clarity, contamination, and electrical power while watching the live hazard information.</span></div>
+            </div>
+          </div></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ==================================================
+         FOOTER
+    ================================================== -->
+    <footer>
+      CHIVISPUPPETS &nbsp;•&nbsp; AN ARCHIVAL SANDBOX OF PUPPETRY
+    </footer>
+
+  </div>
+
+  <!-- ==================================================
+       BACKGROUND JAVASCRIPT
+  ================================================== -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+      /* STARS */
+      const starField = document.getElementById("starField");
+      const starColors = ["orange","green","purple","white"];
+
+      for (let i=0; i<90; i++) {
+        const star = document.createElement("span");
+        const size = Math.random()<.87 ? .6+Math.random()*1.5 : 2+Math.random()*2;
+
+        star.className = `star ${starColors[Math.floor(Math.random()*starColors.length)]}`;
+        star.style.left = `${Math.random()*100}%`;
+        star.style.top = `${Math.random()*100}%`;
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
+        star.style.setProperty("--speed",`${2+Math.random()*5}s`);
+        star.style.animationDelay = `${-Math.random()*6}s`;
+
+        starField.appendChild(star);
+      }
+
+      /* FLOATING DATA */
+      const dataField = document.getElementById("dataField");
+      const dataItems = [];
+
+      const colors = [
+        "orange",
+        "green",
+        "purple",
+        "blue",
+        "cyan"
+      ];
+
+      const labels = [
+        "CHI",
+        "ARC",
+        "MOV",
+        "OBJ",
+        "VIS",
+        "X",
+        "Y",
+        "SIG",
+        "FLUX",
+        "FRAME"
+      ];
+
+      function makeValue() {
+        const type = Math.floor(Math.random()*4);
+
+        if (type===0) {
+          return Math.floor(Math.random()*99999)
+            .toString()
+            .padStart(5,"0");
+        }
+
+        if (type===1) {
+          return "0x" +
+            Math.floor(Math.random()*65535)
+              .toString(16)
+              .toUpperCase()
+              .padStart(4,"0");
+        }
+
+        if (type===2) {
+          return labels[Math.floor(Math.random()*labels.length)] +
+            "_" +
+            Math.floor(Math.random()*999)
+              .toString()
+              .padStart(3,"0");
+        }
+
+        return (Math.random()*360).toFixed(3);
+      }
+
+      for (let i=0; i<24; i++) {
+        const item = document.createElement("span");
+
+        item.className =
+          `data-number ${colors[Math.floor(Math.random()*colors.length)]}`;
+
+        item.textContent = makeValue();
+        item.style.left = `${Math.random()*97}%`;
+        item.style.top = `${Math.random()*97}%`;
+        item.style.fontSize = `${6+Math.random()*4}px`;
+
+        dataField.appendChild(item);
+
+        dataItems.push({
+          element:item,
+          movement:2+Math.random()*8
+        });
+      }
+
+      /* CHANGE RANDOM DATA */
+      setInterval(() => {
+        dataItems.forEach(item => {
+          if (Math.random()>.76) {
+            item.element.textContent = makeValue();
+          }
+        });
+      },2800);
+
+      /* MOUSE DEPTH - throttled to one update per animation frame */
+      let mouseX = 0;
+      let mouseY = 0;
+      let mouseFramePending = false;
+
+      document.addEventListener("mousemove", e => {
+        mouseX = e.clientX / window.innerWidth - .5;
+        mouseY = e.clientY / window.innerHeight - .5;
+
+        if (mouseFramePending) return;
+        mouseFramePending = true;
+
+        requestAnimationFrame(() => {
+          dataItems.forEach(item => {
+            item.element.style.transform =
+              `translate(${mouseX * item.movement}px, ${mouseY * item.movement}px)`;
+          });
+          mouseFramePending = false;
+        });
+      }, { passive:true });
+
+      /* Pause decorative animation when the tab is not visible */
+      document.addEventListener("visibilitychange", () => {
+        const paused = document.hidden;
+        document.querySelectorAll(".star,.galaxy,.background-word").forEach(el => {
+          el.style.animationPlayState = paused ? "paused" : "running";
+        });
+      });
+
+    });
+  </script>
+
+
+  <script>
+  (()=>{const frame=document.getElementById("projectFrame"),stage=document.getElementById("hostFrame"),full=document.getElementById("fullBtn"),exitFull=document.getElementById("exitFullBtn"),drawer=document.getElementById("bottomPanel"),handle=document.getElementById("dragHandle");
+  const frozen=document.getElementById("frozenEmbed"),previewFrame=document.getElementById("previewFrame"),playProgram=document.getElementById("playProgramBtn"),pauseProgram=document.getElementById("pauseProgramBtn"),pauseTransition=document.getElementById("pauseTransition"),cameraFull=document.getElementById("fullscreenCameraBtn"),loader=document.getElementById("embedLoader"),loaderBar=document.getElementById("loaderBar"),loaderText=document.getElementById("loaderText"),programURL=frame.dataset.src;
+  let programLoaded=false,programStarting=false,timers=[];
+
+  /* The preview iframe is allowed to paint briefly, then it is frozen by removing it.
+     Its last rendered frame remains visible in browsers that retain the iframe surface.
+     This avoids keeping two full Phoenix programs running. */
+  let previewFrozen=false;
+  function freezePreview(){
+    if(previewFrozen)return;
+    previewFrozen=true;
+    try{
+      const doc=previewFrame.contentDocument;
+      if(doc){
+        doc.querySelectorAll("*").forEach(el=>{el.style.animationPlayState="paused"});
+        doc.querySelectorAll("video,audio").forEach(m=>m.pause());
+      }
+    }catch(e){}
+  }
+  previewFrame.addEventListener("load",()=>setTimeout(freezePreview,900),{once:true});
+
+  function clearTimers(){timers.forEach(clearTimeout);timers=[]}
+  function step(ms,w,t){timers.push(setTimeout(()=>{if(programStarting){loaderBar.style.width=w+"%";loaderText.textContent=t}},ms))}
+  function startProgram(){
+    if(programLoaded||programStarting)return;
+    clearTimers();programStarting=true;frozen.hidden=true;loader.hidden=false;loader.classList.remove("fade-out");loaderBar.style.width="8%";
+    step(180,30,"Preparing interactive controls...");step(480,55,"Starting movement system...");step(800,76,"Loading visual effects...");step(1120,90,"Almost ready...");
+    frame.src=programURL;
+  }
+  function finishProgram(){
+    if(!programStarting)return;
+    clearTimers();programStarting=false;programLoaded=true;loaderBar.style.width="100%";loaderText.textContent="Ready.";
+    timers.push(setTimeout(()=>{frame.classList.add("embed-ready");loader.classList.add("fade-out")},160));
+    timers.push(setTimeout(()=>{loader.hidden=true;loader.classList.remove("fade-out");pauseProgram.hidden=false;try{frame.contentWindow.focus()}catch(e){}},650));
+  }
+  function stopProgram(){
+    if(!programLoaded && !programStarting) return;
+    clearTimers();
+    programStarting=false;
+    pauseProgram.hidden=true;
+    pauseTransition.classList.add("active");
+
+    /* Fade the running embed away first, just like the loading transition. */
+    frame.classList.remove("embed-ready");
+
+    timers.push(setTimeout(()=>{
+      programLoaded=false;
+      frame.src="about:blank";
+      loader.hidden=true;
+      loader.classList.remove("fade-out");
+      frozen.hidden=false;
+      if(cameraStatus) cameraStatus.textContent="CAMERA: PUPPET PAUSED";
+    },460));
+
+    timers.push(setTimeout(()=>{
+      pauseTransition.classList.remove("active");
+    },850));
+  }
+  playProgram.addEventListener("click",startProgram);
+  pauseProgram.addEventListener("click",stopProgram);
+  cameraFull.addEventListener("click",()=>{
+    if(!programLoaded){ startProgram(); return; }
+    try{
+      const win=frame.contentWindow,doc=win.document;
+      win.focus();
+      doc.dispatchEvent(new KeyboardEvent("keydown",{key:"c",code:"KeyC",bubbles:true}));
+      win.dispatchEvent(new KeyboardEvent("keydown",{key:"c",code:"KeyC",bubbles:true}));
+      cameraFull.textContent="◉ CAMERA COMMAND SENT";
+      if(cameraStatus) cameraStatus.textContent="CAMERA: ALLOW ACCESS IF PROMPTED";
+    }catch(e){
+      frame.focus();
+      cameraFull.textContent="◉ CLICK PUPPET + PRESS C";
+    }
+  });
+
+
+  document.getElementById("reloadBtn").onclick=()=>{
+    if(!programLoaded){ startProgram(); return; }
+    try{ frame.contentWindow.location.reload(); }
+    catch(e){ frame.src=programURL; }
+  };
+  full.onclick=()=>document.fullscreenElement?document.exitFullscreen():stage.requestFullscreen();
+  exitFull.onclick=()=>{if(document.fullscreenElement)document.exitFullscreen()};
+  document.addEventListener("fullscreenchange",()=>{
+    const active=!!document.fullscreenElement;
+    full.textContent=active?"EXIT FULLSCREEN":"FULLSCREEN";
+  });
+  document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{document.querySelectorAll(".tab,.panel").forEach(e=>e.classList.remove("active"));t.classList.add("active");document.getElementById(t.dataset.panel).classList.add("active")});
+  let drag=false,start=0,base=0,off=0;const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const begin=y=>{drag=true;start=y;base=off;document.body.style.userSelect="none"},move=y=>{if(!drag)return;off=clamp(base+y-start,-180,180);drawer.style.transform=`translateY(${off}px)`},end=()=>{drag=false;document.body.style.userSelect=""};
+  handle.addEventListener("mousedown",e=>begin(e.clientY));window.addEventListener("mousemove",e=>move(e.clientY));window.addEventListener("mouseup",end);
+  handle.addEventListener("touchstart",e=>begin(e.touches[0].clientY),{passive:true});window.addEventListener("touchmove",e=>move(e.touches[0].clientY),{passive:true});window.addEventListener("touchend",end);
+
+  /* Keep keyboard interaction inside the embedded Phoenix puppet.
+     C is forwarded to the puppet when possible so Camera Mode can be toggled
+     from the host page as well as from inside the iframe. */
+  const cameraStatus=document.getElementById("cameraStatus");
+  frame.addEventListener("load",()=>{
+    if(!programStarting)return;
+    finishProgram();
+    if(cameraStatus)cameraStatus.textContent="CAMERA: CLICK PUPPET, THEN PRESS C";
+  });
+
+  document.addEventListener("keydown",e=>{
+    if(e.key.toLowerCase()!=="c" || !programLoaded) return;
+    if(document.activeElement===frame) return;
+    try{
+      const win=frame.contentWindow;
+      const doc=win.document;
+      win.focus();
+      doc.dispatchEvent(new KeyboardEvent("keydown",{key:"c",code:"KeyC",bubbles:true}));
+      win.dispatchEvent(new KeyboardEvent("keydown",{key:"c",code:"KeyC",bubbles:true}));
+      if(cameraStatus) cameraStatus.textContent="CAMERA: C COMMAND SENT — ALLOW CAMERA IF PROMPTED";
+    }catch(err){
+      frame.focus();
+      if(cameraStatus) cameraStatus.textContent="CAMERA: CLICK INSIDE PUPPET AND PRESS C";
+    }
+  });
+  })();
+  </script>
+
+</body>
+</html>
