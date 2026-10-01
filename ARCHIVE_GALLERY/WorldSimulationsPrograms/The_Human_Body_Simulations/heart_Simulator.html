@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Anatomical Heart Simulator</title>
+<style>
+:root{
+  --bg:#04070a;--panel:#0b1218;--panel2:#0f171e;--line:#24323c;
+  --text:#edf3f5;--muted:#91a1aa;--blue:#587ca8;--red:#c65e64;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:
+ radial-gradient(circle at 72% 12%,rgba(86,117,137,.09),transparent 25%),
+ linear-gradient(180deg,#05080c,#020407);
+ color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif}
+button,input{font:inherit}
+.app{max-width:1550px;margin:auto;padding:16px}
+.top{display:flex;justify-content:space-between;gap:16px;align-items:flex-end;margin-bottom:14px}
+.top h1{font-size:30px;margin:0;letter-spacing:-.03em}
+.top p{margin:5px 0 0;color:var(--muted);font-size:13px;max-width:800px;line-height:1.5}
+.badge{border:1px solid var(--line);border-radius:999px;padding:6px 9px;background:#091017;color:#9cadb6;font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+
+.layout{display:grid;grid-template-columns:340px minmax(0,1fr);gap:14px}
+.side{position:sticky;top:12px;align-self:start;background:linear-gradient(180deg,#0d151c,#091017);border:1px solid var(--line);border-radius:16px;padding:14px}
+.group{padding:12px 0;border-bottom:1px solid #1d2931}.group:first-child{padding-top:0}.group:last-child{border:0;padding-bottom:0}
+.st{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#94a7b1;margin-bottom:9px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid #2b3a44;background:#111b23;color:#dce5e9;border-radius:10px;padding:9px 11px;cursor:pointer;min-height:38px}
+.btn:hover{background:#17232b}.btn.primary,.btn.active{background:#1c303b;border-color:#4d6878}
+.control{margin-top:10px}.control label{display:flex;justify-content:space-between;color:#a6b4bc;font-size:11px;margin-bottom:6px}
+input[type=range]{width:100%;accent-color:#88bdd2}
+.check{display:flex!important;justify-content:flex-start!important;gap:8px!important;align-items:center;margin:7px 0!important}
+.check input{accent-color:#88bdd2}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.metric{border:1px solid #25343d;border-radius:10px;background:#081017;padding:9px}
+.metric b{display:block;font-size:14px}.metric span{display:block;color:#80919b;font-size:9px;margin-top:2px;text-transform:uppercase;letter-spacing:.08em}
+.info{font-size:11px;line-height:1.55;color:#95a6af}
+.flowSteps{display:grid;gap:6px}.flowStep{border:1px solid #223039;border-radius:9px;background:#081017;padding:8px 9px;color:#9dafb8;font-size:10px;line-height:1.45}.flowStep b{color:#e5edf1;display:block;font-size:11px}
+.conditionGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.conditionBtn{min-height:46px;text-align:left;padding:8px 9px}
+.conditionBtn small{display:block;margin-top:3px;color:#7f919b;font-size:9px;line-height:1.25}
+.conditionBtn.active small{color:#a8bbc5}
+.conditionInfo{margin-top:9px;border:1px solid #283944;border-radius:11px;background:#081118;padding:10px 11px}
+.conditionInfo b{display:block;font-size:12px;color:#edf4f6;margin-bottom:4px}
+.conditionInfo p{margin:0;color:#93a5ae;font-size:10px;line-height:1.52}
+.conditionInfo .effect{margin-top:7px;padding-top:7px;border-top:1px solid #1f2d36;color:#aebcc3}
+.warningNote{margin-top:8px;font-size:9px;line-height:1.4;color:#71838d}
+
+.main{min-width:0}
+.stageCard{border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#0b1218,#060b0f);overflow:hidden;box-shadow:0 18px 45px rgba(0,0,0,.24)}
+.stageHead{display:flex;justify-content:space-between;gap:12px;padding:12px 14px;border-bottom:1px solid #1f2b34}.stageHead strong{font-size:14px}.stageHead span{font-size:10px;color:#8797a0}
+.stage{position:relative;padding:10px;background:radial-gradient(circle at 50% 46%,rgba(90,118,134,.08),transparent 31%),#020609}
+.svgWrap{border:1px solid #1d2931;border-radius:16px;overflow:hidden;background:#03070a}
+#heart{width:100%;height:auto;display:block;aspect-ratio:1.42/1}
+.overlay{position:absolute;top:20px;left:20px;display:flex;gap:6px;flex-wrap:wrap;pointer-events:none}
+.pill{padding:5px 7px;border:1px solid rgba(120,145,160,.2);border-radius:999px;background:rgba(5,10,14,.72);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:#9cadb6}
+.cycle{position:absolute;right:20px;top:20px;width:260px;border:1px solid rgba(105,127,140,.24);border-radius:13px;background:rgba(7,12,17,.84);backdrop-filter:blur(7px);padding:11px}
+.cycle h3{margin:0 0 6px;font-size:13px}.cycle p{margin:0;color:#91a2ac;font-size:10px;line-height:1.5}
+.bar{height:6px;background:#16222a;border-radius:999px;overflow:hidden;margin-top:8px}.fill{height:100%;background:linear-gradient(90deg,#7098ad,#c0d9e4);width:0}
+
+.bottom{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(300px,.9fr);gap:12px;margin-top:12px}
+.card{border:1px solid var(--line);border-radius:15px;background:linear-gradient(180deg,#0d151c,#091017);padding:14px}.card h2{font-size:14px;margin:0 0 8px}.card p{font-size:11px;line-height:1.55;color:#93a4ae;margin:0}
+.ecgBox{height:160px;margin-top:10px;border:1px solid #22313a;border-radius:11px;overflow:hidden;background:#05090d}#ecg{width:100%;height:100%;display:block}
+.legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:10px}.legendItem{display:flex;align-items:center;gap:8px;border:1px solid #22313b;border-radius:9px;padding:8px;background:#081016;color:#9dafb8;font-size:10px}.dot{width:9px;height:9px;border-radius:50%}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.fact{padding:10px;border:1px solid #25343d;border-radius:10px;background:#081016}.fact b{display:block;font-size:12px}.fact span{display:block;color:#81939d;font-size:10px;line-height:1.4;margin-top:3px}
+
+svg text{font-family:Inter,system-ui,Arial,sans-serif}.label{font-size:13px;font-weight:600;fill:#e7eef2;paint-order:stroke;stroke:#071017;stroke-width:4px}.sub{font-size:11px;fill:#a5b6bf;paint-order:stroke;stroke:#071017;stroke-width:4px}
+.clickable{cursor:pointer}.selected{filter:url(#selectGlow)}
+@media(max-width:1100px){.layout{grid-template-columns:1fr}.side{position:static}}
+@media(max-width:760px){.app{padding:9px}.top{flex-direction:column;align-items:flex-start}.bottom{grid-template-columns:1fr}.cycle{position:static;width:auto;margin:10px}.overlay{position:static;padding:10px 10px 0}}
+@media(max-width:500px){.metrics,.facts,.legend{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div>
+      <h1>Anatomical Heart Simulator</h1>
+      <p>Explore chamber anatomy, valve timing, pulmonary and systemic circulation, and a more physiologically faithful cardiac cycle.</p>
+    </div>
+    <div class="badge">Educational model · not diagnostic</div>
+  </div>
+
+  <div class="layout">
+    <aside class="side">
+      <div class="group">
+        <div class="st">Heartbeat</div>
+        <div class="row"><button class="btn primary" id="play">Pause</button><button class="btn" id="reset">Reset</button></div>
+        <div class="control"><label><span>Heart rate</span><span id="hrText">72 bpm</span></label><input id="hr" type="range" min="40" max="160" value="72"></div>
+
+        <div class="control">
+          <label><span>Simulation speed</span><span id="speedText">1×</span></label>
+          <input id="simSpeed" type="range" min="0.125" max="1" step="0.125" value="1">
+        </div>
+        <div class="row" style="margin-top:8px">
+          <button class="btn speedPreset" data-speed="0.125">⅛×</button>
+          <button class="btn speedPreset" data-speed="0.25">¼×</button>
+          <button class="btn speedPreset" data-speed="0.5">½×</button>
+          <button class="btn speedPreset active" data-speed="1">1×</button>
+        </div>
+        <div class="info" style="margin-top:7px">Slow motion changes only the playback speed. The selected BPM remains the physiological heart-rate reference.</div>
+
+        <div class="control"><label><span>Motion strength</span><span id="motionText">100%</span></label><input id="motion" type="range" min="55" max="140" value="100"></div>
+      </div>
+
+      <div class="group">
+        <div class="st">Jump to cycle stage</div>
+        <div class="row" id="jump">
+          <button class="btn" data-p=".15">Filling</button>
+          <button class="btn" data-p=".43">Atrial contraction</button>
+          <button class="btn" data-p=".57">Ventricular contraction</button>
+          <button class="btn" data-p=".76">Ejection</button>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="st">Heart conditions</div>
+        <div class="conditionGrid" id="conditionGrid">
+          <button class="btn conditionBtn active" data-condition="normal">Normal<small>Reference anatomy</small></button>
+          <button class="btn conditionBtn" data-condition="aorticStenosis">Aortic stenosis<small>Narrowed aortic valve</small></button>
+          <button class="btn conditionBtn" data-condition="mitralRegurg">Mitral regurgitation<small>Backward systolic leak</small></button>
+          <button class="btn conditionBtn" data-condition="vsd">VSD<small>Ventricular septal defect</small></button>
+          <button class="btn conditionBtn" data-condition="reducedLV">Reduced LV function<small>Weaker systolic contraction</small></button>
+          <button class="btn conditionBtn" data-condition="afib">Atrial fibrillation<small>Irregular atrial rhythm</small></button>
+        </div>
+        <div class="conditionInfo">
+          <b id="conditionTitle">Normal heart</b>
+          <p id="conditionDesc">Reference mode with coordinated atrial and ventricular contraction and one-way valve flow.</p>
+          <p class="effect" id="conditionEffect">Animation: normal valve timing and forward blood flow.</p>
+        </div>
+        <div class="warningNote">Condition modes are simplified teaching models. Use Slow Motion to study valve and flow changes. Real severity, anatomy, pressures, symptoms, and treatment vary from person to person.</div>
+      </div>
+
+      <div class="group">
+        <div class="st">Display</div>
+        <label class="check"><input id="labels" type="checkbox" checked> Anatomical labels</label>
+        <label class="check"><input id="flow" type="checkbox" checked> Animated blood flow</label>
+        <label class="check"><input id="valves" type="checkbox" checked> Valve labels</label>
+        <label class="check"><input id="oxygen" type="checkbox" checked> Oxygenation colors</label>
+      </div>
+
+      <div class="group">
+        <div class="st">Live cycle</div>
+        <div class="metrics">
+          <div class="metric"><b id="cycleText">0%</b><span>Cycle</span></div>
+          <div class="metric"><b id="beatText">0.83 s</b><span>Beat duration</span></div>
+          <div class="metric"><b id="phaseText">Filling</b><span>Stage</span></div>
+          <div class="metric"><b id="valveText">AV open</b><span>Valve state</span></div>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="st">Selected structure</div>
+        <div class="info" id="selectedInfo">Click a chamber or valve in the diagram.</div>
+      </div>
+
+      <div class="group">
+        <div class="st">Anatomy note</div>
+        <div class="info">
+          In an anterior view, the <b>right ventricle forms most of the front surface</b> of the heart. The <b>left ventricle forms the left border and apex</b>. The left atrium lies mostly posteriorly, so only part of it is prominent from the front.
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="st">Blood pathway</div>
+        <div class="flowSteps">
+          <div class="flowStep"><b>Body → right atrium</b>Superior and inferior vena cava return deoxygenated blood.</div>
+          <div class="flowStep"><b>Right ventricle → lungs</b>Blood exits through the pulmonary valve into the pulmonary trunk and arteries.</div>
+          <div class="flowStep"><b>Lungs → left atrium</b>Pulmonary veins return oxygenated blood.</div>
+          <div class="flowStep"><b>Left ventricle → body</b>Blood exits through the aortic valve into the aorta.</div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <section class="stageCard">
+        <div class="stageHead"><strong>Heart anatomy & motion</strong><span>Anterior cutaway teaching view · anatomical right appears on viewer’s left · vessels and chambers simplified for visibility</span></div>
+        <div class="stage">
+          <div class="svgWrap">
+            <svg id="heart" viewBox="0 0 1100 780" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="bodyGrad" x1=".18" y1=".08" x2=".82" y2=".94">
+                  <stop offset="0" stop-color="#bd6568"/><stop offset=".48" stop-color="#98494d"/><stop offset="1" stop-color="#672d32"/>
+                </linearGradient>
+                <linearGradient id="bodyShade" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0" stop-color="rgba(38,19,24,.18)"/><stop offset=".58" stop-color="rgba(255,255,255,.03)"/><stop offset="1" stop-color="rgba(24,11,16,.38)"/>
+                </linearGradient>
+                <radialGradient id="raGrad"><stop offset="0" stop-color="#6789b1"/><stop offset="1" stop-color="#345476"/></radialGradient>
+                <radialGradient id="rvGrad"><stop offset="0" stop-color="#5f82a9"/><stop offset="1" stop-color="#304c6a"/></radialGradient>
+                <radialGradient id="laGrad"><stop offset="0" stop-color="#c66b70"/><stop offset="1" stop-color="#8b4247"/></radialGradient>
+                <radialGradient id="lvGrad"><stop offset="0" stop-color="#ce7075"/><stop offset="1" stop-color="#8d4147"/></radialGradient>
+                <filter id="selectGlow" x="-30%" y="-30%" width="160%" height="160%">
+                  <feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+              </defs>
+
+              <rect width="1100" height="780" fill="#020609"/>
+              <ellipse cx="550" cy="414" rx="285" ry="315" fill="rgba(115,140,153,.04)"/>
+
+              <!-- great vessels -->
+              <path id="svc" d="M411 80 C408 143 408 205 428 270" fill="none" stroke="#5279a5" stroke-width="38" stroke-linecap="round"/>
+              <path id="ivc" d="M407 695 C404 630 410 572 437 526" fill="none" stroke="#5279a5" stroke-width="38" stroke-linecap="round"/>
+
+              <path id="pulmonaryTrunk" d="M486 470 C476 395 489 323 518 273 C539 238 573 220 616 220" fill="none" stroke="#5b80aa" stroke-width="38" stroke-linecap="round"/>
+              <path d="M518 273 C478 242 420 225 347 235" fill="none" stroke="#5b80aa" stroke-width="27" stroke-linecap="round"/>
+              <path d="M538 248 C596 216 670 218 758 244" fill="none" stroke="#5b80aa" stroke-width="27" stroke-linecap="round"/>
+
+              <path id="aorta" d="M611 482 C606 397 590 329 592 270 C594 190 648 146 716 153 C771 159 796 210 795 275" fill="none" stroke="#ca6066" stroke-width="44" stroke-linecap="round"/>
+              <path d="M684 159 L684 89 M733 166 L746 96 M772 192 L811 126" fill="none" stroke="#ca6066" stroke-width="24" stroke-linecap="round"/>
+
+              <!-- pulmonary veins -->
+              <path d="M781 270 C733 267 702 272 657 292" fill="none" stroke="#bd5a61" stroke-width="21" stroke-linecap="round"/>
+              <path d="M779 325 C730 320 694 308 655 307" fill="none" stroke="#bd5a61" stroke-width="21" stroke-linecap="round"/>
+              <path d="M304 269 C392 267 530 281 615 296" fill="none" stroke="#bd5a61" stroke-width="21" stroke-linecap="round"/>
+              <path d="M306 327 C401 324 531 310 615 308" fill="none" stroke="#bd5a61" stroke-width="21" stroke-linecap="round"/>
+
+              <!-- external myocardium -->
+              <g id="heartBody">
+                <path d="M518 170
+                         C470 149 420 157 382 194
+                         C345 230 330 285 336 348
+                         C345 449 375 548 436 628
+                         C466 667 505 704 548 720
+                         C590 707 636 669 678 616
+                         C727 555 754 474 752 389
+                         C751 307 724 235 676 199
+                         C640 171 594 165 559 183
+                         C544 191 531 181 518 170Z"
+                      fill="url(#bodyGrad)" stroke="#d07c7f" stroke-width="5"/>
+                <path d="M518 170
+                         C470 149 420 157 382 194
+                         C345 230 330 285 336 348
+                         C345 449 375 548 436 628
+                         C466 667 505 704 548 720
+                         C590 707 636 669 678 616
+                         C727 555 754 474 752 389
+                         C751 307 724 235 676 199
+                         C640 171 594 165 559 183
+                         C544 191 531 181 518 170Z"
+                      fill="url(#bodyShade)"/>
+              </g>
+
+              <!-- atria: right atrium is more visible anteriorly; left atrium mostly posterior -->
+              <g id="raGroup" class="clickable" data-id="ra">
+                <path id="ra" d="M382 224
+                  C350 246 343 294 354 334
+                  C363 367 386 387 417 381
+                  C445 376 461 352 461 319
+                  C460 280 438 238 409 224
+                  C400 220 390 219 382 224Z"
+                  fill="url(#raGrad)" stroke="#86a3c2" stroke-width="4"/>
+              </g>
+
+              <g id="laGroup" class="clickable" data-id="la">
+                <path id="la" d="M626 235
+                  C650 225 681 232 696 255
+                  C711 278 708 309 688 329
+                  C671 346 646 351 625 338
+                  C606 327 598 303 602 279
+                  C606 257 613 241 626 235Z"
+                  fill="url(#laGrad)" stroke="#da8b8f" stroke-width="4"/>
+                <!-- left atrial appendage hint -->
+                <path d="M614 253 C590 246 578 257 583 273 C589 289 602 291 616 282"
+                      fill="#a95157" stroke="#cf7f84" stroke-width="3"/>
+              </g>
+
+              <!-- ventricles: RV dominates anterior surface; LV forms apex -->
+              <g id="rvGroup" class="clickable" data-id="rv">
+                <path id="rv" d="M377 365
+                  C353 401 357 468 378 526
+                  C398 584 435 633 486 666
+                  C511 682 533 671 535 642
+                  C539 584 531 512 526 449
+                  C522 404 506 371 478 353
+                  C444 332 398 337 377 365Z"
+                  fill="url(#rvGrad)" stroke="#7e9bb9" stroke-width="4"/>
+              </g>
+
+              <g id="lvGroup" class="clickable" data-id="lv">
+                <path id="lv" d="M578 351
+                  C549 379 543 423 548 474
+                  C555 541 566 614 553 681
+                  C548 704 563 719 583 708
+                  C638 677 685 617 711 548
+                  C735 485 735 415 705 374
+                  C679 338 612 319 578 351Z"
+                  fill="url(#lvGrad)" stroke="#dc8a8e" stroke-width="5"/>
+              </g>
+
+              <!-- thicker interventricular septum and muscular LV wall -->
+              <path id="septum" d="M541 338 C532 417 541 539 552 681"
+                    fill="none" stroke="#d7a88f" stroke-width="24" stroke-linecap="round" opacity=".95"/>
+              <path d="M704 380 C726 449 718 522 689 585 C661 643 624 682 584 706"
+                    fill="none" stroke="rgba(224,166,146,.45)" stroke-width="14" stroke-linecap="round"/>
+
+              <!-- valves -->
+              <g id="tricuspid" class="clickable" data-id="tricuspid">
+                <path id="tri1" d="M420 348 C438 359 452 373 466 389" fill="none" stroke="#d9e0e4" stroke-width="6" stroke-linecap="round"/>
+                <path id="tri2" d="M420 374 C438 364 452 355 468 349" fill="none" stroke="#d9e0e4" stroke-width="6" stroke-linecap="round"/>
+              </g>
+              <g id="mitral" class="clickable" data-id="mitral">
+                <path id="mit1" d="M604 346 C620 358 635 373 650 389" fill="none" stroke="#d9e0e4" stroke-width="6" stroke-linecap="round"/>
+                <path id="mit2" d="M604 375 C620 364 635 355 651 348" fill="none" stroke="#d9e0e4" stroke-width="6" stroke-linecap="round"/>
+              </g>
+              <g id="pulmonary" class="clickable" data-id="pulmonary">
+                <path id="pulmValve" d="M487 304 C501 287 516 286 530 303" fill="none" stroke="#d9e0e4" stroke-width="6" stroke-linecap="round"/>
+              </g>
+              <g id="aorticValveG" class="clickable" data-id="aortic">
+                <path id="aorticValve" d="M570 306 C584 289 600 289 614 306" fill="none" stroke="#d9e0e4" stroke-width="6" stroke-linecap="round"/>
+              </g>
+
+              <!-- chordae tendineae / papillary muscle hints -->
+              <g opacity=".55" stroke="#d5d1c5" stroke-width="2" fill="none">
+                <path d="M437 371 L447 429 M455 371 L472 435"/>
+                <path d="M621 372 L610 434 M640 372 L632 443"/>
+              </g>
+              <g opacity=".55" fill="#caa58f">
+                <ellipse cx="448" cy="444" rx="8" ry="15"/>
+                <ellipse cx="474" cy="449" rx="8" ry="15"/>
+                <ellipse cx="608" cy="451" rx="8" ry="17"/>
+                <ellipse cx="635" cy="458" rx="8" ry="17"/>
+              </g>
+
+              <!-- coronary vessels -->
+              <path d="M552 293 C527 378 522 504 494 615" fill="none" stroke="rgba(237,155,130,.50)" stroke-width="4" stroke-linecap="round"/>
+              <path d="M572 311 C639 344 689 431 684 548" fill="none" stroke="rgba(237,155,130,.40)" stroke-width="4" stroke-linecap="round"/>
+              <path d="M603 319 C643 339 667 367 681 403" fill="none" stroke="rgba(237,155,130,.28)" stroke-width="3"/>
+
+              <!-- labels -->
+              <g id="labelGroup">
+                <text class="label" x="276" y="285">Right atrium</text>
+                <text class="label" x="270" y="474">Right ventricle</text>
+                <text class="label" x="714" y="285">Left atrium</text>
+                <text class="label" x="717" y="486">Left ventricle</text>
+                <text class="sub" x="724" y="145">Aorta</text>
+                <text class="sub" x="292" y="222">Pulmonary artery</text>
+                <text class="sub" x="305" y="96">Vena cava</text>
+                <text id="triLabel" class="sub" x="337" y="352">Tricuspid valve</text>
+                <text id="mitLabel" class="sub" x="663" y="348">Mitral valve</text>
+                <text id="pulmLabel" class="sub" x="448" y="274">Pulmonary valve</text>
+                <text id="aortLabel" class="sub" x="616" y="274">Aortic valve</text>
+              </g>
+
+              <g id="conditionOverlay" pointer-events="none">
+                <circle id="vsdHole" cx="550" cy="455" r="0" fill="#111820" stroke="#e2b0a1" stroke-width="3" opacity="0"/>
+                <path id="stenosisRing" d="M571 303 Q584 296 600 303" fill="none" stroke="#e6d2a3" stroke-width="0" stroke-linecap="round" opacity="0"/>
+                <path id="mrJet" d="M620 363 C625 335 636 313 650 291" fill="none" stroke="rgba(238,140,146,.0)" stroke-width="9" stroke-linecap="round"/>
+              </g>
+              <g id="particles"></g>
+            </svg>
+          </div>
+
+          <div class="overlay"><span class="pill">anterior cutaway</span><span class="pill">pressure-driven valves</span><span class="pill">live circulation</span></div>
+          <div class="cycle">
+            <h3 id="cycleTitle">Ventricular filling</h3>
+            <p id="cycleDesc">Blood returns to the atria and moves through open atrioventricular valves into the ventricles.</p>
+            <div class="bar"><div class="fill" id="barFill"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <div class="bottom">
+        <section class="card">
+          <h2>Electrical rhythm</h2>
+          <p>The ECG below is an illustrative timing trace synchronized with the simulation. It is not intended to reproduce a clinical ECG.</p>
+          <div class="legend">
+            <div class="legendItem"><span class="dot" style="background:#5e7faa"></span>Deoxygenated blood</div>
+            <div class="legendItem"><span class="dot" style="background:#c65d63"></span>Oxygenated blood</div>
+            <div class="legendItem"><span class="dot" style="background:#d9e0e4"></span>Valve leaflets</div>
+            <div class="legendItem"><span class="dot" style="background:#a34e52"></span>Myocardium</div>
+          </div>
+          <div class="ecgBox"><canvas id="ecg" width="920" height="160"></canvas></div>
+        </section>
+
+        <section class="card">
+          <h2>What changes during a beat</h2>
+          <p>The ventricular myocardium shortens and thickens during systole while chamber volume falls. The atria contract late in diastole, just before ventricular systole.</p>
+          <div class="facts">
+            <div class="fact"><b>Ventricular filling</b><span>Tricuspid and mitral valves are open while the aortic and pulmonary valves remain closed.</span></div>
+            <div class="fact"><b>Diastasis</b><span>Mid-diastolic filling slows as atrial and ventricular pressures approach each other.</span></div>
+            <div class="fact"><b>Atrial systole</b><span>Atria contract late in diastole and complete ventricular filling.</span></div>
+            <div class="fact"><b>Isovolumetric contraction</b><span>All four valves are briefly closed while ventricular pressure rises rapidly.</span></div>
+            <div class="fact"><b>Ejection</b><span>Aortic and pulmonary valves open once ventricular pressure exceeds pressure in the aorta and pulmonary artery.</span></div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+const q=id=>document.getElementById(id);
+const els={
+  play:q('play'),reset:q('reset'),hr:q('hr'),motion:q('motion'),simSpeed:q('simSpeed'),
+  hrText:q('hrText'),motionText:q('motionText'),speedText:q('speedText'),
+  cycleText:q('cycleText'),beatText:q('beatText'),phaseText:q('phaseText'),valveText:q('valveText'),
+  selectedInfo:q('selectedInfo'),labels:q('labels'),flow:q('flow'),valves:q('valves'),oxygen:q('oxygen'),
+  labelGroup:q('labelGroup'),barFill:q('barFill'),cycleTitle:q('cycleTitle'),cycleDesc:q('cycleDesc'),
+  ra:q('ra'),rv:q('rv'),la:q('la'),lv:q('lv'),heartBody:q('heartBody'),septum:q('septum'),
+  tri1:q('tri1'),tri2:q('tri2'),mit1:q('mit1'),mit2:q('mit2'),pulmValve:q('pulmValve'),aorticValve:q('aorticValve'),
+  particles:q('particles'),conditionOverlay:q('conditionOverlay'),vsdHole:q('vsdHole'),
+  stenosisRing:q('stenosisRing'),mrJet:q('mrJet'),
+  conditionTitle:q('conditionTitle'),conditionDesc:q('conditionDesc'),conditionEffect:q('conditionEffect')
+};
+const ecg=q('ecg'), ex=ecg.getContext('2d');
+
+let phase=0, running=true, last=performance.now();
+
+const info={
+ ra:['Right atrium','Receives deoxygenated blood from the superior and inferior vena cava.'],
+ rv:['Right ventricle','Pumps deoxygenated blood through the pulmonary valve into the pulmonary trunk toward the lungs.'],
+ la:['Left atrium','Receives oxygenated blood returning from the lungs through the pulmonary veins.'],
+ lv:['Left ventricle','The thick-walled systemic pump that ejects oxygenated blood into the aorta.'],
+ tricuspid:['Tricuspid valve','The right atrioventricular valve. It opens during filling and closes during ventricular contraction.'],
+ mitral:['Mitral valve','The left atrioventricular valve. It opens during filling and closes during ventricular contraction.'],
+ pulmonary:['Pulmonary valve','A semilunar valve that opens during right ventricular ejection.'],
+ aortic:['Aortic valve','A semilunar valve that opens during left ventricular ejection into the aorta.']
+};
+
+const conditions={
+ normal:{
+   title:'Normal heart',
+   desc:'Reference mode with coordinated atrial and ventricular contraction and one-way valve flow.',
+   effect:'Animation: normal valve timing and forward blood flow.'
+ },
+ aorticStenosis:{
+   title:'Aortic stenosis',
+   desc:'The aortic valve opening is narrowed, so the left ventricle must eject through a smaller opening. This increases resistance to outflow and can increase left-ventricular pressure.',
+   effect:'Animation: narrowed aortic-valve opening, reduced forward aortic flow, and a turbulent jet during ejection.'
+ },
+ mitralRegurg:{
+   title:'Mitral regurgitation',
+   desc:'The mitral valve does not close completely, allowing some blood to leak backward from the left ventricle into the left atrium during ventricular systole.',
+   effect:'Animation: backward systolic flow from the left ventricle toward the left atrium.'
+ },
+ vsd:{
+   title:'Ventricular septal defect (VSD)',
+   desc:'A VSD is an opening in the wall between the ventricles. In the common left-to-right pattern, higher left-ventricular pressure drives oxygenated blood into the right ventricle.',
+   effect:'Animation: visible septal opening with a left-to-right systolic shunt. Actual shunt direction depends on pressures and disease severity.'
+ },
+ reducedLV:{
+   title:'Reduced left-ventricular systolic function',
+   desc:'The left ventricle contracts less effectively, so a smaller fraction of its end-diastolic blood volume is ejected with each beat.',
+   effect:'Animation: weaker LV shortening and reduced aortic outflow. Heart failure can also occur with preserved ejection fraction, which this mode does not simulate.'
+ },
+ afib:{
+   title:'Atrial fibrillation',
+   desc:'Atrial fibrillation is an irregular atrial rhythm without coordinated atrial contraction. Ventricular response is often irregular.',
+   effect:'Animation: no organized atrial systole, irregular beat timing, and a fibrillatory ECG baseline.'
+ }
+};
+let condition='normal';
+let beatIndex=0;
+const afIntervals=[0.74,1.08,0.86,1.22,0.79,1.15,0.92,1.28,0.82,1.04];
+
+
+function stage(p){
+  if(p<.18)return['Rapid ventricular filling','AV valves are open. Ventricular pressure is low and blood moves rapidly from atria into ventricles.','AV open'];
+  if(p<.36)return['Diastasis','Filling continues more slowly as atrial and ventricular pressures become similar.','AV open'];
+  if(p<.48)return['Atrial systole','Atrial contraction adds the final portion of ventricular filling.','AV open'];
+  if(p<.60)return['Isovolumetric contraction','Ventricular contraction begins. AV valves close; semilunar valves remain closed while ventricular pressure rises.','All closed'];
+  if(p<.78)return['Rapid ejection','Aortic and pulmonary valves open as ventricular pressure exceeds arterial pressure.','Semilunar open'];
+  if(p<.88)return['Reduced ejection','Ventricular outflow continues but slows as contraction wanes.','Semilunar open'];
+  return['Isovolumetric relaxation','Semilunar valves close. All valves are briefly closed while ventricular pressure falls.','All closed'];
+}
+function bell(p,a,b){
+  if(p<=a||p>=b)return 0;
+  const t=(p-a)/(b-a);
+  return Math.sin(t*Math.PI);
+}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function motionStrength(){return +els.motion.value/100}
+function simulationSpeed(){return Math.max(.125,Math.min(1,+els.simSpeed.value||1))}
+function formatSpeed(v){
+  if(v===0.125)return '⅛×';
+  if(v===0.25)return '¼×';
+  if(v===0.5)return '½×';
+  return v.toFixed(3).replace(/0+$/,'').replace(/\.$/,'')+'×';
+}
+
+function setValve(open,type){
+  if(type==='av'){
+    if(condition==='mitralRegurg'){
+      // Tricuspid behaves normally; mitral never seals completely.
+      els.tri1.setAttribute('d',open?'M420 348 C438 359 452 373 466 389':'M423 361 C438 360 452 360 465 361');
+      els.tri2.setAttribute('d',open?'M420 374 C438 364 452 355 468 349':'M423 361 C438 363 452 363 465 361');
+      els.mit1.setAttribute('d',open?'M604 346 C620 358 635 373 650 389':'M607 359 C621 356 633 358 645 364');
+      els.mit2.setAttribute('d',open?'M604 375 C620 364 635 355 651 348':'M607 364 C620 361 633 360 645 357');
+    }else{
+      els.tri1.setAttribute('d',open?'M420 348 C438 359 452 373 466 389':'M423 361 C438 360 452 360 465 361');
+      els.tri2.setAttribute('d',open?'M420 374 C438 364 452 355 468 349':'M423 361 C438 363 452 363 465 361');
+      els.mit1.setAttribute('d',open?'M604 346 C620 358 635 373 650 389':'M607 360 C621 359 635 359 648 360');
+      els.mit2.setAttribute('d',open?'M604 375 C620 364 635 355 651 348':'M607 360 C621 362 635 362 648 360');
+    }
+  } else {
+    if(condition==='aorticStenosis'){
+      els.pulmValve.setAttribute('d',open?'M481 308 C500 278 518 279 536 308':'M488 301 C501 298 516 298 530 301');
+      // Even when "open", the aortic valve remains visibly restricted.
+      els.aorticValve.setAttribute('d',open?'M576 304 C584 296 600 296 608 304':'M578 303 C586 301 598 301 606 303');
+    }else{
+      els.pulmValve.setAttribute('d',open?'M481 308 C500 278 518 279 536 308':'M488 301 C501 298 516 298 530 301');
+      els.aorticValve.setAttribute('d',open?'M565 310 C584 281 603 281 621 310':'M571 303 C584 300 600 300 614 303');
+    }
+  }
+}
+function morph(){
+  const s=motionStrength();
+  let atr=bell(phase,.36,.49)*s;
+  let ven=bell(phase,.49,.88)*s;
+
+  if(condition==='afib') atr=0;
+
+  const bodyScale=1 - ven*.018;
+  els.heartBody.setAttribute('transform',`translate(${550*(1-bodyScale)} ${455*(1-bodyScale)}) scale(${bodyScale})`);
+
+  const atrScale=1-atr*.08;
+  const rvX=1-ven*.07, rvY=1-ven*.12;
+  const lvStrength=condition==='reducedLV' ? .34 : 1;
+  const lvX=1-ven*.08*lvStrength, lvY=1-ven*.14*lvStrength;
+
+  const afFlutter=condition==='afib' ? Math.sin(performance.now()/33)*1.3 : 0;
+  q('raGroup').setAttribute('transform',`translate(${421*(1-atrScale)+afFlutter} ${300*(1-atrScale)}) scale(${atrScale})`);
+  q('laGroup').setAttribute('transform',`translate(${648*(1-atrScale)-afFlutter} ${300*(1-atrScale)}) scale(${atrScale})`);
+  q('rvGroup').setAttribute('transform',`translate(${465*(1-rvX)} ${500*(1-rvY)}) scale(${rvX} ${rvY})`);
+  q('lvGroup').setAttribute('transform',`translate(${625*(1-lvX)} ${500*(1-lvY)}) scale(${lvX} ${lvY})`);
+
+  els.septum.setAttribute('stroke-width',(24+ven*7).toFixed(1));
+  els.septum.setAttribute('transform',`translate(${ven*4} 0)`);
+
+  const avOpen=phase<.49 || phase>.94;
+  const semOpen=phase>=.60 && phase<.88;
+  setValve(avOpen,'av');
+  setValve(semOpen,'sem');
+
+  updateConditionOverlay(ven,semOpen);
+}
+
+function updateConditionOverlay(ven,semOpen){
+  els.vsdHole.setAttribute('opacity',condition==='vsd'?'1':'0');
+  els.vsdHole.setAttribute('r',condition==='vsd'?'13':'0');
+
+  if(condition==='aorticStenosis'){
+    els.stenosisRing.setAttribute('opacity','1');
+    els.stenosisRing.setAttribute('stroke-width',semOpen?'8':'4');
+  }else{
+    els.stenosisRing.setAttribute('opacity','0');
+    els.stenosisRing.setAttribute('stroke-width','0');
+  }
+
+  if(condition==='mitralRegurg' && phase>=.49 && phase<.88){
+    els.mrJet.setAttribute('stroke','rgba(238,140,146,.60)');
+    els.mrJet.setAttribute('stroke-width',(5+ven*7).toFixed(1));
+  }else{
+    els.mrJet.setAttribute('stroke','rgba(238,140,146,0)');
+    els.mrJet.setAttribute('stroke-width','0');
+  }
+}
+
+const curves={
+ svc:[[411,80],[408,143],[408,205],[425,268]],
+ ivc:[[407,695],[404,630],[412,575],[435,525]],
+ ra2rv:[[410,316],[425,350],[443,392],[458,446]],
+ rv2pa:[[458,446],[474,382],[489,316],[518,273]],
+ pa:[[518,273],[548,235],[590,221],[616,220]],
+ pv:[[781,270],[733,267],[704,276],[658,292]],
+ la2lv:[[646,310],[633,349],[618,394],[606,443]],
+ lv2ao:[[606,443],[603,365],[595,320],[592,270]],
+ ao:[[592,270],[594,190],[648,146],[716,153]]
+};
+curves.mrBack=[[612,382],[620,345],[634,317],[650,291]];
+curves.vsdShunt=[[592,468],[580,458],[565,454],[548,455]];
+
+function point(c,t){
+ const [p0,p1,p2,p3]=c,u=1-t;
+ return[
+  u*u*u*p0[0]+3*u*u*t*p1[0]+3*u*t*t*p2[0]+t*t*t*p3[0],
+  u*u*u*p0[1]+3*u*u*t*p1[1]+3*u*t*t*p2[1]+t*t*t*p3[1]
+ ];
+}
+function dotsOn(c,n,color,speed,offset=0,r=4,opacity=.88){
+ let h='';
+ for(let i=0;i<n;i++){
+  const t=(phase*speed+i/n+offset)%1,p=point(c,t);
+  h+=`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${r}" fill="${color}" opacity="${opacity}"/>`;
+ }
+ return h;
+}
+function dotsReverse(c,n,color,speed,offset=0,r=4,opacity=.88){
+ let h='';
+ for(let i=0;i<n;i++){
+  const t=1-((phase*speed+i/n+offset)%1),p=point(c,t);
+  h+=`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${r}" fill="${color}" opacity="${opacity}"/>`;
+ }
+ return h;
+}
+function particles(){
+ if(!els.flow.checked){els.particles.innerHTML='';return}
+ const blue=els.oxygen.checked?'#90b0d4':'#c5cbcf';
+ const red=els.oxygen.checked?'#ee9ba0':'#d6dadd';
+ let h=dotsOn(curves.svc,8,blue,1.05)+dotsOn(curves.ivc,8,blue,1.05,.45)+dotsOn(curves.pv,8,red,1.1,.2);
+
+ const avOpen=phase<.49||phase>.94, semOpen=phase>=.60&&phase<.88;
+ if(avOpen){
+  h+=dotsOn(curves.ra2rv,8,blue,2.0,.1);
+  h+=dotsOn(curves.la2lv,8,red,2.0,.35);
+ }
+ if(semOpen){
+  h+=dotsOn(curves.rv2pa,10,blue,3.0,.15);
+  h+=dotsOn(curves.pa,10,blue,3.1,.3);
+
+  const lvCount=condition==='reducedLV'?4:10;
+  const aoCount=condition==='reducedLV'?4:(condition==='aorticStenosis'?6:10);
+  h+=dotsOn(curves.lv2ao,lvCount,red,condition==='aorticStenosis'?2.1:3.1,.1,condition==='aorticStenosis'?3:4);
+  h+=dotsOn(curves.ao,aoCount,red,condition==='aorticStenosis'?2.0:3.0,.4,condition==='aorticStenosis'?3:4);
+
+  if(condition==='aorticStenosis'){
+    // turbulent-looking narrow jet just beyond the valve
+    for(let i=0;i<9;i++){
+      const a=i/9*Math.PI*2 + phase*18;
+      const rr=4+(i%3)*5;
+      const x=594+Math.cos(a)*rr;
+      const y=279-Math.sin(a)*rr*.6-(i%4)*5;
+      h+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.8" fill="${red}" opacity=".82"/>`;
+    }
+  }
+ }
+
+ if(condition==='mitralRegurg' && phase>=.49 && phase<.88){
+   h+=dotsReverse(curves.mrBack,10,red,3.4,.15,3.5,.86);
+ }
+
+ if(condition==='vsd' && phase>=.49 && phase<.88){
+   h+=dotsOn(curves.vsdShunt,9,red,3.0,.2,3.5,.88);
+ }
+
+ els.particles.innerHTML=h;
+}
+function updateLabels(){
+ els.labelGroup.style.display=els.labels.checked?'block':'none';
+ ['triLabel','mitLabel','pulmLabel','aortLabel'].forEach(id=>{
+   q(id).style.display=(els.labels.checked&&els.valves.checked)?'block':'none';
+ });
+}
+function updateConditionInfo(){
+ const c=conditions[condition];
+ els.conditionTitle.textContent=c.title;
+ els.conditionDesc.textContent=c.desc;
+ els.conditionEffect.textContent=c.effect;
+ document.querySelectorAll('.conditionBtn').forEach(b=>b.classList.toggle('active',b.dataset.condition===condition));
+}
+function updateUI(){
+ const st=stage(phase),hr=+els.hr.value;
+ els.hrText.textContent=hr+' bpm';els.motionText.textContent=els.motion.value+'%';
+ els.speedText.textContent=formatSpeed(simulationSpeed());
+ document.querySelectorAll('.speedPreset').forEach(b=>b.classList.toggle('active',Math.abs(+b.dataset.speed-simulationSpeed())<.001));
+ els.cycleText.textContent=Math.round(phase*100)+'%';els.beatText.textContent=(60/hr).toFixed(2)+' s';
+ els.phaseText.textContent=st[0].replace('Ventricular ','');els.valveText.textContent=st[2];
+ els.cycleTitle.textContent=st[0];els.cycleDesc.textContent=st[1];els.barFill.style.width=(phase*100)+'%';
+ updateLabels();
+ updateConditionInfo();
+}
+function drawECG(){
+ const W=ecg.width,H=ecg.height;
+ ex.clearRect(0,0,W,H);ex.fillStyle='#05090d';ex.fillRect(0,0,W,H);
+ ex.strokeStyle='rgba(85,115,132,.10)';ex.lineWidth=1;
+ for(let x=0;x<W;x+=28){ex.beginPath();ex.moveTo(x,0);ex.lineTo(x,H);ex.stroke()}
+ for(let y=0;y<H;y+=28){ex.beginPath();ex.moveTo(0,y);ex.lineTo(W,y);ex.stroke()}
+ const base=H*.62;
+ ex.strokeStyle='#a7cdbd';ex.lineWidth=2.2;ex.beginPath();
+ for(let x=0;x<W;x++){
+  const t=((x/W)*2.4+phase)%1,ga=(c,w,a)=>a*Math.exp(-Math.pow((t-c)/w,2));
+  let y;
+  if(condition==='afib'){
+    const fibr=2.8*Math.sin(x*.19+phase*24)+1.7*Math.sin(x*.41+phase*31);
+    y=base+fibr+ga(.40,.013,7)-ga(.445,.009,48)+ga(.472,.014,18)-ga(.70,.060,12);
+  }else{
+    y=base-ga(.13,.030,9)+ga(.40,.013,8)-ga(.445,.009,49)+ga(.472,.014,19)-ga(.70,.060,14);
+  }
+  x?ex.lineTo(x,y):ex.moveTo(x,y);
+ }
+ ex.stroke();ex.fillStyle='#82949e';ex.font='10px system-ui';
+ ex.fillText(condition==='afib'?'Illustrative AF pattern: no organized P wave + irregular baseline':'Illustrative ECG timing',10,16);
+}
+function loop(now){
+ const dt=Math.min(.05,(now-last)/1000);last=now;
+ if(running){
+   let beatSeconds=60/+els.hr.value;
+   if(condition==='afib') beatSeconds*=afIntervals[beatIndex%afIntervals.length];
+   phase += (dt*simulationSpeed())/beatSeconds;
+   if(phase>=1){phase%=1;beatIndex++;}
+ }
+ updateUI();morph();particles();drawECG();requestAnimationFrame(loop);
+}
+els.play.addEventListener('click',()=>{running=!running;els.play.textContent=running?'Pause':'Play'});
+els.reset.addEventListener('click',()=>{phase=0;running=false;condition='normal';beatIndex=0;els.play.textContent='Play';els.hr.value=72;els.motion.value=100;els.simSpeed.value=1;els.selectedInfo.textContent='Click a chamber or valve in the diagram.';updateConditionInfo();updateUI();});
+q('jump').addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(!b)return;phase=+b.dataset.p;running=false;els.play.textContent='Play'});
+q('conditionGrid').addEventListener('click',e=>{
+  const b=e.target.closest('[data-condition]');
+  if(!b)return;
+  condition=b.dataset.condition;
+  beatIndex=0;
+  if(condition==='afib' && +els.hr.value<80) els.hr.value=90;
+  updateConditionInfo();
+});
+document.querySelectorAll('.speedPreset').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    els.simSpeed.value=btn.dataset.speed;
+    updateUI();
+  });
+});
+els.simSpeed.addEventListener('input',updateUI);
+['hr','motion','labels','flow','valves','oxygen'].forEach(id=>q(id).addEventListener('input',updateUI));
+document.querySelectorAll('.clickable').forEach(n=>n.addEventListener('click',()=>{
+ document.querySelectorAll('.clickable').forEach(x=>x.classList.remove('selected'));
+ n.classList.add('selected');
+ const d=info[n.dataset.id];
+ els.selectedInfo.innerHTML=`<b style="color:#edf4f6">${d[0]}</b><br>${d[1]}`;
+}));
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

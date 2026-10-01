@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vision & Light Path Simulator</title>
+<style>
+:root{--bg:#071018;--panel:#111b25;--panel2:#0c141c;--line:#253746;--text:#eef6fa;--muted:#93a7b3;--accent:#75c7ea;--gold:#ffd36f;--retina:#db8db7;--nerve:#d8c77c}
+*{box-sizing:border-box}html,body{margin:0;background:radial-gradient(circle at 18% 0,#153246 0,#08121a 42%,#05090e 100%);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 78% 12%,rgba(75,170,210,.10),transparent 25%),repeating-radial-gradient(circle at 14% 30%,rgba(255,255,255,.025) 0 1px,transparent 1px 18px);animation:drift 24s linear infinite}@keyframes drift{50%{transform:translateY(-16px)}}
+.app{max-width:1500px;margin:auto;padding:22px}.top{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap}.top h1{margin:0;font-size:clamp(28px,4vw,44px);letter-spacing:-.035em}.top p{margin:9px 0 0;color:var(--muted);max-width:900px;line-height:1.55}.note{max-width:450px;padding:11px 13px;border:1px solid #4f4326;background:#211c11;color:#e9dba7;border-radius:13px;font-size:12px;line-height:1.45}
+.layout{display:grid;grid-template-columns:330px minmax(0,1fr);gap:16px;margin-top:18px}.side,.main{border:1px solid var(--line);background:rgba(14,22,30,.94);border-radius:18px}.side{padding:15px;align-self:start;position:sticky;top:16px}.main{padding:16px;min-width:0}.section{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#8195a2;margin:2px 0 9px}.mode-grid{display:grid;gap:7px}.mode{padding:11px;border-radius:11px;border:1px solid var(--line);background:#0d151d;color:#e7f0f4;text-align:left;cursor:pointer}.mode.active{border-color:var(--accent);background:#132b39}.mode b{display:block;font-size:13px}.mode span{display:block;color:#8da0ac;font-size:11px;margin-top:3px}.controls{display:grid;gap:11px;border-top:1px solid var(--line);padding-top:14px;margin-top:14px}.control{display:grid;gap:6px}.control label{font-size:12px;color:#aebbc3}input[type=range],select,button{font:inherit}select{background:#0d151d;border:1px solid var(--line);color:#fff;border-radius:10px;padding:10px}.btnrow{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#0d151d;color:#eef4f7;border-radius:10px;padding:9px 12px;cursor:pointer}.btn.primary{background:#17384a;border-color:#3b7899}.small{font-size:11px;color:#8094a0;line-height:1.45}
+.stage-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:12px}.stage-head h2{margin:0;font-size:23px}.desc{color:var(--muted);font-size:13px;line-height:1.5;max-width:900px;margin-top:5px}.badge{border:1px solid var(--line);background:#0c141c;padding:7px 9px;border-radius:999px;font-size:11px;color:#aab9c1}
+.viewport{position:relative;border:1px solid #283a48;border-radius:17px;overflow:hidden;background:linear-gradient(180deg,#0e1b26,#071019);min-height:620px}.viewport canvas{display:block;width:100%;height:auto;aspect-ratio:16/9;transition:opacity .34s ease,filter .34s ease,transform .34s ease}.viewport.transitioning canvas{opacity:.12;filter:blur(7px);transform:scale(1.012)}.legend{display:flex;gap:8px;flex-wrap:wrap;padding:10px 0 0}.chip{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:6px 9px;color:#afbec6;background:#0d151d}.chip i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}.info-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}.card{border:1px solid var(--line);background:#0c141c;border-radius:13px;padding:11px}.card b{display:block;font-size:12px}.card span{display:block;color:#8fa2ad;font-size:11px;line-height:1.4;margin-top:4px}.timeline{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:14px}.step{border:1px solid var(--line);background:#0d151d;border-radius:11px;padding:9px;text-align:center;font-size:11px;color:#91a5af}.step.active{border-color:var(--accent);color:#fff;background:#122b39}.step strong{display:block;font-size:12px;margin-bottom:2px}.perception{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:12px}.percept-card{border:1px solid var(--line);border-radius:14px;padding:12px;background:#0c141c}.percept-card h3{margin:0 0 8px;font-size:14px}.mini-scene{height:210px;border-radius:11px;overflow:hidden;position:relative;background:#a6d7e8}.mini-scene canvas{width:100%;height:100%;display:block;transition:opacity .38s ease,filter .38s ease}.mini-scene.transitioning canvas{opacity:.12;filter:blur(6px)}.caption{font-size:11px;color:#91a4ae;margin-top:7px;line-height:1.4}
+@media(max-width:980px){.layout{grid-template-columns:1fr}.side{position:static}.mode-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.info-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.timeline{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:620px){.app{padding:12px}.mode-grid,.perception{grid-template-columns:1fr}.info-grid{grid-template-columns:1fr}.timeline{grid-template-columns:repeat(2,minmax(0,1fr))}.viewport{min-height:360px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div><h1>Vision & Light Path Simulator</h1><p>Watch light leave an object, enter the eye, bend through the cornea and lens, form an inverted image on the retina, and travel as electrical signals through the optic nerve to visual areas of the brain.</p></div>
+    <div class="note"><b>Educational model.</b> The geometry is simplified so the optical pathway is easy to see. Real perception is more complex: the brain does not simply “flip a picture.” The cornea provides most of the eye’s refraction, the lens fine-tunes focus, retinal circuits encode visual information, and signals pass through the optic nerve and central visual pathways before reaching visual cortex.</div>
+  </div>
+
+  <div class="layout">
+    <aside class="side">
+      <div class="section">Simulation modes</div>
+      <div class="mode-grid" id="modes">
+        <button class="mode active" data-mode="normal"><b>Normal Vision</b><span>Focused image on retina</span></button>
+        <button class="mode" data-mode="near"><b>Near Object</b><span>Lens accommodates more</span></button>
+        <button class="mode" data-mode="far"><b>Far Object</b><span>Lens flattens slightly</span></button>
+        <button class="mode" data-mode="myopia"><b>Myopia</b><span>Focus falls before retina</span></button>
+        <button class="mode" data-mode="hyperopia"><b>Hyperopia</b><span>Focus tends behind retina</span></button>
+        <button class="mode" data-mode="astigmatism"><b>Astigmatism</b><span>Unequal curvature / split focus</span></button>
+        <button class="mode" data-mode="bright"><b>Bright Light</b><span>Pupil constricts</span></button>
+        <button class="mode" data-mode="dark"><b>Dim Light</b><span>Pupil dilates</span></button>
+      </div>
+      <div class="controls">
+        <div class="control"><label>Object distance <span id="distVal">Medium</span></label><input id="distance" type="range" min="0" max="100" value="55"></div>
+        <div class="control"><label>Pupil size <span id="pupilVal">Medium</span></label><input id="pupil" type="range" min="15" max="100" value="50"></div>
+        <div class="control"><label>Lens focusing power <span id="lensVal">Normal</span></label><input id="lens" type="range" min="20" max="100" value="58"></div>
+        <div class="control"><label>Animation speed <span id="speedVal">1.0×</span></label><input id="speed" type="range" min="0" max="200" value="100"></div>
+        <div class="control"><label>Show</label><select id="showMode"><option value="all">Light + anatomy + signals</option><option value="light">Light rays only</option><option value="anatomy">Anatomy labels</option><option value="signals">Neural signals</option></select></div>
+        <div class="btnrow"><button class="btn primary" id="play">Pause</button><button class="btn" id="reset">Reset</button></div>
+        <div class="small">Drag the sliders to see how the pupil and lens change the path of incoming rays. The colored pulses represent signal transmission after photoreceptors convert light into neural activity.</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="stage-head"><div><h2 id="title">Normal Vision</h2><div class="desc" id="description">Light from each point on the object spreads in many directions. The cornea and lens bend some of those rays so they converge on corresponding points on the retina.</div></div><div class="badge" id="focusBadge">Focus: on retina</div></div>
+      <div class="viewport"><canvas id="canvas" width="1280" height="720" aria-label="Animated eye optics and perception diagram"></canvas></div>
+      <div class="legend"><span class="chip"><i style="background:#ffd36f"></i>incoming light</span><span class="chip"><i style="background:#82d8ff"></i>focused rays</span><span class="chip"><i style="background:#dc8db7"></i>retina</span><span class="chip"><i style="background:#d9c879"></i>optic nerve signal</span></div>
+      <div class="timeline" id="timeline">
+        <div class="step active"><strong>1. Object</strong>Light reflects from scene</div><div class="step"><strong>2. Cornea</strong>Largest refraction step</div><div class="step"><strong>3. Pupil</strong>Iris controls light amount</div><div class="step"><strong>4. Lens</strong>Fine focus / accommodation</div><div class="step"><strong>5. Retina</strong>Photoreceptors transduce light</div><div class="step"><strong>6. Brain</strong>Visual processing builds perception</div>
+      </div>
+      <div class="card" style="margin-top:14px"><b>Retinal processing</b><span>Photoreceptors do not send a tiny picture straight to the brain. Rods and cones convert light to electrical signals, which are processed by retinal circuits before ganglion-cell axons form the optic nerve.</span></div>
+      <div class="info-grid">
+        <div class="card"><b>Cornea</b><span>The transparent front surface provides most of the eye's optical focusing power.</span></div>
+        <div class="card"><b>Iris & pupil</b><span>The iris changes pupil diameter, regulating how much light reaches the retina.</span></div>
+        <div class="card"><b>Lens</b><span>The lens changes shape to adjust focus, especially for near objects.</span></div>
+        <div class="card"><b>Retina</b><span>Rods and cones convert photons into neural signals; downstream retinal cells begin processing contrast and spatial information.</span></div>
+      </div>
+      <div class="perception">
+        <div class="percept-card"><h3>Image formed on the retina</h3><div class="mini-scene" id="retinalScene"><canvas id="retinalCanvas" width="720" height="360"></canvas></div><div class="caption">The optical image on the retina is inverted and left-right reversed. Photoreceptors respond to this pattern rather than sending a literal picture to the brain.</div></div>
+        <div class="percept-card"><h3>What you consciously perceive</h3><div class="mini-scene" id="perceivedScene"><canvas id="perceivedCanvas" width="720" height="360"></canvas></div><div class="caption">The visual system reconstructs spatial relationships from retinal signals. Perception is the result of neural processing across the retina, thalamus, and visual cortex—not a simple mechanical image flip.</div></div>
+      </div>
+    </main>
+  </div>
+</div>
+<script>
+(()=>{
+const canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d');
+const distance=document.getElementById('distance'),pupil=document.getElementById('pupil'),lens=document.getElementById('lens'),speed=document.getElementById('speed'),showMode=document.getElementById('showMode');
+const distVal=document.getElementById('distVal'),pupilVal=document.getElementById('pupilVal'),lensVal=document.getElementById('lensVal'),speedVal=document.getElementById('speedVal');
+const title=document.getElementById('title'),description=document.getElementById('description'),focusBadge=document.getElementById('focusBadge'),play=document.getElementById('play');
+let mode='normal',running=true,t=0,last=performance.now();
+const configs={
+ normal:{title:'Normal Vision',desc:'Light first refracts strongly at the air–cornea surface, then passes through the pupil and is fine-tuned by the crystalline lens so rays from each object point converge on corresponding retinal locations.',dist:55,pupil:50,lens:58,focus:0},
+ near:{title:'Near Object & Accommodation',desc:'For a near target, ciliary-muscle action allows the crystalline lens to become rounder, increasing optical power so more-divergent rays can still focus on the retina.',dist:20,pupil:48,lens:82,focus:0},
+ far:{title:'Far Object',desc:'Light from a distant target reaches the eye in nearly parallel bundles. The crystalline lens is relatively flatter because less additional optical power is needed.',dist:90,pupil:48,lens:44,focus:0},
+ myopia:{title:'Myopia / Nearsighted Optics',desc:'In a simplified myopic eye, optical power is too strong or the eye is too long, so distant rays come to focus before the retina.',dist:80,pupil:50,lens:72,focus:-50},
+ hyperopia:{title:'Hyperopia / Farsighted Optics',desc:'In a simplified hyperopic eye, optical power is too weak or the eye is too short, so the rays would come to focus behind the retina.',dist:55,pupil:50,lens:38,focus:52},
+ astigmatism:{title:'Astigmatism',desc:'If the cornea or lens has different curvature in different meridians, light does not converge to one clean focal point. The simulator shows two slightly different focal paths.',dist:55,pupil:52,lens:58,focus:0},
+ bright:{title:'Bright-Light Response',desc:'The pupil constricts in bright conditions, limiting incoming light. A smaller aperture can also reduce some optical blur.',dist:55,pupil:20,lens:58,focus:0},
+ dark:{title:'Dim-Light Response',desc:'The pupil dilates in dim conditions so more light can enter. Rod-mediated vision becomes more important, while color and fine detail are reduced.',dist:55,pupil:92,lens:58,focus:0}
+};
+function applyMode(name){
+  const viewport=document.querySelector('.viewport');
+  const retinalScene=document.getElementById('retinalScene');
+  const perceivedScene=document.getElementById('perceivedScene');
+  viewport.classList.add('transitioning');
+  retinalScene.classList.add('transitioning'); perceivedScene.classList.add('transitioning');
+  setTimeout(()=>{
+    mode=name;const c=configs[name];distance.value=c.dist;pupil.value=c.pupil;lens.value=c.lens;title.textContent=c.title;description.textContent=c.desc;document.querySelectorAll('.mode').forEach(b=>b.classList.toggle('active',b.dataset.mode===name));updateLabels();drawPerceptionCanvases();
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{viewport.classList.remove('transitioning');retinalScene.classList.remove('transitioning');perceivedScene.classList.remove('transitioning');}));
+  },220);
+}
+function updateLabels(){const d=+distance.value;distVal.textContent=d<34?'Near':d>70?'Far':'Medium';const p=+pupil.value;pupilVal.textContent=p<35?'Constricted':p>70?'Dilated':'Medium';const l=+lens.value;lensVal.textContent=l<42?'Low':l>72?'High':'Normal';speedVal.textContent=(+speed.value/100).toFixed(1)+'×';}
+function ellipse(x,y,rx,ry,fill,stroke,w=2){ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);if(fill){ctx.fillStyle=fill;ctx.fill()}if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=w;ctx.stroke()}}
+function line(x1,y1,x2,y2,color,w=2,a=1){ctx.save();ctx.globalAlpha=a;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.strokeStyle=color;ctx.lineWidth=w;ctx.stroke();ctx.restore()}
+function label(text,x,y){ctx.fillStyle='rgba(230,241,247,.88)';ctx.font='14px system-ui';ctx.fillText(text,x,y)}
+function drawSceneObject(){
+  ctx.save();
+  // distant scene: sky glow and mountain silhouette
+  const sky=ctx.createLinearGradient(18,160,250,510); sky.addColorStop(0,'#82bed4'); sky.addColorStop(1,'#345f72');
+  ctx.fillStyle=sky; ctx.beginPath(); ctx.roundRect(18,172,205,330,26); ctx.fill();
+  ctx.save(); ctx.beginPath(); ctx.roundRect(18,172,205,330,26); ctx.clip();
+  ctx.fillStyle='rgba(255,232,150,.95)'; ctx.beginPath(); ctx.arc(175,228,28,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#506f68'; ctx.beginPath(); ctx.moveTo(18,355); ctx.lineTo(70,300); ctx.lineTo(115,342); ctx.lineTo(160,280); ctx.lineTo(223,350); ctx.lineTo(223,502); ctx.lineTo(18,502); ctx.closePath(); ctx.fill();
+  ctx.fillStyle='#2f6648'; ctx.beginPath(); ctx.moveTo(18,395); ctx.bezierCurveTo(60,365,105,405,150,375); ctx.bezierCurveTo(185,354,205,380,223,367); ctx.lineTo(223,502); ctx.lineTo(18,502); ctx.closePath(); ctx.fill();
+  // main detailed tree used as the tracked object
+  ctx.strokeStyle='#7c5138'; ctx.lineWidth=15; ctx.lineCap='round'; ctx.beginPath(); ctx.moveTo(105,448); ctx.bezierCurveTo(106,400,112,342,110,298); ctx.stroke();
+  ctx.lineWidth=7; ctx.beginPath(); ctx.moveTo(110,344); ctx.lineTo(75,315); ctx.moveTo(112,330); ctx.lineTo(142,298); ctx.stroke();
+  const leaves=[[72,292,31],[103,274,38],[142,286,33],[90,315,33],[130,318,34]];
+  for(const [x,y,r] of leaves){ const g=ctx.createRadialGradient(x-10,y-12,2,x,y,r); g.addColorStop(0,'#74b36c'); g.addColorStop(1,'#2f7445'); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill(); }
+  // foreground path
+  ctx.fillStyle='rgba(215,190,138,.56)'; ctx.beginPath(); ctx.moveTo(140,502); ctx.quadraticCurveTo(150,446,188,402); ctx.quadraticCurveTo(196,455,210,502); ctx.closePath(); ctx.fill();
+  ctx.restore();
+  ctx.strokeStyle='rgba(220,241,248,.42)'; ctx.lineWidth=1.5; ctx.strokeRect(18,172,205,330);
+  ctx.restore();
+  label('object / scene',70,532);
+}
+function drawEye(){
+ const eyeCx=800,eyeCy=350,Rx=252,Ry=190;
+ ctx.save();
+ // sclera: fibrous outer coat
+ ctx.beginPath(); ctx.ellipse(eyeCx,eyeCy,Rx,Ry,0,0,Math.PI*2);
+ const scl=ctx.createRadialGradient(760,292,28,eyeCx,eyeCy,286);
+ scl.addColorStop(0,'#fbfaf5'); scl.addColorStop(.72,'#e8e9e3'); scl.addColorStop(1,'#c8cfd2');
+ ctx.fillStyle=scl; ctx.fill(); ctx.strokeStyle='#7c8e98'; ctx.lineWidth=5; ctx.stroke();
+
+ // choroid + retina follow posterior inner wall; avoid drawing them across the corneal/anterior region
+ ctx.beginPath(); ctx.arc(820,350,225,-1.20,1.20); ctx.strokeStyle='rgba(94,52,69,.78)'; ctx.lineWidth=14; ctx.stroke();
+ ctx.beginPath(); ctx.arc(818,350,217,-1.18,1.18); ctx.strokeStyle='#d987b2'; ctx.lineWidth=8; ctx.stroke();
+
+ // vitreous chamber
+ ctx.beginPath(); ctx.ellipse(833,350,178,143,0,0,Math.PI*2);
+ ctx.fillStyle='rgba(137,202,225,.065)'; ctx.fill();
+
+ // cornea: transparent, steeper anterior curvature than sclera
+ ctx.beginPath(); ctx.moveTo(572,247);
+ ctx.bezierCurveTo(526,278,520,325,522,350);
+ ctx.bezierCurveTo(520,375,526,422,572,453);
+ ctx.strokeStyle='#8bd8f0'; ctx.lineWidth=11; ctx.lineCap='round'; ctx.stroke();
+ // corneal thickness / posterior surface
+ ctx.beginPath(); ctx.moveTo(579,256); ctx.bezierCurveTo(548,292,544,324,545,350); ctx.bezierCurveTo(544,376,548,408,579,444);
+ ctx.strokeStyle='rgba(168,231,247,.72)'; ctx.lineWidth=3; ctx.stroke();
+
+ // aqueous-filled anterior chamber
+ ctx.beginPath(); ctx.moveTo(572,253); ctx.bezierCurveTo(550,300,548,399,572,447); ctx.bezierCurveTo(596,427,610,390,610,350); ctx.bezierCurveTo(610,310,596,273,572,253); ctx.closePath();
+ ctx.fillStyle='rgba(120,205,235,.13)'; ctx.fill();
+
+ // iris and pupil aperture
+ const p=+pupil.value, pupilHalf=10+p*.30;
+ ctx.strokeStyle='#5b987e'; ctx.lineWidth=15; ctx.lineCap='round';
+ ctx.beginPath(); ctx.moveTo(625,268); ctx.quadraticCurveTo(639,304,640,350-pupilHalf); ctx.stroke();
+ ctx.beginPath(); ctx.moveTo(625,432); ctx.quadraticCurveTo(639,396,640,350+pupilHalf); ctx.stroke();
+ // iris stromal texture
+ ctx.strokeStyle='rgba(138,208,176,.56)';ctx.lineWidth=1.1;
+ for(let i=0;i<14;i++){
+   const yy=278+i*11.4;
+   if(Math.abs(yy-350)>pupilHalf+4){ctx.beginPath();ctx.moveTo(621,yy);ctx.lineTo(642,350+(yy-350)*.83);ctx.stroke();}
+ }
+
+ // ciliary body
+ ctx.fillStyle='#735f88';
+ ctx.beginPath();ctx.moveTo(646,256);ctx.quadraticCurveTo(683,242,715,270);ctx.lineTo(692,295);ctx.quadraticCurveTo(670,276,647,286);ctx.closePath();ctx.fill();
+ ctx.beginPath();ctx.moveTo(646,444);ctx.quadraticCurveTo(683,458,715,430);ctx.lineTo(692,405);ctx.quadraticCurveTo(670,424,647,414);ctx.closePath();ctx.fill();
+
+ // crystalline lens: biconvex and accommodation-responsive
+ const lp=+lens.value;
+ const halfW=18+lp*.22;
+ const halfH=64+lp*.19;
+ const lensCx=687;
+ const lg=ctx.createLinearGradient(lensCx-halfW,280,lensCx+halfW,420);
+ lg.addColorStop(0,'rgba(230,248,255,.64)');lg.addColorStop(.48,'rgba(145,216,241,.16)');lg.addColorStop(1,'rgba(224,247,255,.50)');
+ ctx.beginPath();
+ ctx.moveTo(lensCx-halfW,350);
+ ctx.bezierCurveTo(lensCx-halfW-8,312,lensCx-halfW-5,286,lensCx,350-halfH);
+ ctx.bezierCurveTo(lensCx+halfW+10,290,lensCx+halfW+10,410,lensCx,350+halfH);
+ ctx.bezierCurveTo(lensCx-halfW-5,414,lensCx-halfW-8,388,lensCx-halfW,350);
+ ctx.closePath(); ctx.fillStyle=lg;ctx.fill();ctx.strokeStyle='#78cce9';ctx.lineWidth=3;ctx.stroke();
+
+ // zonular fibers
+ ctx.strokeStyle='rgba(210,232,238,.58)';ctx.lineWidth=1.1;
+ [[658,283,lensCx-10,314],[661,300,lensCx-15,326],[658,417,lensCx-10,386],[661,400,lensCx-15,374]].forEach(a=>{ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(a[2],a[3]);ctx.stroke();});
+
+ // macula/fovea temporal to optic disc; fovea = shallow retinal pit
+ ctx.strokeStyle='#f5afd1'; ctx.lineWidth=2.5;
+ ctx.beginPath(); ctx.arc(1007,350,11,-.82,.82); ctx.stroke();
+ ctx.fillStyle='rgba(240,150,195,.32)'; ctx.beginPath(); ctx.arc(1007,350,22,0,Math.PI*2); ctx.fill();
+ // optic disc / blind spot sits nasal to fovea on posterior retina
+ ctx.beginPath(); ctx.ellipse(983,414,12,17,-.15,0,Math.PI*2); ctx.fillStyle='#f2c0b2';ctx.fill();
+
+ // optic nerve exits at disc
+ ctx.beginPath();ctx.moveTo(991,421);ctx.bezierCurveTo(1056,456,1102,492,1160,518);ctx.strokeStyle='#d5c57a';ctx.lineWidth=29;ctx.lineCap='round';ctx.stroke();
+ ctx.beginPath();ctx.moveTo(991,421);ctx.bezierCurveTo(1056,456,1102,492,1160,518);ctx.strokeStyle='rgba(255,244,175,.40)';ctx.lineWidth=7;ctx.stroke();
+ ctx.restore();
+
+ if(showMode.value!=='light'){
+   label('cornea',520,215); label('aqueous chamber',542,470); label('iris / pupil',588,235); label('ciliary body',640,208); label('lens',680,218); label('vitreous',792,168); label('retina',944,194); label('macula / fovea',1008,329); label('optic disc (blind spot)',946,458); label('optic nerve',1070,494);
+ }
+}
+function ray(x1,y1,x2,y2,color,w=2,phase=0){
+ line(x1,y1,x2,y2,color,w,.82);
+ const dx=x2-x1,dy=y2-y1,len=Math.hypot(dx,dy);const u=((t*.00025*(+speed.value)+phase)%1);const px=x1+dx*u,py=y1+dy*u;ellipse(px,py,4,4,color);
+}
+function drawRays(){
+ const sources=[
+   {x:108,y:270,retY:410,color:'#ffd36f'},
+   {x:108,y:420,retY:290,color:'#ffd36f'}
+ ];
+ const corneaX=548,pupilX=640,lensX=687,retinaX=1006;
+ const ph=(+pupil.value-15)/85;
+ const aperture=22+ph*47;
+ const focusOffset=(configs[mode].focus||0) + ((58-(+lens.value))*1.48) + ((55-(+distance.value))*.43);
+ const focusX=retinaX+focusOffset;
+ const apertureFractions=[-.78,0,.78];
+ sources.forEach((s,si)=>{
+   apertureFractions.forEach((af,ri)=>{
+     // ray height at pupil; upper and lower object points spread differently, then pass through the aperture
+     const pY=350 + af*aperture;
+     const sourceSlope=(pY-s.y)/(pupilX-s.x);
+     const yCornea=s.y + sourceSlope*(corneaX-s.x);
+     // cornea provides the largest single refractive bend; route ray partway toward optical axis after cornea
+     const yAfterCornea=yCornea + (pY-yCornea)*.72;
+     const yLens=pY + (350-pY)*.18;
+     ray(s.x,s.y,corneaX,yCornea,'#ffd36f',ri===1?2.4:1.6,si*.28+ri*.06);
+     ray(corneaX,yCornea,pupilX,yAfterCornea,'#91dcff',ri===1?2.2:1.5,si*.28+ri*.06+.06);
+     ray(pupilX,yAfterCornea,lensX,yLens,'#91dcff',ri===1?2.2:1.5,si*.28+ri*.06+.12);
+     ray(lensX,yLens,focusX,s.retY,'#91dcff',ri===1?2.4:1.6,si*.28+ri*.06+.18);
+     if(Math.abs(focusOffset)>3){
+       const blurSpread=Math.min(34,Math.abs(focusOffset)*.36);
+       const sign=(si===0?1:-1);
+       ray(focusX,s.retY,retinaX,s.retY+sign*blurSpread,'rgba(145,220,255,.50)',1.25,si*.28+ri*.06+.25);
+     }
+     if(mode==='astigmatism'){
+       const meridianShift=(ri-1)*10 + (si===0?-15:15);
+       ray(lensX,yLens+4,retinaX,s.retY+meridianShift,'rgba(255,171,218,.58)',1.2,si*.28+ri*.06+.32);
+     }
+   });
+ });
+ focusBadge.textContent=Math.abs(focusOffset)<10?'Focus: retinal plane':focusOffset<0?'Focus: in front of retina':'Focus: behind retina';
+}
+function drawRetinalImage(){
+ if(showMode.value==='light') return;
+ ctx.save();
+ ctx.translate(1001,350);ctx.rotate(Math.PI);ctx.scale(.45,.45);
+ // miniature richer scene projected on retina
+ ctx.fillStyle='rgba(90,150,170,.28)';ctx.fillRect(-66,-78,132,156);
+ ctx.fillStyle='#385c52';ctx.beginPath();ctx.moveTo(-66,25);ctx.lineTo(-30,-4);ctx.lineTo(0,20);ctx.lineTo(34,-12);ctx.lineTo(66,26);ctx.lineTo(66,78);ctx.lineTo(-66,78);ctx.closePath();ctx.fill();
+ ctx.strokeStyle='#7c5138';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(-6,58);ctx.lineTo(-6,-16);ctx.stroke();
+ ctx.fillStyle='#377849';for(const [x,y,r] of [[-24,-22,18],[-4,-31,22],[18,-20,19],[-14,-5,18],[10,-3,18]]){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();}
+ ctx.fillStyle='#ffe276';ctx.beginPath();ctx.arc(44,-50,10,0,Math.PI*2);ctx.fill();
+ ctx.restore();
+ label('inverted retinal projection',872,563);
+}
+function drawBrainAndSignals(){
+ if(showMode.value==='light'||showMode.value==='anatomy') return;
+ // optic nerve -> partial crossing at optic chiasm -> thalamic relay (LGN) -> visual cortex
+ const p1={x:1015,y:430}, p2={x:1100,y:493}, p3={x:1142,y:505}, p4={x:1187,y:505};
+ ctx.save();
+ ctx.strokeStyle='rgba(218,199,121,.92)'; ctx.lineWidth=8; ctx.lineCap='round';
+ ctx.beginPath();ctx.moveTo(p1.x,p1.y);ctx.bezierCurveTo(1056,456,1083,480,p2.x,p2.y);ctx.stroke();
+ ctx.beginPath();ctx.moveTo(p2.x,p2.y);ctx.quadraticCurveTo(1120,486,p3.x,p3.y);ctx.stroke();
+ // chiasm cross-lines to imply partial decussation
+ ctx.strokeStyle='rgba(247,226,145,.66)';ctx.lineWidth=3;
+ ctx.beginPath();ctx.moveTo(1092,485);ctx.lineTo(1120,510);ctx.moveTo(1092,510);ctx.lineTo(1120,485);ctx.stroke();
+ // LGN relay
+ ctx.beginPath();ctx.arc(1146,505,11,0,Math.PI*2);ctx.fillStyle='#d0bfe8';ctx.fill();ctx.strokeStyle='rgba(236,218,250,.8)';ctx.lineWidth=2;ctx.stroke();
+ // optic radiations toward occipital cortex
+ ctx.strokeStyle='rgba(210,190,235,.68)';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(1157,505);ctx.bezierCurveTo(1180,493,1194,481,1206,472);ctx.stroke();
+
+ // brain profile
+ ctx.translate(1202,450);
+ const bg=ctx.createRadialGradient(16,-8,8,20,0,92);bg.addColorStop(0,'rgba(205,167,226,.78)');bg.addColorStop(1,'rgba(128,87,160,.48)');
+ ctx.beginPath();ctx.moveTo(-25,20);ctx.bezierCurveTo(-16,-35,27,-67,72,-49);ctx.bezierCurveTo(112,-40,129,-2,111,32);ctx.bezierCurveTo(95,63,50,78,8,66);ctx.bezierCurveTo(-25,58,-44,39,-25,20);ctx.fillStyle=bg;ctx.fill();ctx.strokeStyle='#c7a3de';ctx.lineWidth=3;ctx.stroke();
+ ctx.strokeStyle='rgba(241,225,251,.40)';ctx.lineWidth=2;
+ for(let i=0;i<6;i++){ctx.beginPath();ctx.moveTo(-2+i*13,-24+i*2);ctx.bezierCurveTo(20+i*4,-10,16+i*8,8,38+i*8,18);ctx.stroke();}
+ // occipital cortex highlight at posterior pole
+ ctx.fillStyle='rgba(255,219,120,.55)';ctx.beginPath();ctx.ellipse(93,23,12,22,.3,0,Math.PI*2);ctx.fill();
+ ctx.restore();
+
+ // animated neural pulse along pathway
+ const u=(t*.00018*(+speed.value))%1;
+ let x,y;
+ if(u<.55){const q=u/.55;x=p1.x+(p2.x-p1.x)*q;y=p1.y+(p2.y-p1.y)*q;}
+ else if(u<.75){const q=(u-.55)/.20;x=p2.x+(p3.x-p2.x)*q;y=p2.y+(p3.y-p2.y)*q;}
+ else {const q=(u-.75)/.25;x=p3.x+(1200-p3.x)*q;y=p3.y+(472-p3.y)*q;}
+ ellipse(x,y,5.5,5.5,'#ffe08a');
+ label('optic chiasm',1076,534); label('LGN',1132,536); label('visual cortex',1170,642);
+}
+function drawNaturalScene(c,w,h,inverted=false){
+  c.save(); if(inverted){c.translate(w,h);c.rotate(Math.PI);}
+  const sky=c.createLinearGradient(0,0,0,h);sky.addColorStop(0,'#8cc9df');sky.addColorStop(.62,'#d7ebea');sky.addColorStop(.63,'#6e9c69');sky.addColorStop(1,'#355d3f');c.fillStyle=sky;c.fillRect(0,0,w,h);
+  c.fillStyle='#ffe074';c.beginPath();c.arc(w*.82,h*.20,h*.08,0,Math.PI*2);c.fill();
+  c.fillStyle='#68847d';c.beginPath();c.moveTo(0,h*.58);c.lineTo(w*.14,h*.34);c.lineTo(w*.27,h*.55);c.lineTo(w*.42,h*.28);c.lineTo(w*.60,h*.56);c.lineTo(w*.72,h*.39);c.lineTo(w,h*.58);c.lineTo(w,h);c.lineTo(0,h);c.closePath();c.fill();
+  c.fillStyle='#487a4e';c.beginPath();c.moveTo(0,h*.67);c.bezierCurveTo(w*.17,h*.55,w*.32,h*.72,w*.47,h*.61);c.bezierCurveTo(w*.68,h*.51,w*.80,h*.68,w,h*.57);c.lineTo(w,h);c.lineTo(0,h);c.closePath();c.fill();
+  // detailed tree
+  c.strokeStyle='#744a34';c.lineWidth=18;c.lineCap='round';c.beginPath();c.moveTo(w*.27,h*.84);c.bezierCurveTo(w*.28,h*.69,w*.30,h*.51,w*.29,h*.38);c.stroke();
+  c.lineWidth=8;c.beginPath();c.moveTo(w*.29,h*.57);c.lineTo(w*.22,h*.47);c.moveTo(w*.30,h*.54);c.lineTo(w*.36,h*.43);c.stroke();
+  const leafPts=[[.20,.39,.07],[.27,.34,.085],[.35,.39,.07],[.23,.48,.065],[.32,.48,.072]];
+  for(const [px,py,rr] of leafPts){const gx=w*px,gy=h*py,r=h*rr;const gr=c.createRadialGradient(gx-r*.3,gy-r*.3,2,gx,gy,r);gr.addColorStop(0,'#78b56c');gr.addColorStop(1,'#2f7445');c.fillStyle=gr;c.beginPath();c.arc(gx,gy,r,0,Math.PI*2);c.fill();}
+  // small cottage with windows and roof
+  c.fillStyle='#d99b74';c.fillRect(w*.61,h*.57,w*.18,h*.20);c.fillStyle='#844941';c.beginPath();c.moveTo(w*.59,h*.57);c.lineTo(w*.70,h*.44);c.lineTo(w*.82,h*.57);c.closePath();c.fill();c.fillStyle='#6d4937';c.fillRect(w*.68,h*.66,w*.04,h*.11);c.fillStyle='#cfe9f1';c.fillRect(w*.63,h*.61,w*.035,h*.05);c.fillRect(w*.75,h*.61,w*.035,h*.05);
+  // path and foreground grasses
+  c.fillStyle='rgba(215,192,142,.66)';c.beginPath();c.moveTo(w*.55,h);c.quadraticCurveTo(w*.59,h*.78,w*.70,h*.68);c.quadraticCurveTo(w*.74,h*.82,w*.78,h);c.closePath();c.fill();
+  c.strokeStyle='rgba(35,86,42,.65)';c.lineWidth=2;for(let i=0;i<24;i++){const x=(i/23)*w,y=h*.90+(i%3)*6;c.beginPath();c.moveTo(x,y);c.lineTo(x-5,y-15-(i%5)*2);c.stroke();}
+  c.restore();
+}
+function drawPerceptionCanvases(){
+  const rc=document.getElementById('retinalCanvas'),pc=document.getElementById('perceivedCanvas'); if(!rc||!pc)return;
+  const rctx=rc.getContext('2d'),pctx=pc.getContext('2d');rctx.clearRect(0,0,rc.width,rc.height);pctx.clearRect(0,0,pc.width,pc.height);
+  drawNaturalScene(rctx,rc.width,rc.height,true); drawNaturalScene(pctx,pc.width,pc.height,false);
+}
+function updateTimeline(){const steps=[...document.querySelectorAll('.step')];const idx=Math.floor((t*.00055*(+speed.value/100))%6);steps.forEach((s,i)=>s.classList.toggle('active',i===idx))}
+function draw(){ctx.clearRect(0,0,canvas.width,canvas.height);const g=ctx.createLinearGradient(0,0,0,720);g.addColorStop(0,'#102331');g.addColorStop(1,'#071018');ctx.fillStyle=g;ctx.fillRect(0,0,1280,720);ctx.strokeStyle='rgba(255,255,255,.035)';for(let x=0;x<1280;x+=64){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,720);ctx.stroke()}for(let y=0;y<720;y+=64){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(1280,y);ctx.stroke()}
+ drawSceneObject(); drawEye(); if(showMode.value!=='anatomy'&&showMode.value!=='signals') drawRays(); drawRetinalImage(); drawBrainAndSignals(); updateTimeline();}
+function loop(now){const dt=Math.min(40,now-last);last=now;if(running)t+=dt;draw();requestAnimationFrame(loop)}
+[distance,pupil,lens,speed].forEach(el=>el.addEventListener('input',()=>{updateLabels()}));showMode.addEventListener('change',draw);document.querySelectorAll('.mode').forEach(b=>b.addEventListener('click',()=>applyMode(b.dataset.mode)));play.addEventListener('click',()=>{running=!running;play.textContent=running?'Pause':'Play'});document.getElementById('reset').addEventListener('click',()=>{running=true;play.textContent='Pause';speed.value=100;applyMode('normal');updateLabels()});
+drawPerceptionCanvases();applyMode('normal');updateLabels();requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

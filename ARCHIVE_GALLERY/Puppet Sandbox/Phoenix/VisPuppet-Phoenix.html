@@ -1,0 +1,1079 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Phoenix Rig</title>
+<style>
+  html,html{background:transparent;}
+body{
+    width:100%;
+    height:100%;
+    margin:0;
+    overflow:hidden;
+  }
+
+  body{
+    background:
+      radial-gradient(circle at 50% 90%, rgba(255,245,180,.55), transparent 18%),
+      linear-gradient(180deg,#ff9a1f 0%,#ff6a00 45%,#b83200 100%);
+    font-family:Arial,Helvetica,sans-serif;
+    position:relative;
+  }
+
+  body::before,
+  body::after{
+    content:"";
+    position:fixed;
+    left:-10vw;
+    bottom:-18vh;
+    width:120vw;
+    height:62vh;
+    pointer-events:none;
+    z-index:0;
+    opacity:.9;
+    filter:blur(6px);
+    background:
+      radial-gradient(ellipse at 8% 100%, rgba(255,255,190,.95) 0 6%, rgba(255,186,0,.95) 7% 15%, rgba(255,78,0,.78) 16% 27%, transparent 29%),
+      radial-gradient(ellipse at 23% 100%, rgba(255,248,170,.9) 0 5%, rgba(255,160,0,.9) 6% 14%, rgba(255,67,0,.75) 15% 25%, transparent 27%),
+      radial-gradient(ellipse at 41% 100%, rgba(255,255,195,.95) 0 6%, rgba(255,175,0,.95) 7% 16%, rgba(255,72,0,.8) 17% 28%, transparent 30%),
+      radial-gradient(ellipse at 58% 100%, rgba(255,248,175,.9) 0 5%, rgba(255,150,0,.9) 6% 14%, rgba(255,60,0,.72) 15% 26%, transparent 28%),
+      radial-gradient(ellipse at 76% 100%, rgba(255,255,190,.95) 0 6%, rgba(255,180,0,.95) 7% 16%, rgba(255,72,0,.78) 17% 28%, transparent 30%),
+      radial-gradient(ellipse at 94% 100%, rgba(255,245,165,.9) 0 5%, rgba(255,145,0,.9) 6% 14%, rgba(255,55,0,.7) 15% 25%, transparent 27%);
+    transform-origin:50% 100%;
+    animation:fireDance 1.8s ease-in-out infinite alternate;
+  }
+
+  body::after{
+    opacity:.55;
+    filter:blur(14px);
+    height:72vh;
+    animation:fireDance2 2.5s ease-in-out infinite alternate;
+    transform:scaleX(1.08);
+  }
+
+  @keyframes fireDance{
+    0%{
+      transform:translateY(4vh) scaleY(.9) skewX(-2deg);
+    }
+    50%{
+      transform:translateY(-2vh) scaleY(1.06) skewX(2deg);
+    }
+    100%{
+      transform:translateY(-6vh) scaleY(1.14) skewX(-1deg);
+    }
+  }
+
+  @keyframes fireDance2{
+    0%{
+      transform:translateY(7vh) scaleX(1.08) scaleY(.85);
+    }
+    100%{
+      transform:translateY(-4vh) scaleX(1.12) scaleY(1.12);
+    }
+  }
+
+  #stage{
+    position:relative;
+    z-index:1;
+    width:100vw;
+    height:100vh;
+    overflow:hidden;
+    cursor:crosshair;
+  }
+
+  #glow{
+    position:absolute;
+    width:520px;
+    height:520px;
+    border-radius:50%;
+    background:radial-gradient(circle,rgba(255,190,85,.20),rgba(255,80,20,.07) 46%,transparent 72%);
+    transform:translate(-50%,-50%);
+    pointer-events:none;
+    filter:blur(10px);
+    opacity:.85;
+  }
+
+  #phoenix{
+    position:absolute;
+    left:50%;
+    top:48%;
+    width:720px;
+    height:620px;
+    transform:translate(-50%,-50%);
+    transform-origin:50% 52%;
+    pointer-events:none;
+    will-change:left,top,transform;
+  }
+
+  #rig{
+    position:absolute;
+    inset:0;
+    transform-origin:50% 50%;
+    will-change:transform;
+  }
+
+  .part{
+    position:absolute;
+    display:block;
+    user-select:none;
+    -webkit-user-drag:none;
+    pointer-events:none;
+    transform:translateZ(0);
+    backface-visibility:hidden;
+  }
+
+  /* Main center body / tail mass */
+  #body{
+    width:360px;
+    left:183px;
+    top:250px;
+    z-index:5;
+    transform-origin:50% 38%;
+    will-change:transform;
+  }
+
+  /* Left wing */
+  #wingL{
+    width:350px;
+    left:72px;
+    top:165px;
+    z-index:4;
+    transform-origin:82% 56%;
+    will-change:transform;
+  }
+
+  /* Right wing */
+  #wingR{
+    width:350px;
+    left:357px;
+    top:164px;
+    z-index:4;
+    transform-origin:18% 56%;
+    will-change:transform;
+  }
+
+  /* Two heads / necks */
+  #headL{
+    width:210px;
+    left:254px;
+    top:145px;
+    z-index:7;
+    transform-origin:56% 79%;
+    will-change:transform;
+  }
+
+  #headR{
+    width:202px;
+    left:316px;
+    top:145px;
+    z-index:7;
+    transform-origin:45% 79%;
+    will-change:transform;
+  }
+
+  /* Feet tucked under the center */
+  #feet{
+    width:125px;
+    left:375px;
+    top:365px;
+    z-index:8;
+    transform-origin:50% 20%;
+    will-change:transform;
+  }
+
+  #shadow{
+    position:absolute;
+    width:290px;
+    height:48px;
+    left:218px;
+    top:520px;
+    border-radius:50%;
+    background:rgba(30,0,0,.26);
+    filter:blur(12px);
+    opacity:.55;
+    transform-origin:center;
+    z-index:1;
+    will-change:transform,opacity;
+  }
+
+  #status{
+    position:absolute;
+    left:50%;
+    bottom:24px;
+    transform:translateX(-50%);
+    padding:9px 14px;
+    border-radius:999px;
+    background:rgba(50,0,0,.30);
+    color:rgba(255,235,220,.86);
+    font-size:13px;
+    letter-spacing:.04em;
+    pointer-events:none;
+    backdrop-filter:blur(5px);
+  }
+
+  /* Idle curl */
+  #phoenix.idle #body{
+    transform:translateY(34px) rotate(1deg) scale(.96);
+  }
+  #phoenix.idle #wingL{
+    transform:rotate(-58deg);
+  }
+  #phoenix.idle #wingR{
+    transform:rotate(58deg);
+  }
+  #phoenix.idle #headL{
+    /* head keeps moving in JavaScript while idle */
+  }
+  #phoenix.idle #headR{
+    /* head keeps moving in JavaScript while idle */
+  }
+  #phoenix.idle #feet{
+    transform:translateY(36px) rotate(30deg) scale(.88);
+  }
+  #phoenix.idle #shadow{
+    transform:translateY(15px) scaleX(.78) scaleY(.72);
+    opacity:.38;
+  }
+
+  #phoenix.idle #rig{
+    animation:idleBreath 4.6s ease-in-out infinite;
+  }
+
+  @keyframes idleBreath{
+    0%,100%{transform:translateY(0) scale(.97);}
+    50%{transform:translateY(3px) scale(.985);}
+  }
+
+  .part{
+    transition:transform .9s cubic-bezier(.2,.8,.25,1);
+  }
+  #phoenix:not(.idle) .part{
+    transition:transform .18s ease-out;
+  }
+
+  @media (max-width:800px){
+    #phoenix{
+      transform:translate(-50%,-50%) scale(.72);
+    }
+  }
+55%{
+    filter:
+      drop-shadow(0 0 12px rgba(255,35,0,1))
+      drop-shadow(0 0 25px rgba(255,105,0,.98))
+      drop-shadow(0 0 42px rgba(255,190,0,.84));
+  }
+  100%{
+    filter:
+      drop-shadow(0 0 17px rgba(255,80,0,1))
+      drop-shadow(0 0 34px rgba(255,145,0,.98))
+      drop-shadow(0 0 55px rgba(255,220,75,.82));
+  }
+}
+
+
+#phoenix.flame-mode{
+  animation:phoenixFlameAura 1.35s ease-in-out infinite alternate;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+html.transparent-bg,
+body.transparent-bg{
+  background:transparent !important;
+  background-image:none !important;
+}
+
+body.transparent-bg::before,
+body.transparent-bg::after{
+  content:none !important;
+  display:none !important;
+  background:none !important;
+}
+
+body.transparent-bg #stage{
+  background:transparent !important;
+  background-image:none !important;
+}
+
+
+
+
+
+/* Flame Mode: high-contrast pulsing aura.
+   Keeps the phoenix's natural colors while making it stand out against
+   the orange background. Applied to the assembled puppet only so joints stay hidden. */
+#phoenix.flame-mode{
+  animation:phoenixContrastPulse 1.35s ease-in-out infinite;
+}
+
+@keyframes phoenixContrastPulse{
+  0%,100%{
+    filter:
+      brightness(1.06)
+      saturate(1.08)
+      contrast(1.04)
+      drop-shadow(0 0 3px rgba(255,250,215,.72))
+      drop-shadow(0 0 7px rgba(255,215,95,.62))
+      drop-shadow(0 0 14px rgba(255,105,0,.42))
+      drop-shadow(0 0 24px rgba(125,18,0,.32));
+  }
+
+  50%{
+    filter:
+      brightness(1.18)
+      saturate(1.18)
+      contrast(1.08)
+      drop-shadow(0 0 5px rgba(255,255,230,.98))
+      drop-shadow(0 0 12px rgba(255,225,115,.90))
+      drop-shadow(0 0 24px rgba(255,95,0,.68))
+      drop-shadow(0 0 40px rgba(120,10,0,.52));
+  }
+}
+
+
+/* Smooth activation for glow modes */
+#phoenix.flame-mode{
+  animation-name: phoenixContrastPulse, phoenixGlowFadeIn;
+  animation-duration: 1.35s, .9s;
+  animation-timing-function: ease-in-out, ease-out;
+  animation-iteration-count: infinite, 1;
+  animation-fill-mode: none, both;
+}
+
+#phoenix.puppet-glow{
+  animation: phoenixWhiteGlowPulse 1.5s ease-in-out infinite, phoenixGlowFadeIn .9s ease-out 1 both;
+}
+
+@keyframes phoenixGlowFadeIn{
+  from{ opacity:.72; }
+  to{ opacity:1; }
+}
+
+@keyframes phoenixWhiteGlowPulse{
+  0%,100%{
+    filter:
+      brightness(1.04)
+      drop-shadow(0 0 4px rgba(255,255,255,.30))
+      drop-shadow(0 0 10px rgba(255,255,255,.18));
+  }
+  50%{
+    filter:
+      brightness(1.14)
+      drop-shadow(0 0 8px rgba(255,255,255,.72))
+      drop-shadow(0 0 18px rgba(255,255,255,.48))
+      drop-shadow(0 0 30px rgba(255,255,255,.26));
+  }
+}
+
+
+/* Gradual glow shutdown */
+#phoenix.flame-fadeout{
+  animation:phoenixFlameFadeOut .9s ease-in forwards !important;
+}
+#phoenix.white-fadeout{
+  animation:phoenixWhiteFadeOut .9s ease-in forwards !important;
+}
+
+@keyframes phoenixFlameFadeOut{
+  from{
+    filter:
+      brightness(1.18)
+      saturate(1.18)
+      contrast(1.08)
+      drop-shadow(0 0 5px rgba(255,255,230,.98))
+      drop-shadow(0 0 12px rgba(255,225,115,.90))
+      drop-shadow(0 0 24px rgba(255,95,0,.68))
+      drop-shadow(0 0 40px rgba(120,10,0,.52));
+  }
+  to{
+    filter:none;
+  }
+}
+
+/* Command 4 returns to its original strong white glow brightness. */
+#phoenix.puppet-glow{
+  animation:phoenixWhiteGlowOriginal 1.5s ease-in-out infinite,
+            phoenixWhiteFadeIn .9s ease-out 1 both;
+}
+
+@keyframes phoenixWhiteFadeIn{
+  from{
+    filter:none;
+  }
+  to{
+    filter:
+      drop-shadow(0 0 8px rgba(255,255,255,.95))
+      drop-shadow(0 0 18px rgba(255,255,255,.85))
+      drop-shadow(0 0 34px rgba(255,255,255,.65));
+  }
+}
+
+@keyframes phoenixWhiteGlowOriginal{
+  0%,100%{
+    filter:
+      drop-shadow(0 0 8px rgba(255,255,255,.95))
+      drop-shadow(0 0 18px rgba(255,255,255,.85))
+      drop-shadow(0 0 34px rgba(255,255,255,.65));
+  }
+  50%{
+    filter:
+      drop-shadow(0 0 10px rgba(255,255,255,1))
+      drop-shadow(0 0 22px rgba(255,255,255,.92))
+      drop-shadow(0 0 40px rgba(255,255,255,.72));
+  }
+}
+
+@keyframes phoenixWhiteFadeOut{
+  from{
+    filter:
+      drop-shadow(0 0 8px rgba(255,255,255,.95))
+      drop-shadow(0 0 18px rgba(255,255,255,.85))
+      drop-shadow(0 0 34px rgba(255,255,255,.65));
+  }
+  to{
+    filter:none;
+  }
+}
+
+
+#coords.coords-readout{
+  margin:0 0 10px 0;
+  padding:7px 9px;
+  border:1px solid rgba(255,255,255,.28);
+  border-radius:7px;
+  background:rgba(0,0,0,.24);
+  font-family:Consolas, Monaco, monospace;
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:.4px;
+  text-align:center;
+  color:#fff4cf;
+  white-space:nowrap;
+}
+
+
+/* Mobile-friendly interaction without changing desktop behavior. */
+html, body, #stage{
+  touch-action:pan-x pan-y;
+}
+
+
+#status.status-hidden{
+  display:none !important;
+}
+#phoenix{
+  transition:opacity .9s ease;
+}
+#phoenix.fade-vanish{
+  opacity:0 !important;
+}
+</style>
+
+<style id="puppet-mode-css">
+#commandBox{position:fixed;top:18px;right:18px;width:min(360px,calc(100vw - 36px));padding:14px 16px;border:2px solid rgba(255,245,210,.9);border-radius:12px;background:rgba(30,10,0,.82);color:#fff7df;font:14px/1.45 Arial,Helvetica,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.35);z-index:9999;display:none;backdrop-filter:blur(5px)}
+#commandBox.show{display:block}#commandBox .cmd-title{font-weight:800;letter-spacing:.06em;margin-bottom:8px;color:#ffd36a}
+  #commandBox .cmd-section{
+    margin-top:10px;
+    padding-top:8px;
+    border-top:1px solid rgba(255,220,150,.28);
+  }
+  #commandBox .cmd-section-title{
+    margin-bottom:5px;
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:.12em;
+    color:#ffb54a;
+  }
+
+  #commandBox b{display:inline-block;min-width:60px;color:#fff}
+body.transparent-bg{background:transparent!important}body.transparent-bg::before,body.transparent-bg::after{display:none!important}
+
+#fireFX{position:fixed;inset:0;pointer-events:none;z-index:9000}.fireJet{position:absolute;width:150px;height:38px;opacity:0;transform-origin:0 50%;border-radius:50%;filter:blur(1px) drop-shadow(0 0 10px rgba(255,190,0,.9));background:radial-gradient(ellipse at 12% 50%,#fff6a5 0 9%,#ffd229 10% 24%,#ff6b00 25% 50%,rgba(255,0,0,.6) 51% 70%,transparent 72%)}#fireFX.active .fireJet{animation:phoenixFire .85s ease-out forwards}@keyframes phoenixFire{0%{opacity:0;transform:scaleX(.15) scaleY(.6)}18%{opacity:1}70%{opacity:1;transform:scaleX(1.15) scaleY(1)}100%{opacity:0;transform:scaleX(1.55) scaleY(.4)}}
+
+/* Camera Mode preview */
+#cameraPreview{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  width:180px;
+  height:120px;
+  object-fit:cover;
+  transform:scaleX(-1);
+  border-radius:10px;
+  border:1px solid rgba(255,245,210,.45);
+  box-shadow:0 8px 24px rgba(0,0,0,.30);
+  opacity:.72;
+  z-index:10000;
+  display:none;
+}
+#cameraPreview.active{display:block;}
+
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="glow"></div>
+
+  <div id="phoenix">
+    <div id="rig">
+      <div id="shadow"></div>
+      <img class="part" id="wingL" src="Phoenix Wing Left.png" alt="">
+      <img class="part" id="wingR" src="Phoenix Wing Right.png" alt="">
+      <img class="part" id="body" src="Phoenix Body.png" alt="">
+      <img class="part" id="headL" src="Phoenix Head Left.png" alt="">
+      <img class="part" id="headR" src="Phoenix Head Right.png" alt="">
+      <img class="part" id="feet" src="Phoenix Feet.png" alt="">
+    </div>
+  </div>
+
+  <div id="status">Move the mouse — the phoenix will fly after it</div>
+</div>
+
+
+
+  <div id="commandBox" aria-live="polite">
+
+<div id="coords" class="coords-readout">X: 0 &nbsp;&nbsp; Y: 0</div>
+
+    <div class="cmd-title">PHOENIX PUPPET MODE</div>
+
+    <div class="cmd-section">
+      <div class="cmd-section-title">MOVEMENT</div>
+      <div><b>W A S D</b> – Fly / steer</div>
+      <div><b>R</b> – Reverse direction</div>
+      <div><b>1</b> – Dramatic entrance</div>
+      <div><b>5</b> – Dramatic exit</div>
+    </div>
+
+    <div class="cmd-section">
+      <div class="cmd-section-title">POSES & EFFECTS</div>
+      <div><b>I</b> – Idle / perch pose</div>
+      <div><b>2</b> – Toggle Flame Mode (pulsating fire aura)</div>
+      <div><b>4</b> – Toggle white glow</div>
+      <div><b>0</b> – Vanish</div>
+    </div>
+
+    <div class="cmd-section">
+      <div class="cmd-section-title">DISPLAY</div>
+      <div><b>B</b> – Toggle fiery / transparent background</div>
+      <div><b>C</b> – Camera Mode (follow movement)</div>
+      <div><b>M</b> – Show / hide command box</div>
+      <div><b>9</b> – Show / hide bottom text</div>
+      <div><b>P</b> – Exit puppet mode</div>
+    </div>
+  </div>
+
+
+  <div id="fireFX" aria-hidden="true"><div class="fireJet fireLeft"></div><div class="fireJet fireRight"></div></div>
+<video id="cameraPreview" autoplay muted playsinline></video>
+<script>
+const stage=document.getElementById('stage');
+const phoenix=document.getElementById('phoenix');
+const rig=document.getElementById('rig');
+const wingL=document.getElementById('wingL');
+const wingR=document.getElementById('wingR');
+const body=document.getElementById('body');
+const headL=document.getElementById('headL');
+const headR=document.getElementById('headR');
+const feet=document.getElementById('feet');
+const shadow=document.getElementById('shadow');
+const glow=document.getElementById('glow');
+const status=document.getElementById('status');
+const coords = document.getElementById('coords');
+const commandBox=document.getElementById('commandBox');
+const fireFX=document.getElementById('fireFX');
+const fireLeft=fireFX.querySelector('.fireLeft');
+const fireRight=fireFX.querySelector('.fireRight');
+
+const IDLE_AFTER=10*1000;
+const state={x:innerWidth*.50,y:innerHeight*.48,tx:innerWidth*.50,ty:innerHeight*.48,vx:0,vy:0,lastInteraction:performance.now(),idle:false,returning:false};
+const puppet={enabled:false,showCommands:true,reverse:false,glow:false,flame:false,vanished:false,forcedIdle:false,entering:false,exiting:false,keys:new Set(),speed:6.8};
+
+function clamp(v,min,max){return Math.max(min,Math.min(max,v))}
+function setStatus(t){status.textContent=t}
+function updateCommandBox(){commandBox.classList.toggle('show',puppet.enabled&&puppet.showCommands)}
+function clearIdlePose(){state.idle=false;state.returning=false;puppet.forcedIdle=false;phoenix.classList.remove('idle')}
+
+function wake(){
+  if(puppet.enabled)return;
+  state.lastInteraction=performance.now();
+  clearIdlePose();
+  setStatus('Awake — following your mouse');
+}
+function pointTo(x,y){if(puppet.enabled||cameraMode.active)return;wake();state.tx=x;state.ty=y}
+stage.addEventListener('pointermove',e=>pointTo(e.clientX,e.clientY));
+stage.addEventListener('pointerdown',e=>pointTo(e.clientX,e.clientY));
+stage.addEventListener('touchstart',wake,{passive:true});
+
+function togglePuppet(){
+  puppet.enabled=!puppet.enabled;
+  puppet.keys.clear();
+  state.lastInteraction=performance.now();
+  if(puppet.enabled){clearIdlePose();puppet.showCommands=true;updateCommandBox();setStatus('Puppet mode active — keyboard control enabled');}
+  else{puppet.glow=false;puppet.flame=false;puppet.forcedIdle=false;phoenix.classList.remove('puppet-glow','flame-mode');updateCommandBox();setStatus('Puppet mode off — mouse control restored');}
+}
+function toggleReverse(){puppet.reverse=!puppet.reverse;setStatus(puppet.reverse?'Direction reversed':'Direction normal')}
+function vanish(){
+  clearIdlePose();
+  puppet.entering=false;
+  puppet.exiting=false;
+  puppet.keys.clear();
+
+  if(!puppet.vanished){
+    puppet.vanished=true;
+    phoenix.style.opacity='1';
+    phoenix.classList.add('fade-vanish');
+    setStatus('Phoenix fading away');
+
+    setTimeout(()=>{
+      if(puppet.vanished){
+        phoenix.style.opacity='0';
+      }
+    },900);
+  }else{
+    puppet.vanished=false;
+
+    /* Start invisible, then remove the fade class so the same
+       opacity transition gradually brings the phoenix back. */
+    phoenix.style.opacity='0';
+    phoenix.classList.add('fade-vanish');
+    void phoenix.offsetWidth;
+    phoenix.classList.remove('fade-vanish');
+
+    requestAnimationFrame(()=>{
+      phoenix.style.opacity='1';
+    });
+
+    setStatus('Phoenix fading back in');
+  }
+}
+
+function entrance(){
+  clearIdlePose();
+
+  puppet.vanished=false;
+  puppet.exiting=false;
+  puppet.entering=true;
+  puppet.keys.clear();
+
+  /* Command 1 always cancels the Command 0 fade state first. */
+  phoenix.classList.remove('fade-vanish');
+  phoenix.style.opacity='1';
+
+  const startX=-340;
+  const startY=-260;
+  const targetX=innerWidth*.50;
+  const targetY=innerHeight*.48;
+
+  state.x=startX;
+  state.y=startY;
+  state.tx=targetX;
+  state.ty=targetY;
+  state.vx=6.5;
+  state.vy=5.2;
+
+  phoenix.classList.add('entering');
+  setStatus('Phoenix making a dramatic entrance');
+
+  const started=performance.now();
+
+  function entranceFlight(now){
+    if(!puppet.entering) return;
+
+    const t=Math.min(1,(now-started)/2100);
+    const ease=1-Math.pow(1-t,3);
+    const arc=Math.sin(t*Math.PI)*150;
+
+    state.x=startX+(targetX-startX)*ease;
+    state.y=startY+(targetY-startY)*ease-arc;
+
+    state.vx=(targetX-state.x)*.035;
+    state.vy=(targetY-state.y)*.035;
+
+    if(t<1){
+      requestAnimationFrame(entranceFlight);
+    }else{
+      state.x=targetX;
+      state.y=targetY;
+      state.tx=targetX;
+      state.ty=targetY;
+      state.vx=0;
+      state.vy=0;
+      puppet.entering=false;
+      phoenix.classList.remove('entering');
+      setStatus('Phoenix entered the scene');
+    }
+  }
+
+  requestAnimationFrame(entranceFlight);
+}
+
+function exitScene(){
+  clearIdlePose();
+  puppet.exiting=true;
+  puppet.entering=false;
+  puppet.keys.clear();
+
+  const startX=state.x;
+  const startY=state.y;
+  const targetX=innerWidth+380;
+  const targetY=-320;
+
+  phoenix.classList.add('exiting');
+  setStatus('Phoenix flying dramatically away');
+
+  const start=performance.now();
+  function exitFlight(now){
+    if(!puppet.exiting) return;
+
+    const t=Math.min(1,(now-start)/1900);
+    const ease=t*t*(3-2*t);
+
+    // Upward sweeping arc toward top-right.
+    const arc=Math.sin(t*Math.PI)*130;
+    state.x=startX+(targetX-startX)*ease;
+    state.y=startY+(targetY-startY)*ease-arc;
+
+    state.vx=(targetX-state.x)*.04;
+    state.vy=(targetY-state.y)*.04;
+
+    if(t<1){
+      requestAnimationFrame(exitFlight);
+    }else{
+      state.x=targetX;
+      state.y=targetY;
+      state.vx=0;
+      state.vy=0;
+      puppet.exiting=false;
+      puppet.vanished=true;
+      phoenix.classList.remove('exiting');
+      phoenix.style.opacity='0';
+      setStatus('Phoenix has left the scene');
+    }
+  }
+  requestAnimationFrame(exitFlight);
+}
+
+function toggleGlow(){
+  puppet.glow=!puppet.glow;
+
+  phoenix.classList.remove('white-fadeout','flame-fadeout');
+
+  if(puppet.glow){
+    puppet.flame=false;
+    phoenix.classList.remove('flame-mode');
+    phoenix.classList.remove('puppet-glow');
+    void phoenix.offsetWidth;
+    phoenix.classList.add('puppet-glow');
+  }else{
+    phoenix.classList.remove('puppet-glow');
+    phoenix.classList.add('white-fadeout');
+    setTimeout(()=>{
+      if(!puppet.glow) phoenix.classList.remove('white-fadeout');
+    },900);
+  }
+
+  setStatus(puppet.glow?'White glow on':'White glow fading out');
+}
+function forceIdle(){
+  puppet.forcedIdle=!puppet.forcedIdle;puppet.keys.clear();
+  if(puppet.forcedIdle){state.vx=state.vy=0;state.idle=true;state.returning=false;phoenix.classList.add('idle');setStatus('Puppet idle pose');}
+  else{state.idle=false;phoenix.classList.remove('idle');setStatus('Puppet idle released');}
+}
+
+function toggleFlame(){
+  puppet.flame=!puppet.flame;
+
+  phoenix.classList.remove('flame-fadeout','white-fadeout');
+
+  if(puppet.flame){
+    puppet.glow=false;
+    phoenix.classList.remove('puppet-glow');
+    phoenix.classList.remove('flame-mode');
+    void phoenix.offsetWidth;
+    phoenix.classList.add('flame-mode');
+  }else{
+    phoenix.classList.remove('flame-mode');
+    phoenix.classList.add('flame-fadeout');
+    setTimeout(()=>{
+      if(!puppet.flame) phoenix.classList.remove('flame-fadeout');
+    },900);
+  }
+
+  setStatus(
+    puppet.flame
+      ? 'Flame Mode on — pulsating fire aura'
+      : 'Flame Mode fading out'
+  );
+}
+function toggleBackground(){
+  const turningOn=!document.body.classList.contains('transparent-bg');
+  document.body.classList.toggle('transparent-bg',turningOn);
+  document.documentElement.classList.toggle('transparent-bg',turningOn);
+  setStatus(turningOn?'Transparent background':'Fiery background');
+}
+
+
+const cameraMode={
+  active:false,
+  stream:null,
+  video:document.getElementById('cameraPreview'),
+  canvas:document.createElement('canvas'),
+  ctx:null,
+  prev:null,
+  raf:0
+};
+
+async function toggleCameraMode(){
+  cameraMode.active=!cameraMode.active;
+
+  if(cameraMode.active){
+    /* Camera Mode belongs to normal follow mode, not Puppet Mode. */
+    if(puppet.enabled) togglePuppet();
+
+    try{
+      cameraMode.stream=await navigator.mediaDevices.getUserMedia({
+        video:{facingMode:'user'},
+        audio:false
+      });
+
+      cameraMode.video.srcObject=cameraMode.stream;
+      cameraMode.video.classList.add('active');
+
+      cameraMode.canvas.width=96;
+      cameraMode.canvas.height=72;
+      cameraMode.ctx=cameraMode.canvas.getContext('2d',{willReadFrequently:true});
+      cameraMode.prev=null;
+
+      wake();
+      setStatus('Camera Mode ON — move in front of the camera');
+      cameraTrackLoop();
+    }catch(err){
+      cameraMode.active=false;
+      cameraMode.video.classList.remove('active');
+      setStatus('Camera Mode unavailable — camera permission is required');
+      console.error(err);
+    }
+  }else{
+    stopCameraMode();
+    setStatus('Camera Mode OFF — mouse control restored');
+  }
+}
+
+function stopCameraMode(){
+  cameraMode.active=false;
+
+  if(cameraMode.raf){
+    cancelAnimationFrame(cameraMode.raf);
+    cameraMode.raf=0;
+  }
+
+  cameraMode.prev=null;
+
+  if(cameraMode.stream){
+    cameraMode.stream.getTracks().forEach(track=>track.stop());
+    cameraMode.stream=null;
+  }
+
+  if(cameraMode.video){
+    cameraMode.video.classList.remove('active');
+    cameraMode.video.srcObject=null;
+  }
+}
+
+function cameraTrackLoop(){
+  if(!cameraMode.active || !cameraMode.video || !cameraMode.ctx) return;
+
+  const v=cameraMode.video;
+
+  if(v.readyState>=2){
+    const w=cameraMode.canvas.width;
+    const h=cameraMode.canvas.height;
+
+    cameraMode.ctx.drawImage(v,0,0,w,h);
+    const frame=cameraMode.ctx.getImageData(0,0,w,h).data;
+
+    if(cameraMode.prev){
+      let sum=0;
+      let sx=0;
+      let sy=0;
+      const threshold=34;
+
+      for(let y=0;y<h;y+=2){
+        for(let x=0;x<w;x+=2){
+          const i=(y*w+x)*4;
+          const d=
+            Math.abs(frame[i]-cameraMode.prev[i])+
+            Math.abs(frame[i+1]-cameraMode.prev[i+1])+
+            Math.abs(frame[i+2]-cameraMode.prev[i+2]);
+
+          if(d>threshold*3){
+            sum+=d;
+            sx+=x*d;
+            sy+=y*d;
+          }
+        }
+      }
+
+      if(sum>22000){
+        /* Mirror X so the on-screen Phoenix follows the user's
+           movement in the same direction they see themselves move. */
+        const mx=1-(sx/sum)/w;
+        const my=(sy/sum)/h;
+
+        wake();
+        state.tx=clamp(mx*innerWidth,120,innerWidth-120);
+        state.ty=clamp(my*innerHeight,100,innerHeight-110);
+        state.lastInteraction=performance.now();
+      }
+    }
+
+    cameraMode.prev=new Uint8ClampedArray(frame);
+  }
+
+  cameraMode.raf=requestAnimationFrame(cameraTrackLoop);
+}
+
+window.addEventListener('keydown',e=>{
+  const k=e.key.toLowerCase();
+  if(k==='c'&&!e.repeat){e.preventDefault();toggleCameraMode();return}
+  if(k==='p'&&!e.repeat){e.preventDefault();togglePuppet();return}
+  if(!puppet.enabled)return;
+  if(['w','a','s','d'].includes(k)){e.preventDefault();puppet.keys.add(k);if(!puppet.forcedIdle)clearIdlePose();return}
+  if(e.repeat)return;
+  if(k==='m'){puppet.showCommands=!puppet.showCommands;updateCommandBox()}
+  else if(k==='9')toggleBottomText()
+  else if(k==='r')toggleReverse();else if(k==='i')forceIdle();else if(k==='0')vanish();else if(k==='1')entrance();else if(k==='2')toggleFlame();else if(k==='4')toggleGlow();else if(k==='5')exitScene();else if(k==='b')toggleBackground();
+});
+window.addEventListener('keyup',e=>puppet.keys.delete(e.key.toLowerCase()));
+
+function animate(now){
+  const dtIdle=now-state.lastInteraction;
+  if(!puppet.enabled&&!state.idle&&!state.returning&&dtIdle>=IDLE_AFTER){state.returning=true;state.tx=innerWidth*.50;state.ty=innerHeight*.48;setStatus('Returning to center...')}
+  if(!puppet.enabled&&state.returning){const cx=innerWidth*.50,cy=innerHeight*.48;if(Math.hypot(cx-state.x,cy-state.y)<18&&Math.hypot(state.vx,state.vy)<1.4){state.returning=false;state.idle=true;state.x=cx;state.y=cy;state.vx=state.vy=0;phoenix.classList.add('idle');setStatus('Idle — move the mouse to wake the phoenix')}}
+
+  if(puppet.enabled){
+    if(puppet.entering){ /* dramatic entranceFlight() owns state.x/state.y */ }
+    else if(puppet.exiting){const target=puppet.reverse?-360:innerWidth+360;state.x+=(target-state.x)*.055;if(Math.abs(target-state.x)<12){state.x=target;puppet.exiting=false;puppet.vanished=true;phoenix.style.opacity='0';setStatus('Phoenix exited the scene')}}
+    else if(!puppet.vanished&&!puppet.forcedIdle&&!puppet.entering&&!puppet.exiting){
+      let dx=0,dy=0;
+      if(puppet.keys.has('w'))dy--;
+      if(puppet.keys.has('s'))dy++;
+      if(puppet.keys.has('a'))dx--;
+      if(puppet.keys.has('d'))dx++;
+
+      // Keyboard flight now uses the same kind of inertia/acceleration
+      // as mouse-follow mode instead of sliding in a straight line.
+      if(dx||dy){
+        const m=Math.hypot(dx,dy)||1;
+        dx/=m; dy/=m;
+        state.vx += dx*.34;
+        state.vy += dy*.34;
+      }
+
+      // Gentle drag lets the phoenix coast and curve naturally.
+      state.vx *= .955;
+      state.vy *= .955;
+
+      const maxFlySpeed=puppet.speed;
+      const vmag=Math.hypot(state.vx,state.vy);
+      if(vmag>maxFlySpeed){
+        state.vx=state.vx/vmag*maxFlySpeed;
+        state.vy=state.vy/vmag*maxFlySpeed;
+      }
+
+      state.x+=state.vx;
+      state.y+=state.vy;
+
+      // Soft screen-edge steering instead of an abrupt stop.
+      if(state.x<85) state.vx+=.22;
+      if(state.x>innerWidth-85) state.vx-=.22;
+      if(state.y<75) state.vy+=.22;
+      if(state.y>innerHeight-85) state.vy-=.22;
+
+      state.x=clamp(state.x,-120,innerWidth+120);
+      state.y=clamp(state.y,-100,innerHeight+100);
+    }
+  }else if(!state.idle){
+    const dx=state.tx-state.x,dy=state.ty-state.y;state.vx+=dx*.0022;state.vy+=dy*.0022;state.vx*=.91;state.vy*=.91;state.vx=clamp(state.vx,-8,8);state.vy=clamp(state.vy,-8,8);state.x+=state.vx;state.y+=state.vy;state.x=clamp(state.x,120,innerWidth-120);state.y=clamp(state.y,100,innerHeight-110);
+  }
+
+  if(state.idle){
+    const breathe=Math.sin(now*.0017),sway=Math.sin(now*.00115),hw=Math.sin(now*.0028),hw2=Math.sin(now*.0021+1.1),ws=Math.sin(now*.0019)*1.5;
+    wingL.style.transform=`rotate(${-58-ws}deg)`;wingR.style.transform=`rotate(${58+ws}deg)`;
+    headL.style.transform=`translate(10px,34px) rotate(${-22+hw*4+hw2*2}deg) translateY(${breathe*2}px)`;headR.style.transform=`translate(-10px,34px) rotate(${22-hw*4+hw2*2}deg) translateY(${breathe*2}px)`;
+    feet.style.transform=`translateY(${36+breathe*2}px) rotate(${30+Math.sin(now*.0024)*2}deg) scale(.88)`;body.style.transform=`translateY(${34+breathe*3}px) rotate(${sway*.8}deg) scale(.96)`;rig.style.transform=`translateY(${breathe*3}px) rotate(${sway*1.2}deg)`;
+  }else if(!puppet.regal){
+    const speed=Math.hypot(state.vx,state.vy);
+    const puppetActive=window.phoenixPuppet&&window.phoenixPuppet.enabled;
+    const flapRate=puppetActive ? (0.00215+Math.min(speed,7)*0.00010) : (0.0045+Math.min(speed,7)*0.00035);
+    const flap=now*flapRate;
+    const fa=puppetActive ? (18+Math.min(speed,7)*1.15) : (11+Math.min(speed,7)*2.2);
+
+    // Puppet mode: slower, broader, graceful wing strokes.
+    const sweep=Math.sin(flap);
+    const featherLift=Math.sin(flap*.5)*2.2;
+    wingL.style.transform=`rotate(${sweep*fa-5}deg) translateY(${featherLift}px)`;
+    wingR.style.transform=`rotate(${-sweep*fa+5}deg) translateY(${featherLift}px)`;
+    const bob=Math.sin(now*.0035)*3;
+    body.style.transform=`translateY(${bob}px) rotate(${state.vx*.35}deg)`;
+    headL.style.transform=`rotate(${Math.sin(now*.0028)*3+state.vy*.18}deg)`;
+    headR.style.transform=`rotate(${-Math.sin(now*.0028)*3+state.vy*.18}deg)`;
+    feet.style.transform=`translateY(${Math.sin(now*.004)*2}px) rotate(${state.vx*.2}deg)`;
+  }
+
+  if(!state.idle){const flip=puppet.enabled&&puppet.reverse?-1:1;const tilt=clamp(state.vx*.8,-8,8);rig.style.transform=`rotate(${tilt}deg) scaleX(${flip})`}
+  if(coords){
+    coords.textContent = `X: ${Math.round(state.x)}   Y: ${Math.round(state.y)}`;
+  }
+
+  phoenix.style.left=state.x+'px';phoenix.style.top=state.y+'px';glow.style.left=state.x+'px';glow.style.top=state.y+'px';
+  requestAnimationFrame(animate)
+}
+requestAnimationFrame(animate);
+window.addEventListener('resize',()=>{if(!puppet.enabled){state.x=clamp(state.x,120,innerWidth-120);state.y=clamp(state.y,100,innerHeight-110);state.tx=clamp(state.tx,120,innerWidth-120);state.ty=clamp(state.ty,100,innerHeight-110)}});
+
+/* Mobile touch support for NORMAL mode.
+   Puppet Mode remains keyboard-controlled and unchanged. */
+function phoenixTouchTarget(touch){
+  if(!touch || puppet.active || cameraMode.active) return;
+
+  state.tx = touch.clientX;
+  state.ty = touch.clientY;
+
+  /* Touch activity wakes the phoenix and resets the normal idle timer,
+     just like mouse movement. */
+  state.lastMove = performance.now();
+  state.idle = false;
+  state.returning = false;
+  clearIdlePose();
+}
+
+window.addEventListener('touchstart', (e)=>{
+  if(puppet.active || cameraMode.active || !e.touches.length) return;
+  phoenixTouchTarget(e.touches[0]);
+}, {passive:true});
+
+window.addEventListener('touchmove', (e)=>{
+  if(puppet.active || cameraMode.active || !e.touches.length) return;
+  phoenixTouchTarget(e.touches[0]);
+}, {passive:true});
+
+function toggleBottomText(){
+  if(!status) return;
+  const hidden = status.classList.toggle('status-hidden');
+  if(!hidden) setStatus('Bottom text shown');
+}
+</script>
+</body>
+</html>

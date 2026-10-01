@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wayang 2024 Archive</title>
+  <style>
+:root{--black:#000;--orange:#d28a3b;--green:#9aa060;--purple:#9b6bd3;--text:#d7d7d0}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;min-height:100%}
+body{background:#000;color:var(--text);font-family:"Courier New",monospace;overflow-x:hidden;line-height:1.7}
+
+/* CHIVISPUPPETS SPACE BACKGROUND */
+#spaceBackground{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:radial-gradient(circle at 18% 24%,rgba(210,138,59,.10),transparent 27%),radial-gradient(circle at 80% 67%,rgba(154,160,96,.07),transparent 28%),radial-gradient(circle at 65% 15%,rgba(155,107,211,.07),transparent 25%),#000}
+.milkyway{position:absolute;left:-15%;top:39%;width:135%;height:290px;transform:rotate(-17deg);opacity:.27;filter:blur(7px);background:radial-gradient(ellipse at center,rgba(155,107,211,.15),rgba(210,138,59,.11) 27%,rgba(154,160,96,.08) 45%,transparent 73%)}
+.galaxy{position:absolute;border-radius:50%;filter:blur(12px);opacity:.24;animation:galaxyFloat 28s ease-in-out infinite alternate}
+.g1{width:340px;height:145px;left:2%;top:13%;background:radial-gradient(ellipse,#e9c28d 0,rgba(210,138,59,.36) 15%,rgba(155,107,211,.12) 43%,transparent 73%);transform:rotate(-18deg)}
+.g2{width:390px;height:170px;right:-3%;top:58%;background:radial-gradient(ellipse,#d8d09b 0,rgba(154,160,96,.27) 17%,rgba(155,107,211,.10) 46%,transparent 74%);transform:rotate(17deg)}
+@keyframes galaxyFloat{to{translate:14px -10px}}
+#starField,#dataField,#floatingWordField{position:absolute;inset:0}
+.star{position:absolute;border-radius:50%;animation:twinkle var(--speed) ease-in-out infinite alternate}
+@keyframes twinkle{from{opacity:.15;transform:scale(.7)}to{opacity:.9;transform:scale(1.15)}}
+.data-number{position:absolute;white-space:nowrap;font-size:9px;letter-spacing:1px;opacity:.43;text-shadow:0 0 8px currentColor;transition:transform .2s linear}
+.floating-word{position:absolute;white-space:nowrap;font-weight:700;letter-spacing:4px;opacity:.22;text-shadow:0 0 9px currentColor;animation:floatWord var(--speed) ease-in-out infinite alternate}
+@keyframes floatWord{to{transform:translate(22px,-15px)}}
+.background-word{position:absolute;font-weight:bold;letter-spacing:6px;white-space:nowrap;opacity:.23;animation:bigFloat 18s ease-in-out infinite alternate,colorShift 15s linear infinite}
+.w1{left:3%;top:13%;font-size:62px}.w2{right:4%;top:32%;font-size:54px;animation-delay:-4s}.w3{left:4%;top:65%;font-size:57px;animation-delay:-8s}.w4{right:5%;top:82%;font-size:48px;animation-delay:-12s}
+@keyframes bigFloat{to{transform:translate(18px,-12px)}}@keyframes colorShift{0%,100%{color:var(--orange)}33%{color:var(--green)}66%{color:var(--purple)}}
+
+/* ARCHIVE CONTENT */
+.container{position:relative;z-index:2;width:calc(100% - 32px);max-width:1000px;margin:0 auto;padding:34px 0 55px}
+header{margin-bottom:34px}
+.banner{display:block;width:100%;height:auto;object-fit:contain;border-radius:7px;border:1px solid rgba(154,160,96,.28);background:#020202;box-shadow:0 15px 38px rgba(0,0,0,.8)}
+section{position:relative;margin:0 0 42px;padding:28px;background:rgba(5,6,5,.76);border:1px solid rgba(154,160,96,.25);border-radius:8px;box-shadow:0 20px 55px rgba(0,0,0,.75);backdrop-filter:blur(6px)}
+section:before{content:"";position:absolute;top:0;left:0;width:80px;height:1px;background:var(--orange);box-shadow:0 0 10px rgba(210,138,59,.5)}
+section:after{content:"";position:absolute;right:0;bottom:0;width:80px;height:1px;background:var(--green);box-shadow:0 0 10px rgba(154,160,96,.4)}
+.separator{display:none}
+.section-title{margin:0 auto 22px;text-align:center;color:var(--orange);font-size:1.35rem;line-height:1.45;letter-spacing:1px}
+h1.section-title{font-size:1.55rem}
+.section-title:after{content:"";display:block;width:125px;height:2px;margin:11px auto 0;background:linear-gradient(90deg,var(--orange),var(--green),var(--purple))}
+.section-text{margin:0 auto 24px;max-width:850px;color:#b9bd98;font-size:15px;line-height:1.85;text-align:left}
+video{display:block;width:100%;height:auto;max-height:620px;margin:0 auto 26px;background:#000;border:1px solid rgba(210,138,59,.32);border-radius:6px;box-shadow:0 12px 30px rgba(0,0,0,.7)}
+.video-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin:24px 0 0}.video-grid video{width:100%;height:auto;margin:0}
+.archive-label{text-align:center;margin-top:8px;color:rgba(210,138,59,.65);font-size:9px;letter-spacing:3px;text-transform:uppercase}
+@media(max-width:650px){.container{width:calc(100% - 18px);padding-top:18px}section{padding:18px;margin-bottom:28px}.section-title,h1.section-title{font-size:1.05rem}.section-text{font-size:14px}.background-word{font-size:28px!important;letter-spacing:2px}.video-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="spaceBackground">
+  <div class="milkyway"></div>
+  <div class="galaxy g1"></div>
+  <div class="galaxy g2"></div>
+  <div id="starField"></div>
+  <div id="dataField"></div>
+  <div id="floatingWordField"></div>
+  <span class="background-word w1">WAYANG</span>
+  <span class="background-word w2">PUPPETRY</span>
+  <span class="background-word w3">MOVEMENT</span>
+  <span class="background-word w4">ARCHIVE</span>
+</div>
+  <div class="container">
+    <header>
+      <img src="../" alt="Wayang 2024 Banner" class="banner">
+    </header>
+
+    <hr class="separator">
+
+    <section>
+      <h1 class="section-title">Animated Backgrounds Case Study</h1>
+      <p class="section-text">For every good story, designing the scenery proved to be an interesting task. Wayang is a very interesting form of art which incorporates elements such as acting, singing, and drama. For this year, we wanted to incorporate more elements, which would allow the show to be more immersive. When we first started this research, we wanted to incorporate “Blender” into our show to create detailed scenery. But given the time restraints, we decided to integrate another software in its place.</p>
+    </section>
+
+    <section>
+      <h2 class="section-title">Creating Captivating 3D Cutscenes and Backgrounds with Roblox Studio</h2>
+      <video controls loop>
+        <source src="../Videos/WAYANG 2024/Temple.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+      <p class="section-text">In ‘Dragon’s Peak,’ our beloved characters are divided into two distinct social classes: the nobility and the peasants. The Temple of Ganesha, located between Spring Star Village (where the nobles live) and the Village of the Golden Sun (where the peasants reside), plays a pivotal role in bridging these two groups. Within the temple grounds, everyone is considered a child of Ganesha and is treated equally.</p>
+      <p class="section-text">The Temple itself is designed like a Colosseum and consists of multiple entryways, symbolizing the different types of people who come together to worship. The god Ganesha rests at the center of the temple on a giant lotus flower. The design of the temple was heavily inspired by the lotus flower, which symbolizes strength, resilience, and rebirth.</p>
+      <h3 class="section-title">Putting Together The Cutscene</h3>
+      <p class="section-text">After creating the 3D scene, we used a Roblox Studio plugin called Otaku Cutscene, which enabled us to create a 360-degree view of the temple. The video was later edited in Adobe Premiere to remove the extra camera movements and scenes produced by the plugin.</p>
+    </section>
+
+    <hr class="separator">
+
+    <section>
+      <h2 class="section-title">Incorporating AI to Design Immersive and Captivating Backgrounds</h2>
+      <p class="section-text">Technology has played a pivotal role in shaping the world we know today. It is constantly evolving, enabling us to discover new and innovative ways to interact with our environment. In addition to using 3D backgrounds, we employed ChatGPT along with Pika Labs to design and animate our backgrounds.<br><br>For the background designs, we utilized ChatGPT-4 to create images based on the prompts we entered.</p>
+      <img src="../Archive Pages/Page Images/Wayang 2024/Cutscene Editor.png" alt="Cutscene Editor" class="banner">
+      <p class="section-text">After generating the images, we used an AI tool called Pika Labs to animate our backgrounds. The main drawback of using Pika Labs is that each video is only three seconds long. For each background, we had to create four to five separate prompts to produce a smooth animation that could be looped. The footage was then imported into Adobe Premiere for editing. The rough animations were cut. The smooth animations were later refined and incorporated into Q Labs.</p>
+      <img src="../Archive Pages/Page Images/Wayang 2024/Pika_Labs.png" alt="Pika Labs" class="banner">
+    </section>
+
+    <hr class="separator">
+
+    <section>
+      <h2 class="section-title">AI Video Samples</h2>
+      <div class="video-grid">
+        <video controls>
+          <source src="../Videos/WAYANG 2024/Dragons Peak.mp4" type="video/mp4">
+        </video>
+        <video controls>
+          <source src="../Videos/WAYANG 2024/Warriors.mp4" type="video/mp4">
+        </video>
+        <video controls>
+          <source src="../Videos/WAYANG 2024/Temple Outside.mp4" type="video/mp4">
+        </video>
+      </div>
+    </section>
+
+    <hr class="separator">
+
+    <section>
+      <h2 class="section-title">Crafting Captivating Intros Using Adobe After Effects</h2>
+      <p class="section-text">For the final touch, our show needed a video that could be played and looped before the start of the show. To create this, we used ChatGPT to generate Javanese shadow puppets that matched the theme of our show. These puppets were imported into Adobe After Effects, where we added black borders and used the Motion Tile effect to animate and duplicate text frame by frame. The resulting video was exported and final touches were added in Adobe Premiere.</p>
+      <video controls autoplay loop>
+        <source src="../Videos/WAYANG 2024/WAYANG INTRO(Samuel Cheung).mp4" type="video/mp4">
+      </video>
+    </section>
+
+    <div class="archive-label">CHIVISPUPPETS • WAYANG 2024 • DIGITAL PERFORMANCE ARCHIVE</div>
+  </div>
+
+<script>
+document.addEventListener("DOMContentLoaded",()=>{
+  const sf=document.getElementById("starField"), colors=["#d28a3b","#9aa060","#9b6bd3","#fff"];
+  for(let i=0;i<260;i++){const s=document.createElement("span");s.className="star";const z=Math.random()<.9?.5+Math.random()*1.4:2+Math.random()*1.7;s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${z}px;height:${z}px;background:${colors[Math.floor(Math.random()*colors.length)]};--speed:${2+Math.random()*5}s;animation-delay:${-Math.random()*6}s`;sf.appendChild(s)}
+  const df=document.getElementById("dataField"),items=[],labels=["WAYANG","FRAME","MOTION","CHI","PUPPET","SCENE","VIS","ARCHIVE"],cols=["#d28a3b","#9aa060","#9b6bd3"];
+  const value=()=>labels[Math.floor(Math.random()*labels.length)]+"_"+String(Math.floor(Math.random()*9999)).padStart(4,"0");
+  for(let i=0;i<58;i++){const e=document.createElement("span");e.className="data-number";e.textContent=value();e.style.cssText=`left:${Math.random()*97}%;top:${Math.random()*97}%;color:${cols[i%3]}`;df.appendChild(e);items.push({e,m:2+Math.random()*7})}
+  setInterval(()=>items.forEach(x=>{if(Math.random()>.72)x.e.textContent=value()}),1200);
+  const wf=document.getElementById("floatingWordField"),words=["WAYANG","SHADOW","STORY","PERFORMANCE","PUPPETRY","MOVEMENT","CULTURE","SCENE","LIGHT","DIGITAL","EXPERIMENT","ARCHIVE"];
+  for(let i=0;i<15;i++){const e=document.createElement("span");e.className="floating-word";e.textContent=words[i%words.length];e.style.cssText=`left:${Math.random()*88}%;top:${Math.random()*94}%;font-size:${12+Math.random()*15}px;color:${cols[i%3]};--speed:${13+Math.random()*17}s;animation-delay:${-Math.random()*18}s`;wf.appendChild(e)}
+  document.addEventListener("mousemove",ev=>{const x=ev.clientX/innerWidth-.5,y=ev.clientY/innerHeight-.5;items.forEach(a=>a.e.style.transform=`translate(${x*a.m}px,${y*a.m}px)`)})
+});
+</script>
+</body>
+</html>

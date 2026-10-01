@@ -1,209 +1,1780 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <!-- Meta tags for character encoding and responsiveness -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <!-- Page title -->
-  <title>Home</title>
-  
-  <!-- Linking external stylesheet -->
+
+  <title>CHI VIS PUPPETS</title>
+
   <link rel="stylesheet" type="text/css" href="../css/mystyle.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  
-  <!-- Internal CSS for styling -->
+
   <style>
-    /* Basic page styling */
+
+    /* =========================
+       PAGE
+    ========================== */
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
     body {
-      background-color: #000;
-      color: #f0f0f0;
-      font-family: 'Courier New', Geneva, sans-serif;
       margin: 0;
       padding: 0;
+      width: 100%;
+      min-height: 100%;
+    }
+
+    body {
+      background: #000;
+      color: #c9782b;
+      font-family: "Courier New", monospace;
       text-align: center;
+      overflow-x: hidden;
     }
 
-    /* Centered banner */
-    .banner {
+
+    /* =========================
+       BACKGROUND
+    ========================== */
+
+    #backgroundEffect {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+
+      background:
+        radial-gradient(
+          circle at 50% 40%,
+          rgba(177, 94, 30, 0.08),
+          transparent 42%
+        );
+    }
+
+
+    /* =========================
+       FLOATING WORDS
+    ========================== */
+
+    .background-word {
+      position: absolute;
+      font-weight: bold;
+      white-space: nowrap;
+      letter-spacing: 5px;
+      user-select: none;
+      text-transform: uppercase;
+
+      animation:
+        floatWords 14s ease-in-out infinite alternate,
+        wordGlow 5s ease-in-out infinite alternate;
+    }
+
+    .word1 {
+      left: 3%;
+      top: 9%;
+      font-size: 72px;
+      color: rgba(205, 101, 38, 0.42);
+    }
+
+    .word2 {
+      right: 4%;
+      top: 23%;
+      font-size: 80px;
+      color: rgba(126, 138, 73, 0.40);
+      animation-delay: -2s;
+    }
+
+    .word3 {
+      left: 5%;
+      top: 40%;
+      font-size: 72px;
+      color: rgba(224, 132, 49, 0.42);
+      animation-delay: -4s;
+    }
+
+    .word4 {
+      right: 3%;
+      top: 57%;
+      font-size: 75px;
+      color: rgba(137, 145, 82, 0.40);
+      animation-delay: -6s;
+    }
+
+    .word5 {
+      left: 8%;
+      top: 73%;
+      font-size: 65px;
+      color: rgba(214, 145, 60, 0.42);
+      animation-delay: -8s;
+    }
+
+    .word6 {
+      right: 7%;
+      top: 88%;
+      font-size: 65px;
+      color: rgba(149, 156, 94, 0.40);
+      animation-delay: -10s;
+    }
+
+    @keyframes floatWords {
+      0% {
+        transform: translate(0, 0) rotate(-1deg);
+      }
+
+      50% {
+        transform: translate(20px, -10px) rotate(1deg);
+      }
+
+      100% {
+        transform: translate(35px, -20px) rotate(-1deg);
+      }
+    }
+
+    @keyframes wordGlow {
+      0% {
+        opacity: 0.58;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+
+    /* =========================
+       BACKGROUND NUMBERS
+    ========================== */
+
+    #numberLayer {
+      position: absolute;
+      inset: 0;
       width: 100%;
-      height: auto;
-      display: block;
-      margin: 0 auto;
+      height: 100%;
     }
 
-    /* Portfolio image sizing */
-    .portfolio-img {
-      max-width: 500px;
+    .data-number {
+      position: absolute;
+      font-size: 11px;
+      letter-spacing: 2px;
+      white-space: nowrap;
+      user-select: none;
+      transition:
+        transform 0.15s linear,
+        color 0.4s ease;
+      text-shadow: 0 0 5px currentColor;
+    }
+
+    .data-number:nth-child(6n + 1) {
+      color: rgba(182, 80, 28, 0.42);
+    }
+
+    .data-number:nth-child(6n + 2) {
+      color: rgba(104, 113, 64, 0.38);
+    }
+
+    .data-number:nth-child(6n + 3) {
+      color: rgba(203, 127, 43, 0.40);
+    }
+
+    .data-number:nth-child(6n + 4) {
+      color: rgba(120, 123, 75, 0.36);
+    }
+
+    .data-number:nth-child(6n + 5) {
+      color: rgba(218, 142, 57, 0.38);
+    }
+
+    .data-number:nth-child(6n + 6) {
+      color: rgba(142, 142, 93, 0.34);
+    }
+
+
+    /* =========================
+       MOUSE DATA
+    ========================== */
+
+    #mouseCoordinates {
+      position: fixed;
+      right: 18px;
+      bottom: 55px;
+      z-index: 20;
+      text-align: left;
+      font-size: 11px;
+      line-height: 1.7;
+      letter-spacing: 2px;
+      color: rgba(194, 111, 44, 0.72);
+      pointer-events: none;
+    }
+
+    .mouse-number {
+      position: fixed;
+      z-index: 20;
+      pointer-events: none;
+      font-family: "Courier New", monospace;
+      font-size: 12px;
+      letter-spacing: 2px;
+      animation: mouseFade 850ms ease-out forwards;
+    }
+
+    .mouse-number.orange {
+      color: rgba(203, 119, 43, 0.88);
+    }
+
+    .mouse-number.green {
+      color: rgba(125, 128, 78, 0.88);
+    }
+
+    @keyframes mouseFade {
+      0% {
+        opacity: 0.9;
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -45px) scale(0.8);
+      }
+    }
+
+
+    /* =========================
+       MAIN CONTENT
+    ========================== */
+
+    .page-content {
+      position: relative;
+      z-index: 2;
+    }
+
+
+    /* =========================
+       BANNER
+    ========================== */
+
+    .banner-frame {
       width: 100%;
-      height: auto;
-      display: block;
-      margin: 20px auto;
+      height: 300px;
+      overflow: hidden;
+      background: #000;
+      border-bottom: 1px solid rgba(190, 100, 35, 0.35);
     }
 
-    /* Navigation bar styling */
-    ul {
-      list-style: none;
-      padding: 0;
+    .banner-frame iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
       margin: 0;
+      padding: 0;
+      border: 0;
+      background: #000;
+    }
+
+
+    /* =========================
+       NAVIGATION
+    ========================== */
+
+    .navigation {
       display: flex;
       justify-content: center;
-      background-color: #3a3a3a;
+      align-items: center;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(16, 13, 10, 0.98),
+          rgba(48, 30, 14, 0.98),
+          rgba(16, 13, 10, 0.98)
+        );
+
+      border-top: 1px solid rgba(190, 100, 35, 0.30);
+      border-bottom: 1px solid rgba(190, 100, 35, 0.30);
       font-size: 24px;
     }
 
-    ul li {
+    .navigation li {
       margin: 0 15px;
     }
 
-    ul li a {
-      text-decoration: none;
-      color: #f0f0f0;
-      padding: 10px 20px;
+    .navigation a {
       display: block;
+      padding: 12px 20px;
+      color: #c77931;
+      text-decoration: none;
       border-radius: 4px;
-      transition: background 0.3s;
+
+      transition:
+        background-color 0.3s,
+        color 0.3s,
+        transform 0.3s,
+        letter-spacing 0.3s;
     }
 
-    ul li a:hover {
-      background-color: #555;
+    .navigation a:hover {
+      background: rgba(120, 112, 70, 0.12);
+      color: #8f9161;
+      transform: translateY(-2px);
+      letter-spacing: 1px;
     }
 
-    ul li a.active {
-      background-color: #000;
-      color: #fff;
-    }
 
-    /* Section heading */
+    /* =========================
+       TITLE
+    ========================== */
+
     h1 {
-      text-align: center;
-      margin: 20px 0;
-      color: #ddd;
-      position: relative;
+      margin: 30px 0 12px;
+      color: #c87932;
+      letter-spacing: 2px;
+      text-shadow: 0 0 7px rgba(185, 92, 35, 0.25);
     }
 
     h1::after {
-      content: '';
+      content: "";
       display: block;
-      width: 80px;
+      width: 110px;
       height: 3px;
-      background-color: #888;
-      margin: 8px auto;
+      margin: 10px auto;
+
+      background:
+        linear-gradient(
+          90deg,
+          #a84f27,
+          #d28a3b,
+          #85875b
+        );
+
       border-radius: 2px;
     }
 
-    /* Social media icon styling */
-    .socialmediaicons {
-      display: flex;
-      justify-content: center;
-      gap: 30px;
-      padding: 20px 0;
-      flex-wrap: wrap;
+
+    /* =========================
+       ORACLE CONTAINER
+    ========================== */
+
+    .oracle-container {
+      position: relative;
+      width: calc(100% - 40px);
+      max-width: 1100px;
+      margin: 30px auto 20px;
+
+      transition:
+        opacity 0.35s ease,
+        transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-    .socialmediaicons a {
-      text-decoration: none;
-      color: #f0f0f0;
-      font-size: 40px;
-      width: 60px;
-      height: 60px;
+    .oracle-container.transitioning-in {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+
+    .oracle-container.transitioning-out {
+      opacity: 0;
+      transform: scale(1.03);
+    }
+
+
+    /* =========================
+       ORACLE WINDOW
+    ========================== */
+
+    .oracle-window {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      background: #000;
+
+      border:
+        2px solid rgba(181, 93, 37, 0.42);
+
+      border-radius: 8px;
+
+      box-shadow:
+        0 15px 45px rgba(0, 0, 0, 0.9),
+        0 0 18px rgba(181, 93, 37, 0.06);
+
+      transition:
+        border-radius 0.4s ease,
+        border-color 0.4s ease,
+        box-shadow 0.4s ease,
+        opacity 0.35s ease;
+    }
+
+
+    /* =========================
+       ORACLE STAGE
+    ========================== */
+
+    #oracleStage {
+      position: absolute;
+      top: 0;
+      left: 0;
+
+      width: 1600px;
+      height: 900px;
+
+      background: #000;
+
+      transform-origin: top left;
+
+      transition:
+        transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        left 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        top 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+
+    /* =========================
+       ORACLE IFRAME
+    ========================== */
+
+    #oracleFrame {
+      display: block;
+      width: 1600px;
+      height: 900px;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: #000;
+    }
+
+
+    /* =========================
+       FULLSCREEN BUTTON
+    ========================== */
+
+    .fullscreen-button {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      z-index: 100;
+
       display: flex;
       align-items: center;
-      justify-content: center;
-      border: 2px solid #666;
+      gap: 8px;
+
+      padding: 9px 14px;
+
+      border:
+        1px solid rgba(210, 138, 59, 0.75);
+
+      border-radius: 4px;
+
+      background:
+        rgba(5, 5, 5, 0.82);
+
+      color: #d28a3b;
+
+      font-family:
+        "Courier New",
+        monospace;
+
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 2px;
+
+      cursor: pointer;
+
+      backdrop-filter:
+        blur(6px);
+
+      opacity: 1;
+
+      transform:
+        translateY(0)
+        scale(1);
+
+      transition:
+        opacity 0.3s ease,
+        transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+        background 0.2s ease,
+        color 0.2s ease;
+    }
+
+    .fullscreen-button:hover {
+      background: #d28a3b;
+      color: #000;
+
+      transform:
+        translateY(-2px)
+        scale(1.03);
+    }
+
+    .fullscreen-button:active {
+      transform:
+        translateY(0)
+        scale(0.96);
+    }
+
+
+    /* =========================
+       EXIT FULLSCREEN BUTTON
+    ========================== */
+
+    .exit-fullscreen-button {
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      z-index: 999999;
+
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      padding: 10px 15px;
+
+      border:
+        1px solid rgba(210, 138, 59, 0.9);
+
+      border-radius: 4px;
+
+      background:
+        rgba(0, 0, 0, 0.82);
+
+      color: #d28a3b;
+
+      font-family:
+        "Courier New",
+        monospace;
+
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 2px;
+
+      cursor: pointer;
+
+      backdrop-filter:
+        blur(7px);
+
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+
+      transform:
+        translateY(-12px)
+        scale(0.94);
+
+      transition:
+        opacity 0.35s ease,
+        visibility 0.35s ease,
+        transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+        background 0.2s ease,
+        color 0.2s ease;
+    }
+
+    .exit-fullscreen-button:hover {
+      background: #d28a3b;
+      color: #000;
+
+      transform:
+        translateY(0)
+        scale(1.03);
+    }
+
+    .exit-fullscreen-button:active {
+      transform:
+        translateY(0)
+        scale(0.96);
+    }
+
+
+    /* =========================
+       FULLSCREEN MODE
+    ========================== */
+
+    .oracle-container:fullscreen {
+      width: 100vw;
+      height: 100vh;
+      max-width: none;
+      margin: 0;
+
+      background: #000;
+
+      opacity: 1;
+
+      transform:
+        scale(1);
+    }
+
+    .oracle-container:fullscreen .oracle-window {
+      width: 100vw;
+      height: 100vh !important;
+
+      border: 0;
+      border-radius: 0;
+
+      box-shadow: none;
+    }
+
+    .oracle-container:fullscreen .fullscreen-button {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+
+      transform:
+        translateY(10px)
+        scale(0.94);
+    }
+
+    .oracle-container:fullscreen .exit-fullscreen-button {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+
+      transform:
+        translateY(0)
+        scale(1);
+    }
+
+    .oracle-container::backdrop {
+      background: #000;
+    }
+
+
+    /* =========================
+       ORACLE STATUS
+    ========================== */
+
+    .oracle-status {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      width: calc(100% - 40px);
+      max-width: 1100px;
+
+      margin: 0 auto 40px;
+
+      color: rgba(196, 117, 53, 0.58);
+
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .status-dot {
+      display: inline-block;
+
+      width: 7px;
+      height: 7px;
+
+      margin-right: 7px;
+
       border-radius: 50%;
-      transition: background 0.3s, transform 0.3s;
+
+      background: #88895c;
+
+      box-shadow:
+        0 0 6px rgba(136, 137, 92, 0.62);
+
+      animation:
+        statusPulse 1.7s ease-in-out infinite alternate;
     }
 
-    .socialmediaicons a:hover {
-      background-color: #666;
-      transform: scale(1.1);
+    @keyframes statusPulse {
+      from {
+        opacity: 0.45;
+      }
+
+      to {
+        opacity: 1;
+      }
     }
 
-    /* About Me Section */
+
+    /* =========================
+       ABOUT
+    ========================== */
+
     .about-me {
-      border: 2px solid grey;
-      padding: 20px;
-      margin: 40px auto;
       max-width: 800px;
+      margin: 40px auto;
+      padding: 30px;
+
       text-align: left;
-      background-color: #111;
-      color: #f0f0f0;
+
+      color: #9aa060;
+
+      background:
+        rgba(12, 10, 8, 0.92);
+
+      border:
+        1px solid rgba(182, 93, 36, 0.40);
+
       border-radius: 8px;
+
+      backdrop-filter:
+        blur(4px);
     }
 
     .about-me h2 {
-      color: #ccc;
+      margin-top: 0;
       margin-bottom: 10px;
+
+      color: #8c8d5d;
+
+      letter-spacing: 1px;
     }
 
     .about-me p {
+      margin-bottom: 0;
+
       font-size: 1rem;
       line-height: 1.6;
+
+      color: #9aa060;
     }
 
-    /* Footer styling */
+
+    /* =========================
+       FOOTER
+    ========================== */
+
     footer {
-      background-color: #333;
-      color: #aaa;
-      text-align: center;
-      padding: 12px 0;
+      position: relative;
+      z-index: 3;
+
+      padding: 14px 0;
+
+      background:
+        rgba(15, 13, 11, 0.97);
+
+      border-top:
+        1px solid rgba(180, 92, 34, 0.25);
+
+      color:
+        rgba(192, 118, 56, 0.62);
+
       font-size: 0.875rem;
+
+      text-align: center;
     }
+
+
+    /* =========================
+       MOBILE
+    ========================== */
+
+    @media screen and (max-width: 700px) {
+
+      .banner-frame {
+        height: 200px;
+      }
+
+      .navigation {
+        flex-wrap: wrap;
+        font-size: 17px;
+      }
+
+      .navigation li {
+        margin: 0 4px;
+      }
+
+      .navigation a {
+        padding: 10px 12px;
+      }
+
+      h1 {
+        padding: 0 12px;
+        font-size: 23px;
+      }
+
+      .background-word {
+        font-size: 34px !important;
+        letter-spacing: 2px;
+      }
+
+      .oracle-container {
+        width: calc(100% - 20px);
+      }
+
+      .oracle-status {
+        width: calc(100% - 20px);
+        font-size: 8px;
+      }
+
+      .fullscreen-button {
+        right: 8px;
+        bottom: 8px;
+        padding: 8px 10px;
+        font-size: 9px;
+      }
+
+      .exit-fullscreen-button {
+        top: 10px;
+        right: 10px;
+        padding: 8px 10px;
+        font-size: 9px;
+      }
+
+      .about-me {
+        margin: 30px 15px;
+        padding: 20px;
+      }
+
+      #mouseCoordinates {
+        display: none;
+      }
+    }
+
   </style>
 </head>
 
+
 <body>
 
-  <!-- Banner Image -->
-  <img src="../ER1-H-STUD10S/Website Design/Banner/Banner.png" class="banner" alt="Banner Image">
+  <!-- =========================
+       BACKGROUND
+  ========================== -->
 
-  <!-- Navigation Menu -->
-    <ul> 
-        <li><a href="SkillSquare.html">Skill Square</a></li>
-        <li><a href="pages/ProjectGallery.html">Projects</a></li>
+  <div id="backgroundEffect">
 
+    <span class="background-word word1">
+      SANDBOX
+    </span>
+
+    <span class="background-word word2">
+      SIMULATION
+    </span>
+
+    <span class="background-word word3">
+      VISUALIZATION
+    </span>
+
+    <span class="background-word word4">
+      INTERACTION
+    </span>
+
+    <span class="background-word word5">
+      MOVEMENT
+    </span>
+
+    <span class="background-word word6">
+      EXPLORE
+    </span>
+
+    <div id="numberLayer"></div>
+
+  </div>
+
+
+  <!-- =========================
+       MOUSE COORDINATES
+  ========================== -->
+
+  <div id="mouseCoordinates">
+    X: 0000<br>
+    Y: 0000
+  </div>
+
+
+  <!-- =========================
+       MAIN CONTENT
+  ========================== -->
+
+  <div class="page-content">
+
+
+    <!-- =========================
+         BANNER
+    ========================== -->
+
+    <div class="banner-frame">
+
+      <iframe
+        src="Website design/Banner/Banner.html"
+        title="CHI VIS PUPPETS Banner"
+        scrolling="no"
+      ></iframe>
+
+    </div>
+
+
+    <!-- =========================
+         NAVIGATION
+    ========================== -->
+
+    <ul class="navigation">
+
+      <li>
+        <a href="OUR_HISTORY.html">
+          OUR HISTORY
+        </a>
+      </li>
+
+        
+        
+        
+    <li>
+    <a href="ArchiveGallery.html">
+    ARCHIVE
+    </a>
+    </li>
     </ul>
-    
-  <h1>Welcome To My Website</h1>
 
-  <!-- Portfolio Image -->
-  <img src="../ER1-H-STUD10S/Gallery/Portfolio Image/Port1.jpg" alt="Audience" class="portfolio-img" />
 
-  <!-- Social Media Links -->
-  <div class="socialmediaicons">
-<!--    <a href="https://www.facebook.com" target="_blank" class="fab fa-facebook" title="Facebook"></a>-->
-    <a href="https://github.com/SCMcoding" target="_blank" class="fab fa-github" title="GitHub"></a>
-<!--    <a href="https://www.instagram.com" target="_blank" class="fab fa-instagram" title="Instagram"></a>-->
-    <a href="https://www.linkedin.com/in/samuel-cheung-95a975278/" target="_blank" class="fab fa-linkedin" title="LinkedIn"></a>
-    <a href="https://citytech.joinhandshake.com/profiles/r3r4bj" target="_blank" class="fas fa-handshake" title="Handshake"></a>
-    <a href="https://profile.indeed.com/?hl=en_US&co=US" target="_blank" class="fas fa-briefcase" title="Indeed"></a>
-    <a href="https://www.youtube.com/@samuelsmusicallibrary8725" target="_blank" class="fab fa-youtube" title="YouTube"></a>
+    <!-- =========================
+         TITLE
+    ========================== -->
+
+    <h1>
+      An Archival Sandbox of Puppetry
+    </h1>
+
+
+    <!-- =========================
+         ORACLE
+    ========================== -->
+
+    <div
+      class="oracle-container"
+      id="oracleContainer"
+    >
+
+      <div
+        class="oracle-window"
+        id="oracleWindow"
+      >
+
+        <div id="oracleStage">
+
+          <iframe
+            id="oracleFrame"
+            src="Website design/Oracle/ORACLE.html"
+            title="CHI VIS ORACLE"
+            loading="eager"
+            allow="autoplay; fullscreen"
+            allowfullscreen
+            scrolling="no"
+          ></iframe>
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================
+           ENTER FULLSCREEN
+      ========================== -->
+
+      <button
+        class="fullscreen-button"
+        id="fullscreenButton"
+        type="button"
+      >
+        <i class="fa-solid fa-expand"></i>
+        FULLSCREEN
+      </button>
+
+
+      <!-- =========================
+           EXIT FULLSCREEN
+      ========================== -->
+
+      <button
+        class="exit-fullscreen-button"
+        id="exitFullscreenButton"
+        type="button"
+      >
+        <i class="fa-solid fa-compress"></i>
+        EXIT FULLSCREEN
+      </button>
+
+    </div>
+
+
+    <!-- =========================
+         ORACLE STATUS
+    ========================== -->
+
+    <div class="oracle-status">
+
+      <span>
+        <span class="status-dot"></span>
+        ORACLE
+      </span>
+
+      <span>
+        Interactive Sandbox
+      </span>
+
+    </div>
+
+
+    <!-- =========================
+         ABOUT
+    ========================== -->
+
+    <div class="about-me">
+
+  <p>
+    The <strong>Observational Research Archival Cultural Learning Engine</strong>,
+    also known as <strong>ORACLE</strong>, is an engine specifically designed to
+    research and explore puppet cultures from around the world. It allows anyone
+    to experience and learn about these cultures through a guided tour or through
+    traditional music.
+  </p>
+
+  <p>
+    ORACLE relies on existing sources to gather information about puppetry
+    traditions, using keywords to locate relevant history, cultural information,
+    locations, images, time periods, and music. The system was developed through
+    prompt engineering, visual design, and HTML-based programming.
+  </p>
+
+
+  <p>
+    <strong>Please Note:</strong> ORACLE is an experimental program and may
+    occasionally experience bugs, errors, missing information, or unexpected
+    behavior. Because the system relies on external online sources, some content
+    may also change or become temporarily unavailable.
+  </p>        
+    </div>
+
+
+    <!-- =========================
+         FOOTER
+    ========================== -->
+
+    <footer>
+      &copy; 2025 CHIVISPUPPETS
+      &bull;
+      All rights reserved
+    </footer>
+
   </div>
 
-  <!-- About Me Section -->
-  <div class="about-me">
-    <h2>About Me</h2>
-    <p>
-        
-      I'm a graduate of CUNY New York City College of Technology, where I earned my Bachelors in Emerging Media Technology. My academic journey is driven by a passion for research and innovation at the intersection of technology, storytelling, and interactive media.
-        
-    </p>    
 
-    <p>  
-        My work explores how emerging technologies can enhance creative expression and narrative experiences. I’ve developed interactive web projects, crafted immersive game environments, and used AI-driven techniques to create dynamic storytelling elements. Through research, I aim to bridge the gap between traditional media and modern digital tools.
-    </p>
+  <script>
 
-    <p>  
-        
-      I’m passionate about combining technical expertise with creative problem-solving to push the boundaries of digital storytelling. Welcome to my site—feel free to explore my projects and see how I bring research-driven ideas to life.
-    
-    </p>
-      
-  </div>
+    document.addEventListener(
+      "DOMContentLoaded",
+      function () {
 
-  <!-- Footer -->
-  <footer>&copy; 2025 Samuel Cheung &bull; All rights reserved</footer>
+
+        /* =========================
+           ORACLE ELEMENTS
+        ========================== */
+
+        const ORACLE_WIDTH = 1600;
+        const ORACLE_HEIGHT = 900;
+
+        const oracleContainer =
+          document.getElementById(
+            "oracleContainer"
+          );
+
+        const oracleWindow =
+          document.getElementById(
+            "oracleWindow"
+          );
+
+        const oracleStage =
+          document.getElementById(
+            "oracleStage"
+          );
+
+        const fullscreenButton =
+          document.getElementById(
+            "fullscreenButton"
+          );
+
+        const exitFullscreenButton =
+          document.getElementById(
+            "exitFullscreenButton"
+          );
+
+
+        /* =========================
+           ORACLE SCALING
+        ========================== */
+
+        function resizeOracle() {
+
+          let availableWidth;
+          let availableHeight;
+          let scale;
+
+
+          if (
+            document.fullscreenElement ===
+            oracleContainer
+          ) {
+
+            availableWidth =
+              window.innerWidth;
+
+            availableHeight =
+              window.innerHeight;
+
+
+            scale =
+              Math.min(
+                availableWidth /
+                ORACLE_WIDTH,
+
+                availableHeight /
+                ORACLE_HEIGHT
+              );
+
+
+            const scaledWidth =
+              ORACLE_WIDTH *
+              scale;
+
+            const scaledHeight =
+              ORACLE_HEIGHT *
+              scale;
+
+
+            oracleStage.style.left =
+              (
+                availableWidth -
+                scaledWidth
+              ) /
+              2 +
+              "px";
+
+
+            oracleStage.style.top =
+              (
+                availableHeight -
+                scaledHeight
+              ) /
+              2 +
+              "px";
+
+
+            oracleStage.style.transform =
+              "scale(" +
+              scale +
+              ")";
+
+
+            oracleWindow.style.width =
+              "100vw";
+
+            oracleWindow.style.height =
+              "100vh";
+
+          } else {
+
+            availableWidth =
+              oracleWindow.clientWidth;
+
+
+            scale =
+              availableWidth /
+              ORACLE_WIDTH;
+
+
+            oracleStage.style.left =
+              "0px";
+
+            oracleStage.style.top =
+              "0px";
+
+
+            oracleStage.style.transform =
+              "scale(" +
+              scale +
+              ")";
+
+
+            oracleWindow.style.width =
+              "100%";
+
+            oracleWindow.style.height =
+              (
+                ORACLE_HEIGHT *
+                scale
+              ) +
+              "px";
+          }
+        }
+
+
+        /* =========================
+           ENTER FULLSCREEN
+        ========================== */
+
+        fullscreenButton.addEventListener(
+          "click",
+          async function () {
+
+            if (
+              document.fullscreenElement
+            ) {
+              return;
+            }
+
+
+            oracleContainer.classList.add(
+              "transitioning-in"
+            );
+
+
+            await new Promise(
+              function (resolve) {
+
+                setTimeout(
+                  resolve,
+                  180
+                );
+
+              }
+            );
+
+
+            try {
+
+              await oracleContainer
+                .requestFullscreen();
+
+
+              oracleContainer.classList.remove(
+                "transitioning-in"
+              );
+
+
+              requestAnimationFrame(
+                function () {
+
+                  resizeOracle();
+
+                }
+              );
+
+            } catch (error) {
+
+              oracleContainer.classList.remove(
+                "transitioning-in"
+              );
+
+              console.error(
+                "Fullscreen failed:",
+                error
+              );
+
+            }
+
+          }
+        );
+
+
+        /* =========================
+           EXIT FULLSCREEN
+        ========================== */
+
+        exitFullscreenButton.addEventListener(
+          "click",
+          async function () {
+
+            if (
+              !document.fullscreenElement
+            ) {
+              return;
+            }
+
+
+            oracleContainer.classList.add(
+              "transitioning-out"
+            );
+
+
+            await new Promise(
+              function (resolve) {
+
+                setTimeout(
+                  resolve,
+                  180
+                );
+
+              }
+            );
+
+
+            try {
+
+              await document.exitFullscreen();
+
+            } catch (error) {
+
+              console.error(
+                "Exit fullscreen failed:",
+                error
+              );
+
+            }
+
+
+            oracleContainer.classList.remove(
+              "transitioning-out"
+            );
+
+
+            requestAnimationFrame(
+              function () {
+
+                resizeOracle();
+
+              }
+            );
+
+          }
+        );
+
+
+        /* =========================
+           FULLSCREEN CHANGE
+        ========================== */
+
+        document.addEventListener(
+          "fullscreenchange",
+          function () {
+
+            oracleContainer.classList.remove(
+              "transitioning-in"
+            );
+
+            oracleContainer.classList.remove(
+              "transitioning-out"
+            );
+
+
+            requestAnimationFrame(
+              function () {
+
+                resizeOracle();
+
+              }
+            );
+
+
+            setTimeout(
+              resizeOracle,
+              120
+            );
+
+          }
+        );
+
+
+        /* =========================
+           WINDOW RESIZE
+        ========================== */
+
+        window.addEventListener(
+          "resize",
+          resizeOracle
+        );
+
+
+        /* =========================
+           INITIAL ORACLE SIZE
+        ========================== */
+
+        resizeOracle();
+
+
+        /* =========================
+           BACKGROUND NUMBERS
+        ========================== */
+
+        const numberLayer =
+          document.getElementById(
+            "numberLayer"
+          );
+
+        const numbers = [];
+
+        const NUMBER_COUNT = 50;
+
+
+        function randomNumber() {
+
+          return Math.floor(
+            Math.random() *
+            10000
+          )
+          .toString()
+          .padStart(
+            4,
+            "0"
+          );
+
+        }
+
+
+        function createNumbers() {
+
+          for (
+            let i = 0;
+            i < NUMBER_COUNT;
+            i++
+          ) {
+
+            const element =
+              document.createElement(
+                "span"
+              );
+
+
+            element.className =
+              "data-number";
+
+
+            element.innerText =
+              randomNumber();
+
+
+            element.style.left =
+              Math.random() *
+              95 +
+              "%";
+
+
+            element.style.top =
+              Math.random() *
+              95 +
+              "%";
+
+
+            element.style.opacity =
+              0.35 +
+              Math.random() *
+              0.35;
+
+
+            element.style.fontSize =
+              (
+                9 +
+                Math.random() *
+                5
+              ) +
+              "px";
+
+
+            numberLayer.appendChild(
+              element
+            );
+
+
+            numbers.push({
+
+              element:
+                element,
+
+              movement:
+                5 +
+                Math.random() *
+                30
+
+            });
+
+          }
+
+        }
+
+
+        function updateNumbers() {
+
+          numbers.forEach(
+            function (item) {
+
+              item.element.innerText =
+                randomNumber();
+
+            }
+          );
+
+        }
+
+
+        createNumbers();
+
+
+        setInterval(
+          updateNumbers,
+          750
+        );
+
+
+        /* =========================
+           MOUSE SETUP
+        ========================== */
+
+        const coordinateDisplay =
+          document.getElementById(
+            "mouseCoordinates"
+          );
+
+        const backgroundWords =
+          document.querySelectorAll(
+            ".background-word"
+          );
+
+        let alternate =
+          true;
+
+        let lastTrailTime =
+          0;
+
+
+        document.addEventListener(
+          "mousemove",
+          function (event) {
+
+            const mouseX =
+              event.clientX;
+
+            const mouseY =
+              event.clientY;
+
+
+            updateMouseCoordinates(
+              mouseX,
+              mouseY
+            );
+
+
+            moveBackground(
+              mouseX,
+              mouseY
+            );
+
+
+            createMouseTrail(
+              mouseX,
+              mouseY
+            );
+
+          }
+        );
+
+
+        /* =========================
+           COORDINATES
+        ========================== */
+
+        function updateMouseCoordinates(
+          mouseX,
+          mouseY
+        ) {
+
+          coordinateDisplay.innerHTML =
+
+            "X: " +
+
+            mouseX
+              .toString()
+              .padStart(
+                4,
+                "0"
+              )
+
+            +
+
+            "<br>Y: " +
+
+            mouseY
+              .toString()
+              .padStart(
+                4,
+                "0"
+              );
+
+        }
+
+
+        /* =========================
+           BACKGROUND PARALLAX
+        ========================== */
+
+        function moveBackground(
+          mouseX,
+          mouseY
+        ) {
+
+          const xRatio =
+            mouseX /
+            window.innerWidth -
+            0.5;
+
+
+          const yRatio =
+            mouseY /
+            window.innerHeight -
+            0.5;
+
+
+          numbers.forEach(
+            function (item) {
+
+              const moveX =
+                xRatio *
+                item.movement;
+
+
+              const moveY =
+                yRatio *
+                item.movement;
+
+
+              item.element.style.transform =
+
+                "translate(" +
+                moveX +
+                "px, " +
+                moveY +
+                "px)";
+
+            }
+          );
+
+
+          backgroundWords.forEach(
+            function (
+              word,
+              index
+            ) {
+
+              const strength =
+                4 +
+                index *
+                1.7;
+
+
+              word.style.marginLeft =
+                xRatio *
+                strength +
+                "px";
+
+
+              word.style.marginTop =
+                yRatio *
+                strength +
+                "px";
+
+            }
+          );
+
+        }
+
+
+        /* =========================
+           MOUSE TRAIL
+        ========================== */
+
+        function createMouseTrail(
+          mouseX,
+          mouseY
+        ) {
+
+          const now =
+            performance.now();
+
+
+          if (
+            now -
+            lastTrailTime <
+            70
+          ) {
+
+            return;
+
+          }
+
+
+          lastTrailTime =
+            now;
+
+
+          const trail =
+            document.createElement(
+              "span"
+            );
+
+
+          trail.className =
+            "mouse-number " +
+            (
+              alternate
+                ? "orange"
+                : "green"
+            );
+
+
+          if (alternate) {
+
+            trail.innerText =
+              "X:" +
+              mouseX
+                .toString()
+                .padStart(
+                  4,
+                  "0"
+                );
+
+          } else {
+
+            trail.innerText =
+              "Y:" +
+              mouseY
+                .toString()
+                .padStart(
+                  4,
+                  "0"
+                );
+
+          }
+
+
+          alternate =
+            !alternate;
+
+
+          trail.style.left =
+            mouseX +
+            "px";
+
+
+          trail.style.top =
+            mouseY +
+            "px";
+
+
+          document.body.appendChild(
+            trail
+          );
+
+
+          setTimeout(
+            function () {
+
+              trail.remove();
+
+            },
+            900
+          );
+
+        }
+
+      }
+    );
+
+  </script>
 
 </body>
 </html>
+

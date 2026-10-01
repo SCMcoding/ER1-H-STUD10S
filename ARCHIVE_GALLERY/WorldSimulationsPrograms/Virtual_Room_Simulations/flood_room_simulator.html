@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Flooded Room Simulator</title>
+<style>
+:root{
+  --bg:#05080b;--panel:#0c1319;--line:#26343d;--text:#edf3f5;--muted:#91a2ab;
+  --accent:#80b6c8;--water:#468aa3;--water2:#234f66;
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;
+  background:
+    radial-gradient(circle at 76% 8%,rgba(67,105,122,.08),transparent 28%),
+    radial-gradient(circle at 18% 0%,rgba(108,91,71,.06),transparent 26%),
+    linear-gradient(180deg,#05080c,#020407);
+  color:var(--text);
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif
+}
+button,input,select{font:inherit}
+.app{max-width:1580px;margin:auto;padding:16px}
+.header{display:flex;justify-content:space-between;gap:18px;align-items:flex-end;margin-bottom:14px}
+.header h1{margin:0;font-size:30px;letter-spacing:-.03em}
+.header p{margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.5;max-width:900px}
+.badge{font-size:10px;letter-spacing:.13em;text-transform:uppercase;border:1px solid var(--line);border-radius:999px;padding:6px 9px;background:#091017;color:#9cafb9;white-space:nowrap}
+.layout{display:grid;grid-template-columns:355px minmax(0,1fr);gap:14px}
+.side{position:sticky;top:12px;align-self:start;border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,#0d151c,#091017);padding:14px;box-shadow:0 15px 34px rgba(0,0,0,.22)}
+.group{padding:12px 0;border-bottom:1px solid #1d2931}
+.group:first-child{padding-top:0}.group:last-child{border:0;padding-bottom:0}
+.st{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#94a7b1;margin-bottom:9px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid #2b3a44;background:#111a22;color:#dce5e9;border-radius:10px;padding:9px 11px;cursor:pointer;min-height:38px}
+.btn:hover{background:#17232b}
+.btn.primary,.btn.active{background:#1c303b;border-color:#4d6878}
+.control{margin-top:10px}
+.control label{display:flex;justify-content:space-between;gap:10px;color:#a6b5bd;font-size:11px;margin-bottom:6px}
+input[type=range]{width:100%;accent-color:#88bdd1}
+select{width:100%;background:#0c151c;border:1px solid #2b3a44;color:#dce5e9;border-radius:9px;padding:9px}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.metric{padding:9px;border:1px solid #25343d;border-radius:10px;background:#081017}
+.metric b{display:block;font-size:14px}
+.metric span{display:block;margin-top:3px;color:#81929c;font-size:9px;letter-spacing:.07em;text-transform:uppercase}
+.infoBox{border:1px solid #273741;border-radius:11px;background:#081017;padding:10px 11px}
+.infoBox b{display:block;font-size:12px;margin-bottom:4px}
+.infoBox p{margin:0;color:#93a5ae;font-size:10px;line-height:1.5}
+.main{min-width:0}
+.viewerCard{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:linear-gradient(180deg,#0a1118,#060b0f);box-shadow:0 18px 46px rgba(0,0,0,.25)}
+.viewerHead{display:flex;justify-content:space-between;gap:12px;padding:12px 14px;border-bottom:1px solid #1f2b34}
+.viewerHead strong{font-size:14px}
+.viewerHead span{font-size:10px;color:#8697a0}
+.viewer{position:relative;padding:10px;background:#020609}
+.scene{position:relative;border:1px solid #1d2931;border-radius:16px;overflow:hidden;background:#151718}
+#room{display:block;width:100%;height:auto;aspect-ratio:16/9}
+.hud{position:absolute;left:18px;top:18px;display:flex;gap:6px;flex-wrap:wrap;pointer-events:none}
+.pill{font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:5px 7px;border:1px solid rgba(121,146,160,.22);border-radius:999px;background:rgba(4,9,13,.74);color:#9eafb8}
+.status{position:absolute;right:18px;top:18px;width:285px;border:1px solid rgba(108,130,143,.25);border-radius:13px;background:rgba(7,12,17,.84);backdrop-filter:blur(8px);padding:11px}
+.status h3{font-size:13px;margin:0 0 5px}
+.status p{font-size:10px;color:#91a2ac;line-height:1.5;margin:0}
+.bar{height:6px;background:#17222a;border-radius:999px;overflow:hidden;margin-top:9px}
+.fill{height:100%;width:0;background:linear-gradient(90deg,#68a4bc,#4d86a0,#31586e);border-radius:999px}
+.bottom{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(320px,.95fr);gap:12px;margin-top:12px}
+.card{border:1px solid var(--line);border-radius:15px;background:linear-gradient(180deg,#0d151c,#091017);padding:14px;min-width:0}
+.card h2{font-size:14px;margin:0 0 8px}
+.card p{font-size:11px;line-height:1.55;color:#93a4ad;margin:0}
+.effects{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}.dangerBox{border:1px solid rgba(190,104,93,.45);background:linear-gradient(180deg,rgba(99,44,39,.25),rgba(49,25,23,.22));border-radius:11px;padding:10px 11px}.dangerBox b{display:block;font-size:12px;color:#f0c8c1;margin-bottom:4px}.dangerBox p{margin:0;color:#cfa8a1;font-size:10px;line-height:1.5}.legendGrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}.legendItem{padding:8px;border:1px solid #25343d;border-radius:9px;background:#081016}.legendItem b{display:block;font-size:10px}.legendItem span{display:block;font-size:9px;color:#81939d;line-height:1.4;margin-top:3px}
+.effect{padding:9px;border:1px solid #25343d;border-radius:9px;background:#081016}
+.effect b{display:block;font-size:11px}
+.effect span{display:block;font-size:9px;color:#82939d;line-height:1.4;margin-top:3px}
+.depthBox{height:150px;border:1px solid #22313a;border-radius:11px;overflow:hidden;background:#05090d;margin-top:10px}
+#depthGraph{display:block;width:100%;height:100%}
+@media(max-width:1100px){.layout{grid-template-columns:1fr}.side{position:static}}
+@media(max-width:760px){.app{padding:9px}.header{flex-direction:column;align-items:flex-start}.bottom{grid-template-columns:1fr}.status{position:static;width:auto;margin:10px}.hud{position:static;padding:10px 10px 0}.effects{grid-template-columns:1fr 1fr}}
+@media(max-width:500px){.metrics,.effects{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div>
+      <h1>Flooded Room Simulator</h1>
+      <p>A finished-basement home office starts completely dry. Toggle the flood on to watch water rise from the floor all the way to the ceiling, completely filling the room at the maximum depth.</p>
+    </div>
+    <div class="badge">Educational flood-response model</div>
+  </div>
+
+  <div class="layout">
+    <aside class="side">
+      <div class="group">
+        <div class="st">Flood control</div>
+        <div class="row">
+          <button class="btn primary" id="toggle">Start flooding</button>
+          <button class="btn" id="reset">Reset room</button>
+        </div>
+        <div class="control">
+          <label><span>Target water depth</span><span id="depthText">2.40 m</span></label>
+          <input id="depth" type="range" min=".05" max="2.4" step=".05" value="2.40">
+        </div>
+        <div class="control">
+          <label><span>Rise speed</span><span id="riseText">1×</span></label>
+          <input id="rise" type="range" min=".25" max="2" step=".25" value="1">
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="st">Flood conditions</div>
+        <div class="control">
+          <label><span>Water movement</span></label>
+          <select id="current">
+            <option value=".25">Nearly still water</option>
+            <option value=".55" selected>Gentle current</option>
+            <option value=".90">Moving floodwater</option>
+            <option value="1.25">Strong indoor current</option>
+          </select>
+        </div>
+        <div class="control">
+          <label><span>Water clarity</span></label>
+          <select id="clarity">
+            <option value=".42">Clearer water</option>
+            <option value=".58" selected>Typical murky floodwater</option>
+            <option value=".72">Very muddy water</option>
+          </select>
+        </div>
+        <div class="control">
+          <label><span>Contamination</span></label>
+          <select id="contamination">
+            <option value="0">Clean-water demonstration</option>
+            <option value=".35">Dirty floodwater</option>
+            <option value=".70" selected>Heavily contaminated water</option>
+          </select>
+        </div>
+        <div class="control">
+          <label><span>Electrical power</span></label>
+          <select id="power">
+            <option value="1" selected>Power ON</option>
+            <option value="0">Power OFF</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="st">Live flood state</div>
+        <div class="metrics">
+          <div class="metric"><b id="liveDepth">0.00 m</b><span>Water depth</span></div>
+          <div class="metric"><b id="percentText">0%</b><span>Target reached</span></div>
+          <div class="metric"><b id="stateText">Dry</b><span>Room state</span></div>
+          <div class="metric"><b id="floatText">None</b><span>Floating objects</span></div>
+          <div class="metric"><b id="electricText">Safe / dry</b><span>Electrical state</span></div>
+          <div class="metric"><b id="dirtyText">Dirty</b><span>Water condition</span></div>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="st">Current response</div>
+        <div class="infoBox">
+          <b id="stageTitle">Dry room</b>
+          <p id="stageDesc">No flooding is active. Furniture and loose objects remain at rest.</p>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="st">Electrical danger</div>
+        <div class="dangerBox">
+          <b id="electricWarning">No electrical contact with water</b>
+          <p id="electricWarningText">Powered outlets and equipment become dangerous if floodwater reaches them. Never enter floodwater that may be energized.</p>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="st">Important</div>
+        <div class="infoBox">
+          <p>Water depth alone does not describe real flood danger. Flow speed, contamination, hidden debris, structural damage, and electricity can all make actual flooding much more hazardous. Do not enter floodwater if electrical equipment may be energized.</p>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <section class="viewerCard">
+        <div class="viewerHead">
+          <strong>Finished-basement home office</strong>
+          <span>Dry start · floor-to-ceiling flooding · buoyancy · floating debris · reflections</span>
+        </div>
+        <div class="viewer">
+          <div class="scene"><canvas id="room" width="1440" height="810"></canvas></div>
+          <div class="hud">
+            <span class="pill" id="waterPill">Dry room</span>
+            <span class="pill" id="depthPill">0.00 m</span>
+            <span class="pill">Indoor flood simulation</span>
+            <span class="pill" id="hazardPill">Electrical: dry</span>
+          </div>
+          <div class="status">
+            <h3 id="statusTitle">Normal room</h3>
+            <p id="statusDesc">The room is dry. Start flooding to begin the simulation.</p>
+            <div class="bar"><div class="fill" id="barFill"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <div class="bottom">
+        <section class="card">
+          <h2>What changes as water rises</h2>
+          <p>Furniture is drawn with reinforced frames, supports, feet, hardware, and layered shading. Different objects react according to their height and simplified buoyancy rather than all moving at the same time.</p>
+          <div class="effects">
+            <div class="effect"><b>Rug</b><span>Darkens, loosens, and begins lifting as water gets underneath it.</span></div>
+            <div class="effect"><b>Storage boxes</b><span>Cardboard boxes shift, tilt, and can float or partially collapse.</span></div>
+            <div class="effect"><b>Office chair</b><span>Rolls first, then becomes partly buoyant at greater depth.</span></div>
+            <div class="effect"><b>Desk objects</b><span>Papers and small items can be carried off the desk if the water reaches them.</span></div>
+            <div class="effect"><b>Bookcase</b><span>Lower shelves become submerged while loose items can lift or drift.</span></div>
+            <div class="effect"><b>Electronics</b><span>The visualization marks when water reaches low electrical equipment. It is not a safety-clearance calculation.</span></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>What the simulator is showing</h2>
+          <div class="legendGrid">
+            <div class="legendItem"><b>Water depth</b><span>Vertical depth of water on the room floor.</span></div>
+            <div class="legendItem"><b>Current</b><span>Controls how strongly floating objects drift sideways.</span></div>
+            <div class="legendItem"><b>Clarity</b><span>Changes how transparent or muddy the water appears.</span></div>
+            <div class="legendItem"><b>Contamination</b><span>Adds dirty-water color, particles, and a health-hazard warning.</span></div>
+            <div class="legendItem"><b>Electrical power</b><span>If ON, the floodwater becomes a shock hazard once it reaches the wall outlet height.</span></div>
+            <div class="legendItem"><b>Floating objects</b><span>Objects begin moving only after the water reaches enough of their height.</span></div>
+            <div class="legendItem"><b>Electrical arcs</b><span>Visual warning only. The whole connected water is highlighted as hazardous; real current is not uniform and may not visibly spark.</span></div>
+            <div class="legendItem"><b>Dirty water</b><span>May contain sewage, chemicals, microorganisms, sediment, and sharp debris.</span></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Water-depth history</h2>
+          <p>The trace shows simulated water depth over time.</p>
+          <div class="depthBox"><canvas id="depthGraph" width="900" height="150"></canvas></div>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+const q=id=>document.getElementById(id);
+const room=q('room'),ctx=room.getContext('2d');
+const graph=q('depthGraph'),gx=graph.getContext('2d');
+
+const E={
+  toggle:q('toggle'),reset:q('reset'),
+  depth:q('depth'),depthText:q('depthText'),
+  rise:q('rise'),riseText:q('riseText'),
+  current:q('current'),clarity:q('clarity'),contamination:q('contamination'),power:q('power'),
+  liveDepth:q('liveDepth'),percentText:q('percentText'),
+  stateText:q('stateText'),floatText:q('floatText'),
+  stageTitle:q('stageTitle'),stageDesc:q('stageDesc'),
+  waterPill:q('waterPill'),depthPill:q('depthPill'),
+  statusTitle:q('statusTitle'),statusDesc:q('statusDesc'),
+  barFill:q('barFill'),electricText:q('electricText'),dirtyText:q('dirtyText'),
+  electricWarning:q('electricWarning'),electricWarningText:q('electricWarningText'),
+  hazardPill:q('hazardPill')
+};
+
+let flooding=false,last=performance.now(),simT=0,waterDepth=0,waterVelocity=0;
+const history=[];
+
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const smooth=(a,b,x)=>{const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t)};
+const lerp=(a,b,t)=>a+(b-a)*t;
+
+function rr(x,y,w,h,r,fill){
+  ctx.fillStyle=fill;
+  ctx.beginPath();
+  ctx.roundRect(x,y,w,h,r);
+  ctx.fill();
+}
+function shadow(x,y,rx,ry,a=.22){
+  ctx.fillStyle=`rgba(0,0,0,${a})`;
+  ctx.beginPath();
+  ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);
+  ctx.fill();
+}
+function targetDepth(){return +E.depth.value}
+function currentStrength(){return +E.current.value}
+function clarity(){return +E.clarity.value}
+function contamination(){return +E.contamination.value}
+function powerOn(){return E.power.value==='1'}
+function electricHazard(){
+  // The wall outlets are around y=542 in an 810px-high room.
+  // With 2.4 m mapped to the full room height, the water reaches them at about 0.8 m.
+  return powerOn() && waterDepth>=0.80;
+}
+function depthPixels(){
+  // 2.4 m represents floor-to-ceiling flooding in this room.
+  // At maximum depth the water surface reaches the very top of the canvas.
+  return clamp(waterDepth/2.4,0,1)*room.height;
+}
+function waterSurfaceY(){
+  return room.height-depthPixels();
+}
+function stateFor(d){
+  if(d<.02)return['Dry','Dry room','No flooding is active. Furniture and loose objects remain at rest.'];
+  if(d<.15)return['Shallow','Water entering','A thin layer of water spreads across the floor and begins soaking the rug and boxes.'];
+  if(d<.35)return['Low flood','Objects shifting','Small objects begin drifting and lower furniture components are submerged.'];
+  if(d<.70)return['Moderate flood','Buoyancy increasing','Boxes and lightweight items begin floating. The office chair starts moving more freely.'];
+  if(d<1.20)return['Deep flood','Furniture partly submerged','Water reaches higher furniture surfaces and floating debris moves across the room.'];
+  if(d<1.80)return['Very deep','Most furniture submerged','The flood has risen above much of the furniture and continues climbing toward the ceiling.'];
+  if(d<2.30)return['Near ceiling','Room almost full','Only the highest parts of the room remain above water.'];
+  return['Completely flooded','Room filled to ceiling','Floodwater now fills essentially the entire room from floor to ceiling.'];
+}
+function updateUI(){
+  const target=targetDepth();
+  const pct=target>0?clamp(waterDepth/target,0,1):0;
+  const st=stateFor(waterDepth);
+
+  E.depthText.textContent=target.toFixed(2)+' m';
+  E.riseText.textContent=(+E.rise.value).toFixed(2).replace(/0+$/,'').replace(/\.$/,'')+'×';
+  E.liveDepth.textContent=waterDepth.toFixed(2)+' m';
+  E.percentText.textContent=Math.round(pct*100)+'%';
+  E.stateText.textContent=st[0];
+  E.stageTitle.textContent=st[1];
+  E.stageDesc.textContent=st[2];
+  E.statusTitle.textContent=st[1];
+  E.statusDesc.textContent=st[2];
+  E.waterPill.textContent=flooding?'Flooding on':(waterDepth>.02?'Flood paused':'Dry room');
+  E.depthPill.textContent=waterDepth.toFixed(2)+' m';
+  E.toggle.textContent=flooding?'Pause flooding':'Start flooding';
+  E.barFill.style.width=(pct*100)+'%';
+
+  let floating=0;
+  if(waterDepth>.18)floating++;
+  if(waterDepth>.32)floating+=2;
+  if(waterDepth>.55)floating+=2;
+  if(waterDepth>.90)floating++;
+  E.floatText.textContent=floating?floating+'+ items':'None';
+
+  const dirty=contamination();
+  E.dirtyText.textContent=dirty<=0?'Clean demo':dirty<.55?'Dirty':'Heavily contaminated';
+
+  if(electricHazard()){
+    E.electricText.textContent='SHOCK HAZARD';
+    E.hazardPill.textContent='Electrical: DANGER';
+    E.electricWarning.textContent='Potentially energized floodwater';
+    E.electricWarningText.textContent='The floodwater has reached the powered wall outlet. Treat the entire connected body of water as potentially energized and do not enter it. Real current strength is not uniform and depends on the electrical path and water conductivity.';
+  }else if(powerOn() && waterDepth>0){
+    E.electricText.textContent='Power ON';
+    E.hazardPill.textContent='Electrical: power on';
+    E.electricWarning.textContent='Power remains on';
+    E.electricWarningText.textContent='The water has not reached the simulated low outlet yet, but energized equipment remains a growing hazard as the flood rises.';
+  }else{
+    E.electricText.textContent=powerOn()?'Safe / dry':'Power OFF';
+    E.hazardPill.textContent=powerOn()?'Electrical: dry':'Electrical: off';
+    E.electricWarning.textContent=powerOn()?'No electrical contact with water':'Power switched off';
+    E.electricWarningText.textContent=powerOn()?'Powered outlets and equipment become dangerous if floodwater reaches them. Never enter floodwater that may be energized.':'The simulated electrical supply is off. Other flood hazards still remain.';
+  }
+}
+function drawRoomBase(){
+  const W=room.width,H=room.height;
+
+  // rear wall
+  const wall=ctx.createLinearGradient(0,0,0,H*.72);
+  wall.addColorStop(0,'#c8c2b6');
+  wall.addColorStop(.62,'#b1aa9c');
+  wall.addColorStop(1,'#958d80');
+  ctx.fillStyle=wall;
+  ctx.fillRect(0,0,W,H*.73);
+
+  // right wall for perspective
+  const side=ctx.createLinearGradient(W*.79,0,W,0);
+  side.addColorStop(0,'#a1988b');
+  side.addColorStop(1,'#81786c');
+  ctx.fillStyle=side;
+  ctx.beginPath();
+  ctx.moveTo(W*.79,0);ctx.lineTo(W,0);ctx.lineTo(W,H*.73);ctx.lineTo(W*.79,H*.73);ctx.closePath();
+  ctx.fill();
+
+  // ceiling trim
+  const crown=ctx.createLinearGradient(0,0,0,28);
+  crown.addColorStop(0,'#e7e1d7');
+  crown.addColorStop(1,'#cfc7ba');
+  ctx.fillStyle=crown;
+  ctx.fillRect(0,0,W,28);
+
+  // floor
+  const floor=ctx.createLinearGradient(0,H*.72,0,H);
+  floor.addColorStop(0,'#6b6258');
+  floor.addColorStop(1,'#3b3734');
+  ctx.fillStyle=floor;
+  ctx.fillRect(0,H*.72,W,H*.28);
+
+  // tile pattern
+  ctx.strokeStyle='rgba(240,240,235,.10)';
+  ctx.lineWidth=2;
+  for(let y=H*.74;y<H;y+=58){
+    ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();
+  }
+  for(let x=0;x<W;x+=120){
+    ctx.beginPath();ctx.moveTo(W*.50,H*.72);ctx.lineTo(x,H);ctx.stroke();
+  }
+
+  // low basement window
+  rr(102,104,350,192,14,'#5d5b57');
+  rr(117,119,320,162,9,'#758f9b');
+  const outside=ctx.createLinearGradient(0,119,0,281);
+  outside.addColorStop(0,'#8ba7b3');
+  outside.addColorStop(1,'#a8ae99');
+  rr(122,124,310,152,7,outside);
+
+  // exterior grade visible near window
+  ctx.fillStyle='#758268';
+  ctx.beginPath();
+  ctx.moveTo(122,224);ctx.bezierCurveTo(195,199,260,230,332,211);ctx.bezierCurveTo(376,201,406,208,432,199);
+  ctx.lineTo(432,276);ctx.lineTo(122,276);ctx.closePath();ctx.fill();
+
+  ctx.fillStyle='#5d5b57';
+  ctx.fillRect(269,116,10,168);
+  ctx.fillRect(112,197,330,10);
+
+  // baseboard
+  ctx.fillStyle='#d0c8ba';
+  ctx.fillRect(0,H*.70,W,16);
+  ctx.fillStyle='rgba(0,0,0,.12)';
+  ctx.fillRect(0,H*.72-2,W,4);
+
+  // wall outlets: mounted on the wall above the baseboard
+  rr(444,526,46,32,6,'#e1ddd3');
+  ctx.fillStyle='#7d7870';
+  ctx.fillRect(455,535,5,9);ctx.fillRect(473,535,5,9);
+  ctx.fillRect(464,547,5,4);
+
+  rr(932,526,46,32,6,'#e1ddd3');
+  ctx.fillStyle='#7d7870';
+  ctx.fillRect(943,535,5,9);ctx.fillRect(961,535,5,9);
+  ctx.fillRect(952,547,5,4);
+
+  // power strip: actually resting on the floor underneath the desk
+  rr(716,688,128,22,8,'#d7d6d1');
+  ctx.strokeStyle='rgba(70,70,68,.25)';
+  ctx.lineWidth=1.5;
+  ctx.strokeRect(722,693,116,12);
+  for(let i=0;i<4;i++){
+    ctx.fillStyle='#77736d';
+    ctx.fillRect(731+i*25,695,5,8);
+    ctx.fillRect(739+i*25,695,5,8);
+  }
+  // cord leading toward right wall outlet
+  ctx.strokeStyle='#464849';
+  ctx.lineWidth=3;
+  ctx.beginPath();
+  ctx.moveTo(840,699);
+  ctx.bezierCurveTo(880,695,900,650,937,548);
+  ctx.stroke();
+}
+
+function drawPaintings(){
+  // large landscape print above desk
+  shadow(650,286,100,9,.10);
+  rr(548,155,208,126,10,'#49443e');
+  rr(561,168,182,100,6,'#d1c3a8');
+  const p1=ctx.createLinearGradient(573,180,738,252);
+  p1.addColorStop(0,'#6c8790');p1.addColorStop(.48,'#8ea398');p1.addColorStop(1,'#b49372');
+  rr(573,180,158,76,4,p1);
+  ctx.fillStyle='rgba(255,255,255,.12)';
+  ctx.beginPath();ctx.moveTo(580,188);ctx.lineTo(624,188);ctx.lineTo(672,250);ctx.lineTo(628,250);ctx.closePath();ctx.fill();
+
+  // smaller abstract print moved farther right
+  shadow(905,286,68,7,.09);
+  rr(842,178,126,104,9,'#514942');
+  rr(853,189,104,82,5,'#d8cbb5');
+  ctx.fillStyle='#71828a';ctx.beginPath();ctx.arc(885,224,24,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#a58465';ctx.beginPath();ctx.arc(924,238,18,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#6d725f';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(864,252);ctx.lineTo(947,203);ctx.stroke();
+
+  // narrow print moved farther toward shelf with more spacing
+  shadow(1108,242,46,6,.08);
+  rr(1060,112,92,128,8,'#4b453f');
+  rr(1070,122,72,108,5,'#cfc0a4');
+  const p3=ctx.createLinearGradient(1075,130,1137,220);
+  p3.addColorStop(0,'#7a8d70');p3.addColorStop(1,'#9a705e');
+  rr(1077,132,58,86,4,p3);
+}
+
+function drawDesk(){
+  const floorY=700;
+  shadow(700,706,205,18,.20);
+
+  // desk top
+  const wood=ctx.createLinearGradient(490,455,915,700);
+  wood.addColorStop(0,'#806750');
+  wood.addColorStop(.52,'#684f3d');
+  wood.addColorStop(1,'#4d3b30');
+  rr(485,458,430,34,9,wood);
+
+  // front apron and beveled edge give the desk thickness
+  rr(485,485,430,12,3,'#4b382e');
+  ctx.strokeStyle='rgba(255,255,255,.08)';
+  ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(496,463);ctx.lineTo(904,463);ctx.stroke();
+  ctx.fillStyle='rgba(0,0,0,.12)';
+  ctx.fillRect(496,488,408,4);
+
+  // drawer pedestal reaches floor
+  rr(505,492,118,208,8,'#594437');
+  rr(520,508,88,43,6,'#745a46');
+  rr(520,560,88,43,6,'#745a46');
+  rr(520,612,88,43,6,'#745a46');
+  // drawer faces and pulls
+  for(const yy of [508,560,612]){
+    ctx.strokeStyle='rgba(42,31,25,.35)';
+    ctx.lineWidth=2;
+    ctx.strokeRect(527,yy+7,74,29);
+    rr(556,yy+18,18,4,2,'#b99a72');
+  }
+  rr(548,691,32,9,3,'#3d3028');
+
+  // right legs meet the same floor plane
+  rr(852,492,18,208,5,'#4d3a30');
+  rr(892,492,18,208,5,'#4d3a30');
+  rr(848,694,26,7,3,'#372b24');
+  rr(888,694,26,7,3,'#372b24');
+
+  // monitor sits on desktop
+  rr(644,350,176,108,10,'#242a2f');
+  const screen=ctx.createLinearGradient(654,360,810,444);
+  screen.addColorStop(0,'#425d6b');
+  screen.addColorStop(1,'#233945');
+  rr(656,362,152,82,6,screen);
+  ctx.fillStyle='rgba(255,255,255,.11)';
+  ctx.beginPath();
+  ctx.moveTo(668,370);ctx.lineTo(722,370);ctx.lineTo(760,438);ctx.lineTo(706,438);ctx.closePath();ctx.fill();
+  rr(726,458,14,25,4,'#35383b');
+  rr(694,480,78,8,4,'#35383b');
+
+  // keyboard + mouse on desktop
+  rr(648,468,142,17,5,'#3a3d40');
+  ctx.strokeStyle='rgba(255,255,255,.12)';
+  ctx.lineWidth=1;
+  for(let x=658;x<782;x+=12){ctx.beginPath();ctx.moveTo(x,472);ctx.lineTo(x,480);ctx.stroke();}
+  ctx.fillStyle='#404447';
+  ctx.beginPath();ctx.ellipse(816,476,13,9,0,0,Math.PI*2);ctx.fill();
+}
+function drawBookshelf(){
+  const floorY=700;
+  shadow(1185,706,145,17,.20);
+
+  const wood=ctx.createLinearGradient(1065,255,1325,700);
+  wood.addColorStop(0,'#5d493a');
+  wood.addColorStop(1,'#3d3028');
+  rr(1060,258,265,442,12,wood);
+  rr(1078,276,229,405,8,'#735946');
+  rr(1060,250,265,18,7,'#6d5543');
+  rr(1068,270,14,414,5,'#49382f');
+  rr(1303,270,14,414,5,'#49382f');
+
+  for(let j=0;j<4;j++){
+    rr(1078,355+j*96,229,12,4,'#3c2f28');
+    ctx.fillStyle='rgba(255,255,255,.06)';
+    ctx.fillRect(1086,356+j*96,211,2);
+  }
+
+  const colors=['#7b604d','#596b73','#7b5049','#697255','#8c7558','#5c4b62'];
+  for(let row=0;row<4;row++){
+    for(let i=0;i<7;i++){
+      rr(1093+i*28,326+row*96,20,29+(i%3)*8,3,colors[i%colors.length]);
+    }
+  }
+
+  // feet / plinth
+  rr(1070,691,245,9,3,'#302720');
+}
+function drawBoxes(){
+  // storage boxes against the left wall; their bottoms align with the floor
+  const b1=buoyancyPose(.18, 230,657, .22, .22, 1);
+  drawBox(b1.x,b1.y,128,86,b1.angle,'#9c7957','#72563d');
+
+  const b2=buoyancyPose(.30, 345,665, .36, .28, -1);
+  drawBox(b2.x,b2.y,112,70,b2.angle,'#b18c66','#795f46');
+
+  // plastic tote near the bookcase, also on the floor
+  const b3=buoyancyPose(.47, 1235,664, .56, .34, 1);
+  drawPlasticBin(b3.x,b3.y,130,72,b3.angle);
+}
+function drawBox(x,y,w,h,a,c1,c2){
+  ctx.save();ctx.translate(x,y);ctx.rotate(a);
+  const g=ctx.createLinearGradient(-w/2,-h/2,w/2,h/2);g.addColorStop(0,c1);g.addColorStop(1,c2);
+  rr(-w/2,-h/2,w,h,7,g);
+  ctx.strokeStyle='rgba(79,57,40,.38)';ctx.lineWidth=2;
+  ctx.strokeRect(-w/2+8,-h/2+8,w-16,h-16);
+  // folded top flaps and packing tape
+  ctx.strokeStyle='rgba(88,63,43,.34)';
+  ctx.beginPath();ctx.moveTo(0,-h/2+8);ctx.lineTo(0,h/2-8);ctx.stroke();
+  ctx.fillStyle='rgba(222,196,145,.28)';
+  ctx.fillRect(-6,-h/2+2,12,h-4);
+  ctx.fillStyle='rgba(255,255,255,.10)';
+  ctx.fillRect(-w/2+10,-h/2+10,w-20,5);
+  ctx.restore();
+}
+function drawPlasticBin(x,y,w,h,a){
+  ctx.save();ctx.translate(x,y);ctx.rotate(a);
+  const g=ctx.createLinearGradient(-w/2,-h/2,w/2,h/2);g.addColorStop(0,'#57747d');g.addColorStop(1,'#344e58');
+  rr(-w/2,-h/2,w,h,10,g);
+  rr(-w/2-5,-h/2-5,w+10,14,6,'#6b8992');
+  rr(-w/2+10,-h/2+15,w-20,10,4,'rgba(255,255,255,.06)');
+  ctx.strokeStyle='rgba(255,255,255,.10)';
+  ctx.lineWidth=2;
+  ctx.strokeRect(-w/2+10,-h/2+12,w-20,h-24);
+  // molded handles
+  rr(-w/2+14,-4,20,8,4,'#2d4750');
+  rr(w/2-34,-4,20,8,4,'#2d4750');
+  ctx.restore();
+}
+function drawChair(){
+  // Rear-facing ergonomic office chair: the chair now faces the desk.
+  const p=buoyancyPose(.52,760,623,.68,.26,-1);
+  ctx.save();
+  ctx.translate(p.x,p.y);
+  ctx.rotate(p.angle);
+
+  shadow(0,78,72,12,.21);
+
+  // Back shell seen from behind.
+  const shell=ctx.createLinearGradient(0,-126,0,-28);
+  shell.addColorStop(0,'#4d5c63');
+  shell.addColorStop(.55,'#39474e');
+  shell.addColorStop(1,'#273238');
+  ctx.fillStyle=shell;
+  ctx.beginPath();
+  ctx.moveTo(-46,-118);
+  ctx.bezierCurveTo(-58,-104,-59,-74,-51,-48);
+  ctx.bezierCurveTo(-45,-29,-28,-18,0,-17);
+  ctx.bezierCurveTo(28,-18,45,-29,51,-48);
+  ctx.bezierCurveTo(59,-74,58,-104,46,-118);
+  ctx.bezierCurveTo(30,-134,-30,-134,-46,-118);
+  ctx.closePath();
+  ctx.fill();
+
+  // Outer back-shell rim.
+  ctx.strokeStyle='rgba(18,24,27,.55)';
+  ctx.lineWidth=4;
+  ctx.stroke();
+
+  // Rear central support.
+  const support=ctx.createLinearGradient(-7,-28,7,29);
+  support.addColorStop(0,'#424b50');
+  support.addColorStop(1,'#242c30');
+  rr(-8,-31,16,56,7,support);
+
+  // Back reinforcement ribs.
+  ctx.strokeStyle='rgba(255,255,255,.09)';
+  ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(-29,-104);
+  ctx.bezierCurveTo(-8,-114,8,-114,29,-104);
+  ctx.moveTo(-35,-77);
+  ctx.bezierCurveTo(-10,-66,10,-66,35,-77);
+  ctx.moveTo(-32,-48);
+  ctx.bezierCurveTo(-11,-39,11,-39,32,-48);
+  ctx.stroke();
+
+  // Seat is partly hidden because the chair faces away from us.
+  const seat=ctx.createLinearGradient(0,-8,0,24);
+  seat.addColorStop(0,'#596970');
+  seat.addColorStop(1,'#37454b');
+  ctx.fillStyle=seat;
+  ctx.beginPath();
+  ctx.moveTo(-44,-10);
+  ctx.quadraticCurveTo(-34,-20,-19,-20);
+  ctx.lineTo(19,-20);
+  ctx.quadraticCurveTo(34,-20,44,-10);
+  ctx.lineTo(38,17);
+  ctx.quadraticCurveTo(0,23,-38,17);
+  ctx.closePath();
+  ctx.fill();
+
+  // Armrests viewed from behind.
+  ctx.strokeStyle='#2c353a';
+  ctx.lineWidth=7;
+  ctx.lineCap='round';
+  ctx.beginPath();
+  ctx.moveTo(-37,-8);ctx.lineTo(-54,-31);ctx.lineTo(-50,-48);
+  ctx.moveTo(37,-8);ctx.lineTo(54,-31);ctx.lineTo(50,-48);
+  ctx.stroke();
+  rr(-61,-53,22,8,4,'#272f33');
+  rr(39,-53,22,8,4,'#272f33');
+
+  // Gas lift.
+  const stem=ctx.createLinearGradient(-6,20,8,63);
+  stem.addColorStop(0,'#62696c');
+  stem.addColorStop(1,'#252c30');
+  rr(-6,19,12,44,5,stem);
+
+  // Five-star base.
+  ctx.fillStyle='#2b3236';
+  ctx.beginPath();ctx.arc(0,64,11,0,Math.PI*2);ctx.fill();
+
+  ctx.strokeStyle='#2d3438';
+  ctx.lineWidth=8;
+  ctx.lineCap='round';
+  const legs=[[-50,80],[50,80],[-35,94],[35,94],[0,98]];
+  for(const [lx,ly] of legs){
+    ctx.beginPath();ctx.moveTo(0,65);ctx.lineTo(lx,ly);ctx.stroke();
+  }
+
+  // Casters.
+  ctx.fillStyle='#1f2528';
+  for(const [wx,wy] of [[-52,82],[52,82],[-37,97],[37,97],[0,101]]){
+    ctx.beginPath();ctx.ellipse(wx,wy,8,5,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,.07)';
+    ctx.beginPath();ctx.ellipse(wx-2,wy-1,3,1.5,0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#1f2528';
+  }
+
+  ctx.restore();
+}
+function drawFloorLamp(){
+  // Modern arched floor lamp beside the desk.
+  // Base stays on the floor and the shade hangs inward toward the seating area.
+  const p=buoyancyPose(.78,145,690,.94,.10,1);
+  ctx.save();
+  ctx.translate(p.x,p.y);
+  ctx.rotate(p.angle);
+
+  // Weighted elliptical base.
+  const baseGrad=ctx.createLinearGradient(-52,-12,52,12);
+  baseGrad.addColorStop(0,'#3f4648');
+  baseGrad.addColorStop(.45,'#5c6568');
+  baseGrad.addColorStop(1,'#2d3436');
+  ctx.fillStyle=baseGrad;
+  ctx.beginPath();
+  ctx.ellipse(0,0,52,14,0,0,Math.PI*2);
+  ctx.fill();
+  ctx.strokeStyle='rgba(10,14,15,.45)';
+  ctx.lineWidth=2;
+  ctx.stroke();
+
+  // Vertical support emerging from rear of base.
+  const stemGrad=ctx.createLinearGradient(-8,-210,8,0);
+  stemGrad.addColorStop(0,'#727a7c');
+  stemGrad.addColorStop(.45,'#535b5d');
+  stemGrad.addColorStop(1,'#343b3d');
+  rr(-7,-190,14,186,6,stemGrad);
+
+  // Arched arm - smooth curve instead of a straight pole.
+  ctx.strokeStyle='#596164';
+  ctx.lineWidth=13;
+  ctx.lineCap='round';
+  ctx.beginPath();
+  ctx.moveTo(0,-184);
+  ctx.bezierCurveTo(8,-245,74,-280,142,-260);
+  ctx.stroke();
+
+  // Inner highlight on the metal arm.
+  ctx.strokeStyle='rgba(255,255,255,.13)';
+  ctx.lineWidth=3;
+  ctx.beginPath();
+  ctx.moveTo(1,-183);
+  ctx.bezierCurveTo(13,-238,75,-268,134,-253);
+  ctx.stroke();
+
+  // Small neck/drop at end of arc.
+  ctx.strokeStyle='#4b5355';
+  ctx.lineWidth=8;
+  ctx.beginPath();
+  ctx.moveTo(142,-260);
+  ctx.lineTo(142,-230);
+  ctx.stroke();
+
+  // Joint collar.
+  const collar=ctx.createLinearGradient(130,-240,154,-220);
+  collar.addColorStop(0,'#6d7476');
+  collar.addColorStop(1,'#3f4648');
+  rr(132,-237,20,14,5,collar);
+
+  // Hanging dome shade.
+  const shade=ctx.createLinearGradient(95,-228,188,-172);
+  shade.addColorStop(0,'#d7c7aa');
+  shade.addColorStop(.50,'#b89e7a');
+  shade.addColorStop(1,'#8e765c');
+  ctx.fillStyle=shade;
+  ctx.beginPath();
+  ctx.moveTo(99,-211);
+  ctx.quadraticCurveTo(142,-252,185,-211);
+  ctx.quadraticCurveTo(179,-181,142,-172);
+  ctx.quadraticCurveTo(105,-181,99,-211);
+  ctx.closePath();
+  ctx.fill();
+
+  // Lower rim for depth.
+  ctx.fillStyle='#7f6954';
+  ctx.beginPath();
+  ctx.ellipse(142,-184,37,8,0,0,Math.PI*2);
+  ctx.fill();
+
+  // Warm inner shade surface.
+  ctx.fillStyle='rgba(255,230,183,.22)';
+  ctx.beginPath();
+  ctx.ellipse(142,-187,27,5,0,0,Math.PI*2);
+  ctx.fill();
+
+  // Small bulb glow, subtle rather than cartoonish.
+  const glow=ctx.createRadialGradient(142,-185,0,142,-185,30);
+  glow.addColorStop(0,'rgba(255,232,184,.30)');
+  glow.addColorStop(1,'rgba(255,232,184,0)');
+  ctx.fillStyle=glow;
+  ctx.beginPath();
+  ctx.arc(142,-185,30,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.restore();
+}
+function drawRug(){
+  const lift=smooth(.12,.55,waterDepth);
+  const y=724-lift*10;
+  ctx.save();ctx.translate(0,-lift*2);
+  const rg=ctx.createRadialGradient(690,y,20,690,y,300);
+  rg.addColorStop(0,waterDepth>.08?'#4f6267':'#6a6760');
+  rg.addColorStop(1,waterDepth>.08?'#394b50':'#504b46');
+  ctx.fillStyle=rg;
+  ctx.beginPath();
+  ctx.ellipse(690,y,300,61,Math.sin(simT*1.2)*lift*.01,0,Math.PI*2);
+  ctx.fill();
+  ctx.strokeStyle='rgba(218,206,186,.17)';ctx.lineWidth=6;
+  ctx.beginPath();ctx.ellipse(690,y,262,46,0,0,Math.PI*2);ctx.stroke();
+  ctx.restore();
+}
+function buoyancyPose(th,x,y,maxLift,driftScale,dir){
+  const f=smooth(th,Math.min(1.8,th+.48),waterDepth);
+  const flow=currentStrength();
+  const bob=Math.sin(simT*(1.25+th)+x*.01)*f*(5+flow*4);
+  const drift=Math.sin(simT*.55+x*.013)*f*driftScale*90*flow;
+  return {
+    x:x+drift*dir,
+    y:y-f*maxLift*100+bob,
+    angle:Math.sin(simT*.72+y*.01)*f*.16*flow*dir
+  };
+}
+function drawLoosePapers(){
+  const f=smooth(.88,1.25,waterDepth);
+  if(f<=0)return;
+  const flow=currentStrength();
+  for(let i=0;i<6;i++){
+    const x=620+i*26 + Math.sin(simT*.6+i)*f*90*flow;
+    const y=440 + f*(110+i*10) + Math.sin(simT*1.4+i)*7;
+    ctx.save();ctx.translate(x,y);ctx.rotate(Math.sin(simT+i)*f*.6);
+    ctx.fillStyle=`rgba(231,229,216,${.78-f*.18})`;
+    ctx.fillRect(-16,-10,32,20);
+    ctx.restore();
+  }
+}
+function drawElectricalWarning(){
+  if(waterDepth<.36)return;
+  const a=smooth(.06,.30,waterDepth);
+  ctx.save();ctx.globalAlpha=.45+.5*a;
+  rr(700,645,162,34,9,'rgba(108,57,50,.88)');
+  ctx.fillStyle='#f2d2c8';ctx.font='600 12px system-ui';
+  ctx.fillText('WATER AT POWER STRIP',711,667);
+  ctx.restore();
+}
+
+function drawElectricalHazard(){
+  if(!electricHazard())return;
+
+  const W=room.width,H=room.height;
+  const sy=waterSurfaceY();
+  const strength=clamp((waterDepth-0.80)/.65,0,1);
+
+  // IMPORTANT: This visual means the whole connected body of water should be
+  // treated as potentially energized. It does NOT mean current density is
+  // physically uniform everywhere in real floodwater.
+  ctx.save();
+
+  // whole-water electrical hazard tint
+  const field=ctx.createLinearGradient(0,sy,0,H);
+  field.addColorStop(0,`rgba(255,217,105,${.05+.05*strength})`);
+  field.addColorStop(.35,`rgba(92,188,221,${.08+.05*strength})`);
+  field.addColorStop(1,`rgba(57,145,186,${.11+.06*strength})`);
+  ctx.fillStyle=field;
+  ctx.fillRect(0,sy,W,H-sy);
+
+  // animated field pulses spanning the entire connected water body
+  for(let j=0;j<8;j++){
+    const yy=sy+18+j*Math.max(18,(H-sy-25)/8);
+    ctx.strokeStyle=`rgba(255,226,123,${.09+.08*strength})`;
+    ctx.lineWidth=1.5;
+    ctx.beginPath();
+    for(let x=0;x<=W;x+=18){
+      const y=yy
+        +Math.sin(x*.017+simT*2.7+j)*3.5
+        +Math.sin(x*.041-simT*1.8+j*.7)*1.8;
+      x?ctx.lineTo(x,y):ctx.moveTo(x,y);
+    }
+    ctx.stroke();
+  }
+
+  // sparse warning filaments across the water, not only near an outlet
+  ctx.strokeStyle=`rgba(255,236,155,${.18+.12*strength})`;
+  ctx.lineWidth=1.6;
+  for(let j=0;j<7;j++){
+    let x=(j*211+simT*19)%W;
+    let y=sy+22+(j%4)*32;
+    ctx.beginPath();ctx.moveTo(x,y);
+    for(let k=0;k<8;k++){
+      x+=28+Math.sin(simT*3+j+k)*8;
+      if(x>W) x-=W;
+      y+=Math.sin(simT*5+j*1.7+k)*8;
+      y=clamp(y,sy+8,H-18);
+      ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+  }
+
+  // stronger local source glow at actual energized equipment
+  const points=[[467,542],[955,542],[780,699]];
+  points.forEach((p)=>{
+    if(p[1] < sy)return;
+    const r=85+strength*65;
+    const g=ctx.createRadialGradient(p[0],p[1],0,p[0],p[1],r);
+    g.addColorStop(0,`rgba(255,222,120,${.22+.14*strength})`);
+    g.addColorStop(.35,`rgba(112,199,229,${.12+.09*strength})`);
+    g.addColorStop(1,'rgba(80,160,200,0)');
+    ctx.fillStyle=g;
+    ctx.beginPath();ctx.arc(p[0],p[1],r,0,Math.PI*2);ctx.fill();
+  });
+
+  ctx.restore();
+
+  // danger label
+  rr(1015,680,238,54,11,'rgba(83,37,34,.90)');
+  ctx.fillStyle='#f3d2c9';ctx.font='700 14px system-ui';
+  ctx.fillText('POTENTIALLY ENERGIZED WATER',1031,702);
+  ctx.font='10px system-ui';ctx.fillStyle='#d7aca4';
+  ctx.fillText('Treat the entire connected floodwater as hazardous',1031,720);
+}
+
+function drawWater(){
+  const W=room.width,H=room.height;
+  if(waterDepth<=.002)return;
+
+  const sy=waterSurfaceY();
+  const flow=currentStrength();
+  const murk=clarity();
+  const dirty=Math.max(.45, contamination());
+
+  // underwater tint
+  const g=ctx.createLinearGradient(0,sy,0,H);
+  const brown=Math.round(30+dirty*65);
+  g.addColorStop(0,`rgba(${63+brown},${132-Math.round(dirty*34)},${157-Math.round(dirty*62)},${murk*.50})`);
+  g.addColorStop(.58,`rgba(${39+brown},${96-Math.round(dirty*26)},${119-Math.round(dirty*45)},${murk*.68})`);
+  g.addColorStop(1,`rgba(${24+brown},${67-Math.round(dirty*20)},${86-Math.round(dirty*32)},${murk*.78})`);
+  ctx.fillStyle=g;
+  ctx.fillRect(0,sy,W,H-sy);
+
+  // moving surface
+  ctx.strokeStyle='rgba(183,226,238,.55)';
+  ctx.lineWidth=3;
+  ctx.beginPath();
+  for(let x=0;x<=W;x+=12){
+    const y=sy + Math.sin(x*.021+simT*2.1)*2.6*flow + Math.sin(x*.049-simT*1.4)*1.4*flow;
+    x?ctx.lineTo(x,y):ctx.moveTo(x,y);
+  }
+  ctx.stroke();
+
+  // secondary ripples
+  for(let j=0;j<9;j++){
+    ctx.strokeStyle=`rgba(184,221,230,${.12-j*.009})`;
+    ctx.lineWidth=1.2;
+    ctx.beginPath();
+    for(let x=0;x<=W;x+=16){
+      const y=sy+14+j*21 + Math.sin(x*.019+j+simT*(1.2+.04*j))*2.3*flow;
+      x?ctx.lineTo(x,y):ctx.moveTo(x,y);
+    }
+    ctx.stroke();
+  }
+
+  // drifting suspended sediment / dirty-water particles
+  const particleCount=65+Math.round(dirty*85);
+  for(let i=0;i<particleCount;i++){
+    const px=(i*137+simT*(16+dirty*12)*flow)%W;
+    const py=sy+18+((i*71)%Math.max(20,H-sy-22));
+    ctx.fillStyle=`rgba(${150+Math.round(dirty*35)},${132-Math.round(dirty*22)},${100-Math.round(dirty*18)},${.025+murk*.055+dirty*.045})`;
+    ctx.beginPath();ctx.arc(px,py,1+(i%4)*.55,0,Math.PI*2);ctx.fill();
+  }
+
+  // pieces of floating debris in contaminated water
+  if(dirty>.2 && waterDepth>.20){
+    for(let i=0;i<14;i++){
+      const px=(110+i*97+simT*11*flow)%(W+120)-60;
+      const py=sy+22+(i%4)*24+Math.sin(simT*1.2+i)*4;
+      ctx.save();ctx.translate(px,py);ctx.rotate(Math.sin(simT*.8+i)*.25);
+      ctx.fillStyle=`rgba(92,75,56,${.32+dirty*.30})`;
+      ctx.fillRect(-8,-2,16,4);
+      ctx.restore();
+    }
+  }
+
+  // waterline reflection highlight
+  const refl=ctx.createLinearGradient(0,sy,0,sy+45);
+  refl.addColorStop(0,'rgba(220,245,250,.12)');
+  refl.addColorStop(1,'rgba(220,245,250,0)');
+  ctx.fillStyle=refl;
+  ctx.fillRect(0,sy,W,45);
+}
+function drawRoom(){
+  ctx.clearRect(0,0,room.width,room.height);
+  drawRoomBase();
+  drawPaintings();
+  drawBookshelf();
+  drawDesk();
+  drawRug();
+  drawBoxes();
+  drawChair();
+  drawFloorLamp();
+  drawLoosePapers();
+  drawElectricalWarning();
+
+  // Water is intentionally drawn late so submerged portions are tinted.
+  drawWater();
+  drawElectricalHazard();
+
+  // front glassy reflections over objects
+  if(waterDepth>.03){
+    const sy=waterSurfaceY();
+    ctx.save();
+    ctx.globalCompositeOperation='screen';
+    ctx.fillStyle='rgba(190,229,237,.035)';
+    for(let i=0;i<8;i++){
+      ctx.beginPath();
+      ctx.ellipse(180+i*170, sy+35+(i%3)*34, 70, 8, 0,0,Math.PI*2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+}
+function drawGraph(){
+  const W=graph.width,H=graph.height;
+  gx.clearRect(0,0,W,H);
+  gx.fillStyle='#05090d';gx.fillRect(0,0,W,H);
+
+  gx.strokeStyle='rgba(87,116,132,.11)';
+  gx.lineWidth=1;
+  for(let x=0;x<W;x+=45){gx.beginPath();gx.moveTo(x,0);gx.lineTo(x,H);gx.stroke();}
+  for(let y=0;y<H;y+=30){gx.beginPath();gx.moveTo(0,y);gx.lineTo(W,y);gx.stroke();}
+
+  if(history.length>1){
+    gx.strokeStyle='#88bdca';gx.lineWidth=2;
+    gx.beginPath();
+    history.forEach((d,i)=>{
+      const x=i/(history.length-1)*(W-20)+10;
+      const y=H-12-clamp(d/2.4,0,1)*(H-28);
+      i?gx.lineTo(x,y):gx.moveTo(x,y);
+    });
+    gx.stroke();
+  }
+
+  gx.fillStyle='#82949e';gx.font='10px system-ui';
+  gx.fillText('Simulated water depth',10,16);
+}
+function frame(now){
+  const dt=Math.min(.05,(now-last)/1000);
+  last=now;
+
+  const target=flooding?targetDepth():waterDepth;
+  if(flooding){
+    const rate=.075*(+E.rise.value);
+    waterVelocity += (rate-waterVelocity)*(1-Math.exp(-dt*2.5));
+    waterDepth=Math.min(target,waterDepth+waterVelocity*dt);
+    if(waterDepth>=target-.001){
+      waterDepth=target;
+      waterVelocity*=.92;
+    }
+  }else{
+    waterVelocity += (0-waterVelocity)*(1-Math.exp(-dt*3));
+  }
+
+  simT+=dt;
+
+  if(history.length===0 || simT-(history._last||0)>.12){
+    history.push(waterDepth);
+    history._last=simT;
+    if(history.length>220)history.shift();
+  }
+
+  updateUI();
+  drawRoom();
+  drawGraph();
+  requestAnimationFrame(frame);
+}
+
+E.toggle.addEventListener('click',()=>{flooding=!flooding;updateUI();});
+E.reset.addEventListener('click',()=>{
+  flooding=false;waterDepth=0;waterVelocity=0;simT=0;
+  E.depth.value=2.40;E.rise.value=1;E.current.value=.55;E.clarity.value=.58;E.contamination.value=.70;E.power.value=1;
+  history.length=0;
+  updateUI();drawRoom();drawGraph();
+});
+['depth','rise','current','clarity','contamination','power'].forEach(id=>q(id).addEventListener('input',()=>{updateUI();drawRoom();}));
+
+updateUI();
+drawRoom();
+drawGraph();
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
